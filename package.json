@@ -1,0 +1,26 @@
+{
+  "name": "project-pir-node",
+  "version": "1.0.0",
+  "description": "Node.js API server",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Prophet32j/project-pir-node.git"
+  },
+  "author": "Joshua Hardy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Prophet32j/project-pir-node/issues"
+  },
+  "homepage": "https://github.com/Prophet32j/project-pir-node",
+  "dependencies": {
+    "express": "^4.10.4"
+  },
+  "devDependencies": {
+    "mocha": "^2.0.1",
+    "supertest": "^0.15.0"
+  }
+}
