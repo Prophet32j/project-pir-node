@@ -4,6 +4,7 @@
   "description": "Node.js API server",
   "main": "app.js",
   "scripts": {
+    "start": "./bin/www",
     "test": "mocha tests/users.js"
   },
   "repository": {
@@ -19,7 +20,8 @@
   "dependencies": {
     "body-parser": "^1.10.0",
     "express": "^4.10.4",
-    "mongodb": "^1.4.23"
+    "mongodb": "^1.4.23",
+    "monk": "^0.9.1"
   },
   "devDependencies": {
     "mocha": "^2.0.1",

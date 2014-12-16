@@ -337,6 +337,61 @@
           }
         }
       }
+    },
+    "monk": {
+      "version": "0.9.1",
+      "from": "monk@",
+      "resolved": "https://registry.npmjs.org/monk/-/monk-0.9.1.tgz",
+      "dependencies": {
+        "mongoskin": {
+          "version": "1.4.4",
+          "from": "mongoskin@1.4.4",
+          "resolved": "https://registry.npmjs.org/mongoskin/-/mongoskin-1.4.4.tgz",
+          "dependencies": {
+            "mongodb": {
+              "version": "1.4.4",
+              "from": "mongodb@1.4.4",
+              "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-1.4.4.tgz",
+              "dependencies": {
+                "bson": {
+                  "version": "0.2.8",
+                  "from": "bson@0.2.8",
+                  "resolved": "https://registry.npmjs.org/bson/-/bson-0.2.8.tgz",
+                  "dependencies": {
+                    "nan": {
+                      "version": "1.0.0",
+                      "from": "nan@~1.0.0",
+                      "resolved": "https://registry.npmjs.org/nan/-/nan-1.0.0.tgz"
+                    }
+                  }
+                },
+                "kerberos": {
+                  "version": "0.0.3",
+                  "from": "kerberos@0.0.3",
+                  "resolved": "https://registry.npmjs.org/kerberos/-/kerberos-0.0.3.tgz"
+                }
+              }
+            }
+          }
+        },
+        "debug": {
+          "version": "2.1.0",
+          "from": "debug@*",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-2.1.0.tgz",
+          "dependencies": {
+            "ms": {
+              "version": "0.6.2",
+              "from": "ms@0.6.2",
+              "resolved": "https://registry.npmjs.org/ms/-/ms-0.6.2.tgz"
+            }
+          }
+        },
+        "mpromise": {
+          "version": "0.5.1",
+          "from": "mpromise@0.5.1",
+          "resolved": "https://registry.npmjs.org/mpromise/-/mpromise-0.5.1.tgz"
+        }
+      }
     }
   }
 }
