@@ -1,8 +1,9 @@
 var request = require('supertest');
 var app = require('./../app');
 
-var redis = require('redis');
-var client = redis.createClient();
+// TODO
+// recode tests to test strict User and API
+// add MongoDB transactions for additional testing
 
 client.flushdb();
 
