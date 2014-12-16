@@ -4,7 +4,7 @@
   "description": "Node.js API server",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha tests/users.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/Prophet32j/project-pir-node",
   "dependencies": {
-    "express": "^4.10.4"
+    "body-parser": "^1.10.0",
+    "express": "^4.10.4",
+    "mongodb": "^1.4.23"
   },
   "devDependencies": {
     "mocha": "^2.0.1",

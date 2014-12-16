@@ -1,10 +1,11 @@
 var express = require('express');
 var app = express();
 
-app.get('/', function(req, res) {
-  res.send('Hello World\n');
-});
+// static file serving
+app.use(express.static(__dirname + '/public'));
 
+// routes
+var userRoutes = require('./routes/users');
+app.use('/users', userRoutes);
 
-app.listen(8000);
-
+module.exports = app;
