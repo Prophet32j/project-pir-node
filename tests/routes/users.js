@@ -1,11 +1,9 @@
 var request = require('supertest');
-var app = require('./../app');
+var app = require('./../../app');
 
 // TODO
 // recode tests to test strict User and API
 // add MongoDB transactions for additional testing
-
-client.flushdb();
 
 describe('GET Requests to /users', function() {
   

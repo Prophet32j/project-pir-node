@@ -46,5 +46,22 @@ User.findById = function(id, callback) {
     callback(null, new User(doc));
   });
 }
+
+/*
+ * find all Users in database
+ * @param callback function(error, User[])
+ */
+User.find = function(callback) {
+  users.find({}, function(err, docs) {
+    if (err) return callback(err);
+    
+    // iterate over docs and create new User, push into users array
+    var users = [];
+    for (var i in docs)
+      users.push(new User(docs[i]));
+    
+    callback(null, users);
+  });
+}
              
 module.exports = User;
