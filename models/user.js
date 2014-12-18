@@ -73,7 +73,7 @@ function _insert(user, callback) {
 // starting Class/namespace functions
 
 /*
- * find a User by ID
+ * find a User by ID, returns a null object if not found
  * @param id of the User as ObjectId or String
  * @param callback function(error, User)
  */
@@ -88,10 +88,25 @@ User.findById = function(id, callback) {
 }
 
 /*
+ * find User by email, returns null if not found
+ * @param email of the User
+ * @param callback function(error, User[])
+ */   
+User.findByEmail = function(email, callback) {
+  users.findOne({ email: email}, function(err, doc) {
+    if (err) return callback(err);
+    
+    if(!doc) return callback(null, null);
+    
+    callback(null, new User(doc));
+  });
+}
+
+/*
  * find all Users in database
  * @param callback function(error, User[])
  */
-User.find = function(callback) {
+User.findAll = function(callback) {
   users.find({}, function(err, docs) {
     if (err) return callback(err);
     
@@ -103,5 +118,24 @@ User.find = function(callback) {
     callback(null, users);
   });
 }
-             
+
+/*
+ * find all Users in database
+ * @param hash of key and value items to search on
+ * @param callback function(error, User[])
+ */
+User.find = function(hash, callback) {
+  users.find(hash, function(err, docs) {
+    if (err) return callback(err);
+    
+    var users = [];
+    for (var i in docs) {
+      users.push(new User(docs[i]));
+    }
+    
+    callback(null, users);
+  });
+}
+
+
 module.exports = User;
