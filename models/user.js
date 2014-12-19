@@ -3,16 +3,20 @@
 // database is Mongo
 var mongo = require('mongodb');
 var monk = require('monk');
+var _ = require('lodash');
 
 // getting users collection in Mongo
 var db = monk('localhost/test'),
     users = db.get('users');
 
+// User schema
+var schema = require('./schemas').user;
+
 /*
  * constructor for User Class
  */
 var User = function(data) {
-  this.data = data;
+  this.data = data || {};
 }
 
 // User data in JSON form
@@ -42,6 +46,7 @@ User.prototype.set = function(name, value) {
  */
 User.prototype.save = function(callback) {
   var self = this;
+  self.data = _sanitize(self.data);
   
   // insert User if there is no Mongo ObjectId
   if (!self.data._id)
@@ -55,10 +60,30 @@ User.prototype.save = function(callback) {
   });
 }
 
+/*
+ * deletes User from collection.
+ * @param callback function(error)
+ */
+User.prototype.delete = function(callback) {
+  users.remove({_id: this.data._id}, function(err) {
+    callback(err);
+  });
+}
+
+/*
+ * sets default keys on data from User schema.
+ * Strips out any keys not specified in User schema
+ * @param data to be sanitized
+ * @return sanitized data
+ */
+function _sanitize(data) {
+  return _.pick(_.defaults(data, schema), _.keys(schema));
+}
+
 // private functions
 
 /*
- * inserts User into users collection
+ * inserts sanitized User into users collection
  * @param user to be inserted
  * @param callback function(err, new User)
  */
