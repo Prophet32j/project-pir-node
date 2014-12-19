@@ -280,6 +280,11 @@
         }
       }
     },
+    "lodash": {
+      "version": "2.4.1",
+      "from": "lodash@",
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-2.4.1.tgz"
+    },
     "mongodb": {
       "version": "1.4.23",
       "from": "mongodb@",
