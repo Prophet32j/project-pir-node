@@ -27,10 +27,10 @@ $(function() {
   
   function appendToList(users) {
     var list = [];
-    for (i in users) {
-      var html = '<li>' + users[i];
+    users.forEach(function(user) {
+      var html = '<li>' + user.data.first_name + ' ' + user.data.last_name;
       list.push(html);
-    }
+    });
     $('#user-list').append(list);
   }
 });
