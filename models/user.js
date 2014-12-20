@@ -154,9 +154,9 @@ User.find = function(hash, callback) {
     if (err) return callback(err);
     
     var users = [];
-    for (var i in docs) {
-      users.push(new User(docs[i]));
-    }
+    docs.forEach(function(doc) {
+      users.push(new User(doc));
+    });
     
     callback(null, users);
   });
