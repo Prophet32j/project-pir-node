@@ -162,5 +162,4 @@ User.find = function(hash, callback) {
   });
 }
 
-
 module.exports = User;

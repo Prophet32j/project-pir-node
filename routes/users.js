@@ -34,34 +34,44 @@ router.route('/')
     });
   });
 
-router.route('/:email')
+router.route('/:id')
   .get(function(req, res) {
-    var email = req.params.email;
-    User.findByEmail(email, function(err, user) {
+    User.findById(req.params.id, function(err, user) {
       if (err) {
         // what error was thrown??
         return res.status(400).json(err);
       }
       if (!user)
-        return res.status(404).json('Email was not found in system');
+        return res.status(404).json('ID was not found in system');
       
       // user was found, send it
       res.json(user);
     });
   })
   .put(urlencoded, function(req, res) {
+    var userData = req.body;
     
-    // TODO
-    // implement put method on API
-    
-    res.sendStatus(501);
+    User.findById(userData._id, function(err, user) {
+      if (err) { 
+        return res.status(400).json(err);
+      }
+      user.data = userData;
+      user.save(function(err, user) {
+        res.status(200).json(user);
+      });
+    });
   })
   .delete(function(req, res) {
-    
-    // TODO
-    // implement delete method on API
-    
-    res.sendStatus(501);
+    User.findById(req.params.id, function(err, user) {
+      if (err) { 
+        return res.status(400).json(err);
+      }
+      user.delete(function(err) {
+        if (err) return res.status(500).json(err);
+        
+        res.sendStatus(204); // 204 = No Response Body
+      });
+    });
   });
 
 module.exports = router;
