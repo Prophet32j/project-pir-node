@@ -10,15 +10,22 @@ router.route('/')
   .get(function(req, res) {
     
     // we need to check for query params, filters
-    
-    User.findAll(function(err, users) {
-      if (err) {
-        // what is the error?
-        return res.status(400).json(err);
-      }
-      
-      res.json(users);
-    });
+    if (req.query.first_name) {
+      User.find({first_name: req.query.first_name}, function(err, users) {
+        if (err) return res.status(500).json(err);
+        
+        return res.status(200).json(users);
+      });
+    }
+    else
+      User.findAll(function(err, users) {
+        if (err) {
+          // what is the error?
+          return res.status(400).json(err);
+        }
+
+        res.json(users);
+      });
   })
   .post(urlencoded, function(req, res) { // uses a JSON parser first to populate body
     var userData = req.body;
