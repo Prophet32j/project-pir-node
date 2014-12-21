@@ -66,7 +66,7 @@ var schemas = {
     availability: []
   },
   pair: {
-    _id:
+    _id: null,
     volunteer: null,
     child: null,
     day: null,
