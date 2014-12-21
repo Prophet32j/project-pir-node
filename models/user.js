@@ -3,7 +3,8 @@
 // database is Mongo
 var mongo = require('mongodb');
 var monk = require('monk');
-var _ = require('lodash');
+
+var util = require('./../util/util');
 
 // getting users collection in Mongo
 var db = monk('localhost/test'),
@@ -46,52 +47,48 @@ User.prototype.set = function(name, value) {
  */
 User.prototype.save = function(callback) {
   var self = this;
-  self.data = _sanitize(self.data);
+  self.data = util.sanitize(self.data, schema);
   
-  // insert User if there is no Mongo ObjectId
+  // insert if no ObjectId
   if (!self.data._id)
-    return _insert(self, callback);
-  
-  // User is in collection, update
-  users.updateById(self.data._id, self.data, function(err) {
-    if (err) return callback(err);
-    
-    callback(null, self);
-  });
+    _insert(self, callback);
+  else
+    _update(self, callback);
 }
 
 /*
  * deletes User from collection.
  * @param callback function(error)
  */
-User.prototype.delete = function(callback) {
+User.prototype.remove = function(callback) {
   users.remove({_id: this.data._id}, function(err) {
     callback(err);
   });
-}
-
-/*
- * sets default keys on data from User schema.
- * Strips out any keys not specified in User schema
- * @param data to be sanitized
- * @return sanitized data
- */
-function _sanitize(data) {
-  return _.pick(_.defaults(data, schema), _.keys(schema));
 }
 
 // private functions
 
 /*
  * inserts sanitized User into users collection
- * @param user to be inserted
+ * @param data to be inserted
  * @param callback function(err, new User)
  */
-function _insert(user, callback) {
-  users.insert(user.data, function(err, doc) {
+function _insert(data, callback) {
+  users.insert(data, function(err, doc) {
     if (err) return callback(err);
     
     callback(null, new User(doc));
+  });
+}
+
+/*
+ * updates sanitized user in users collection
+ * @param user to be updated
+ * @param callback function(err, user)
+ */
+function _update(user, callback) {
+  users.updateById(user.data._id, user.data, function(err) {
+    callback(err, user);
   });
 }
 
@@ -136,11 +133,11 @@ User.findAll = function(callback) {
     if (err) return callback(err);
     
     // iterate over docs and create new User, push into users array
-    var users = [];
+    var array = [];
     for (var i in docs)
-      users.push(new User(docs[i]));
+      array.push(new User(docs[i]));
     
-    callback(null, users);
+    callback(null, array);
   });
 }
 
@@ -153,12 +150,12 @@ User.find = function(hash, callback) {
   users.find(hash, function(err, docs) {
     if (err) return callback(err);
     
-    var users = [];
+    var array = [];
     docs.forEach(function(doc) {
-      users.push(new User(doc));
+      array.push(new User(doc));
     });
     
-    callback(null, users);
+    callback(null, array);
   });
 }
 
