@@ -26,7 +26,7 @@ var schemas = {
     image: null,
     pairs: [],
     availability: [],
-    pair_request: {
+    reader_request: {
       first_name: null,
       last_name: null,
       day: null,
@@ -40,9 +40,9 @@ var schemas = {
     last_name: null,
     phone: null,
     image: null,
-    children: []
+    readers: []
   },
-  child: {
+  reader: {
     _id: null,
     parent_id: null,
     first_name: null,
@@ -57,7 +57,7 @@ var schemas = {
     about_me: null,
     image: null,
     pair: null,
-    pair_request: {
+    volunteer_request: {
       first_name: null,
       last_name: null,
       day: null,
@@ -68,7 +68,7 @@ var schemas = {
   pair: {
     _id: null,
     volunteer: null,
-    child: null,
+    reader: null,
     day: null,
     time: null
   }
