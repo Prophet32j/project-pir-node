@@ -129,22 +129,26 @@ describe('User Model', function() {
       
       after('delete test user', function(done) {
         users.remove({ username: newUser.username }, function(err) {
-          return done(err);
+          done(err);
         });
       });
 
       it('should save new User and return with ObjectId', function(done) {
         newUser.save(function(err, user) {
+          newUser = user;
           expect(user.data).to.have.key('_id');
           done();
         });
       });
       
       it('should return an empty error object when update is successful', function(done) {
-        newUser.email = 'changed_email@email.com';
-        newUser.save(function(err, user) {
-          expect(err).to.not.be.ok();
-          done();
+        users.findOne({username: newUser.username}, function(err, doc) {
+          newUser.data = doc;
+          newUser.set('email', 'changed_email@email.com');
+          newUser.save(function(err, user) {
+            expect(err).to.not.be.ok();
+            done();
+          });
         });
       });
 
