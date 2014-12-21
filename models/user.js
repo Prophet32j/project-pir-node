@@ -70,11 +70,11 @@ User.prototype.remove = function(callback) {
 
 /*
  * inserts sanitized User into users collection
- * @param data to be inserted
+ * @param user to be inserted
  * @param callback function(err, new User)
  */
-function _insert(data, callback) {
-  users.insert(data, function(err, doc) {
+function _insert(user, callback) {
+  users.insert(user.data, function(err, doc) {
     if (err) return callback(err);
     
     callback(null, new User(doc));
