@@ -280,6 +280,11 @@
         }
       }
     },
+    "express-subdomain": {
+      "version": "1.0.2",
+      "from": "express-subdomain@",
+      "resolved": "https://registry.npmjs.org/express-subdomain/-/express-subdomain-1.0.2.tgz"
+    },
     "lodash": {
       "version": "2.4.1",
       "from": "lodash@",

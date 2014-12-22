@@ -32,6 +32,8 @@ router.route('/')
     console.log(userData);
     
     var user = new User(userData);
+    user.set('created', new Date());
+    
     user.save(function(err, newUser) {
       if (err) {
         // we need to check what the error was
@@ -73,7 +75,7 @@ router.route('/:id')
       if (err) { 
         return res.status(400).json(err);
       }
-      user.delete(function(err) {
+      user.remove(function(err) {
         if (err) return res.status(500).json(err);
         
         res.sendStatus(204); // 204 = No Response Body

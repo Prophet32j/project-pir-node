@@ -25,10 +25,10 @@ $(function() {
     });
   });
   
-  $('.a-users-del').click(function(event) {
+  $(document).on('click', '.a-users-del', function(event) {
     var anchor = $(this);
     var url = anchor.attr('href');
-    
+    alert(url);
     event.preventDefault();
     
     $.ajax({
@@ -36,7 +36,7 @@ $(function() {
       url: url
     })
     .done(function() {
-      anchor.remove();
+      anchor.parent().remove();
     })
     .fail(function(message) {
       alert(message);
@@ -47,7 +47,7 @@ $(function() {
     var list = [];
     users.forEach(function(user) {
       var html = '<li><a href="/users/' + user.data._id + '">' + 
-          user.data.first_name + ' ' + user.data.last_name + '</a>' + '\t' +
+          user.data.email + '</a>' + '  ' +
           '<a class="a-users-del" href="/users/' + user.data._id + '">delete</a>';
       list.push(html);
     });

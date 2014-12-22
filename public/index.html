@@ -10,22 +10,26 @@
     
     <form>
       <legend>New User Form</legend>
-      <label>Username: 
-        <input name='username' placeholder='Username'>
-      </label>
       <br/>
       <label>Email:
         <input type='email' name='email' placeholder='Email'>
       </label>
       <br/>
-      <label>First Name:
-        <input name='first_name' placeholder='First Name'>
+      <label>Password:
+        <input name='password' placeholder='Password'>
       </label>
       <br/>
-      <label>Last Name:
-        <input name='last_name' placeholder='Last Name'>
+      <label>Retype Password:
+        <input name='confirm_password' placeholder='Retype Password'>
       </label>
       <br/>
+      <label>Account Type:
+        <select name='type'>
+          <option value='a'>Admin</option>
+          <option value='p'>Parent</option>
+          <option value='v'>Volunteer</option>
+        </select>
+      </label>
       <button type='submit'>Submit</button>
     </form>
     
