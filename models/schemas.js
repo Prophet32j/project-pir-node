@@ -15,7 +15,7 @@ var schemas = {
     last_name: null,
     gender: null,
     phone: null,
-    firstTime: true,
+    first_time: true,
     orientation_complete: false,
     background_complete: false,
     affiliation: null,
