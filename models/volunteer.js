@@ -60,7 +60,7 @@ Volunteer.prototype.save = function(callback) {
  * deletes Volunteer from collection.
  * @param callback function(error)
  */
-Volunteer.prototype.delete = function(callback) {
+Volunteer.prototype.remove = function(callback) {
   volunteers.remove({_id: this.data._id}, function(err) {
     callback(err);
   });
