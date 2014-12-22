@@ -103,7 +103,7 @@ Parent.findById = function(id, callback) {
   parents.findById(id, function(err, doc) {
     if (err) return callback(err);
     
-    if (!doc) return callback(null, null);
+    if (!doc) return callback();
     
     callback(null, new Parent(doc));
   });
@@ -118,7 +118,7 @@ Parent.findByUserId = function(id, callback) {
   parents.findOne({ user_id: id}, function(err, doc) {
     if (err) return callback(err);
     
-    if(!doc) return callback(null, null);
+    if(!doc) return callback();
     
     callback(null, new Parent(doc));
   });
@@ -134,8 +134,9 @@ Parent.findAll = function(callback) {
     
     // iterate over docs and create new Parent, push into parents array
     var array = [];
-    for (var i in docs)
-      array.push(new Parent(docs[i]));
+    docs.forEach(function(doc) {
+      array.push(new Parent(doc));
+    });
     
     callback(null, array);
   });

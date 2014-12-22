@@ -10,6 +10,9 @@ var util = require('./../util/util');
 var db = monk('localhost/test'),
     users = db.get('users');
 
+// ensure that email is unique constrained
+users.index('email', { unique: true });
+
 // User schema
 var schema = require('./schemas').user;
 
@@ -134,8 +137,9 @@ User.findAll = function(callback) {
     
     // iterate over docs and create new User, push into users array
     var array = [];
-    for (var i in docs)
-      array.push(new User(docs[i]));
+    docs.forEach(function(doc) {
+      array.push(new User(doc));
+    });
     
     callback(null, array);
   });

@@ -103,7 +103,7 @@ Volunteer.findById = function(id, callback) {
   volunteers.findById(id, function(err, doc) {
     if (err) return callback(err);
     
-    if (!doc) return callback(null, null);
+    if (!doc) return callback();
     
     callback(null, new Volunteer(doc));
   });
@@ -118,7 +118,7 @@ Volunteer.findByUserId = function(id, callback) {
   volunteers.findOne({ user_id: id}, function(err, doc) {
     if (err) return callback(err);
     
-    if(!doc) return callback(null, null);
+    if(!doc) return callback();
     
     callback(null, new Volunteer(doc));
   });
@@ -134,8 +134,9 @@ Volunteer.findAll = function(callback) {
     
     // iterate over docs and create new Volunteer, push into volunteers array
     var array = [];
-    for (var i in docs)
-      array.push(new Volunteer(docs[i]));
+    docs.forEach(function(doc) {
+      array.push(new Volunteer(doc));
+    });
     
     callback(null, array);
   });
