@@ -67,8 +67,8 @@ var schemas = {
   },
   pair: {
     _id: null,
-    volunteer: null,
-    reader: null,
+    volunteer_id: null,
+    reader_id: null,
     day: null,
     time: null
   }
