@@ -1,7 +1,7 @@
 // User Model for handling data layer
 
 // database is Mongo
-var mongo = require('mongodb');
+// var mongo = require('mongodb');
 var monk = require('monk');
 
 var util = require('./../util/util');

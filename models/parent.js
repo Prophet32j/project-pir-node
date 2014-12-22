@@ -1,7 +1,7 @@
 // Parent Model for handling data layer
 
 // database is Mongo
-var mongo = require('mongodb');
+// var mongo = require('mongodb');
 var monk = require('monk');
 
 var util = require('./../util/util');
@@ -60,7 +60,7 @@ Parent.prototype.save = function(callback) {
  * deletes Parent from collection.
  * @param callback function(error)
  */
-Parent.prototype.delete = function(callback) {
+Parent.prototype.remove = function(callback) {
   parents.remove({_id: this.data._id}, function(err) {
     callback(err);
   });

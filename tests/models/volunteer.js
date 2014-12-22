@@ -148,6 +148,17 @@ describe('Volunteer Model', function() {
 
     });
     
+    describe('remove()', function() {
+      
+      it('should return an empty error object when remove is successful', function(done) {
+        var newVolunteer = new Volunteer({ first_name: 'tester' });
+        newVolunteer.save(function(err, volunteer) {
+          newVolunteer = volunteer;
+        })
+      });
+      
+    });
+    
   });
   
 });
