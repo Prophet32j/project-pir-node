@@ -4,12 +4,9 @@
     <script src='js/client.js'></script>
   </head>
   
-  <body>
-    <h1>Test Page</h1>
-    <br/>
-    
-    <form>
-      <legend>New User Form</legend>
+  <body>    
+    <form name='parent-form'>
+      <legend>New Parent Form</legend>
       <br/>
       <label>Email:
         <input type='email' name='email' placeholder='Email'>
@@ -23,18 +20,33 @@
         <input name='confirm_password' placeholder='Retype Password'>
       </label>
       <br/>
-      <label>Account Type:
-        <select name='type'>
-          <option value='a'>Admin</option>
-          <option value='p'>Parent</option>
-          <option value='v'>Volunteer</option>
-        </select>
-      </label>
       <button type='submit'>Submit</button>
     </form>
     
-    <h3>Listing all users</h3>
+    <h3>Listing all Parents</h3>
     
-    <ul id='user-list'></ul>
+    <ul id='parent-list'></ul>
+    
+    <form name='volunteer-form'>
+      <legend>New Volunteer Form</legend>
+      <br/>
+      <label>Email:
+        <input type='email' name='email' placeholder='Email'>
+      </label>
+      <br/>
+      <label>Password:
+        <input name='password' placeholder='Password'>
+      </label>
+      <br/>
+      <label>Retype Password:
+        <input name='confirm_password' placeholder='Retype Password'>
+      </label>
+      <br/>
+      <button type='submit'>Submit</button>
+    </form>
+    
+    <h3>Listing all Volunteers</h3>
+    
+    <ul id='volunteer-list'></ul>
   </body>
 </html>
