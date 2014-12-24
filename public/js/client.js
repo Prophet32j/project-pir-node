@@ -46,9 +46,9 @@ $(function() {
   function appendToList(users) {
     var list = [];
     users.forEach(function(user) {
-      var html = '<li><a href="/users/' + user.data._id + '">' + 
-          user.data.email + '</a>' + '  ' +
-          '<a class="a-users-del" href="/users/' + user.data._id + '">delete</a>';
+      var html = '<li><a href="/users/' + user._id + '">' + 
+          user.email + '</a>' + '  ' +
+          '<a class="a-users-del" href="/users/' + user._id + '">delete</a>';
       list.push(html);
     });
     $('#user-list').append(list);

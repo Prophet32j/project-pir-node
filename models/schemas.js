@@ -1,13 +1,4 @@
-var schemas = {
-  user: {
-    _id: null,
-    email: null,
-    password: null,
-    type: null,
-    created: null,
-    last_login: null,
-    activated: null
-  },
+
   volunteer: {
     _id: null,
     user_id: null,
@@ -32,15 +23,6 @@ var schemas = {
       day: null,
       time: null
     }
-  },
-  parent: {
-    _id: null,
-    user_id: null,
-    first_name: null,
-    last_name: null,
-    phone: null,
-    image: null,
-    readers: []
   },
   reader: {
     _id: null,
