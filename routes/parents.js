@@ -28,55 +28,39 @@ router.route('/')
     });
   });
 
-// TODO
-// http://expressjs.com/api.html#router.param
 // parse param value to determine if it's email or id
-
-router.route('/:email')
-  .get(function(req, res) {
-    Parent.findByEmail(req.params.email, function(err, doc) {
+router.param('id', function(req, res, next, id) {
+  // check if id is an hex value or email
+  var regex = /@/;
+  if (regex.test(id)) {  // it's an email
+    Parent.findByEmail(id, function(err, doc) {
       if (err)
-        return res.status(400).send(err);
+        return next(err);
       
-      if (!doc)
-        return res.status(404).send('email not found');
-      
-      res.json(doc);
+      req.parent = doc;
+      next();
     });
-  })
-  .put(function(req, res) {
-    res.sendStatus(501);
-  })
-  .delete(function(req, res) {
-    Parent.remove({ email: req.params.email }, function(err) {
-      if (err) return res.status(400).send(err);
+  } else {  // it's a hex value
+    Parent.findById(id, function(err, doc) {
+      if (err)
+        return next(err);
       
-      res.sendStatus(204);
+      req.parent = doc;
+      next();
     });
-  });
+  }
+});
 
 router.route('/:id')
   .get(function(req, res) {
-    Parent.findById(req.params.id, function(err, doc) {
-      if (err)
-        return res.status(400).send(err);
-      
-      if (!doc)
-        return res.status(404).send('id not found');
-      
-      res.json(doc);
-    });
+    res.json(req.parent);
   })
-  .put(function(req, res) {
+  .put(urlencoded, jsonparser, function(req, res) {
     res.sendStatus(501);
   })
   .delete(function(req, res) {
-    Parent.findByIdAndRemove(req.params.id, function(err, doc) {
-      if (err)
-        return res.status(400).send(err);
-      
-      if (!doc)
-        return res.status(404).send('id not found');
+    req.parent.remove(function(err) {
+      if (err) return res.status(400).send(err);
       
       res.sendStatus(204);
     });
