@@ -30,6 +30,9 @@ var schema = new Schema({
     last_name: String,
     day: String,
     time: String
+  },
+  metadata: {
+    interests: [String]
   }
 });
 

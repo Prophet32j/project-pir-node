@@ -25,6 +25,9 @@ var schema = new Schema({
     last_name: Sting,
     day: String,
     time: String
+  },
+  metadata: {
+    interests: [String]
   }
 });
 
