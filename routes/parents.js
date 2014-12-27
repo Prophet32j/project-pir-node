@@ -12,7 +12,7 @@ router.route('/')
     // get all parents
     Parent.find(function(err, docs) {
       if (err)
-        return res.status(400).send(err);
+        return res.status(500).json(err);
       
       res.json(docs);
     });
@@ -22,7 +22,7 @@ router.route('/')
     console.log(data);
     Parent.create(data, function(err, doc) {
       if (err)
-        return res.status(400).send(err);
+        return res.status(400).json(err);
       console.log(doc);
       res.status(201).json(doc);
     });
@@ -60,7 +60,7 @@ router.route('/:id')
   })
   .delete(function(req, res) {
     req.parent.remove(function(err) {
-      if (err) return res.status(400).send(err);
+      if (err) return res.status(500).json(err);
       
       res.sendStatus(204);
     });
