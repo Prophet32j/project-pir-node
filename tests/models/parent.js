@@ -1,151 +1,133 @@
 // var app = require('./../../app');
 
-// database is Mongo
-var monk = require('monk');
-// getting parents collection in Mongo
-var db = monk('localhost/test'),
-    parents = db.get('parents');
-
 var expect = require('expect.js');
+var mongoose = require('mongoose');
+var uri = 'mongodb://localhost/test';
 
-var Parent = require('./../../models/parent');
+var Parent = require('./../../models/parent'),
+    Reader = require('./../../models/reader');
 
-describe('Parent Model', function() {
+describe('Parent', function() {
   
-  describe('Finding Parents in collection', function() {
-    var _id = parents.id('5491b90e8e6a9e01d284a0d1');
-    var test_data = { _id: _id, first_name: 'John', last_name: 'Anderson' }
-    
-    before('insert test parent', function(done) {
-      parents.insert(test_data, function(err, doc) {
-        done(err);
-      });
+  before('Set up MongoDB and Mongoose', function(done) {
+    if (mongoose.connection.db) return done();
+    require('./../../models/schemas').init();
+    mongoose.connect(uri, done);
+  });
+  var ids = [];
+  
+  before('Add Parents to collection', function(done) {
+    var parents = [{ email: 'test1@mail.com', password: '123' },
+                   { email: 'test2@mail.com', password: '123' },
+                   { email: 'test3@mail.com', password: '123' }];
+    Parent.create(parents, function(err, doc1, doc2, doc3) {
+      ids.push(doc1._id, doc2._id, doc3._id);
+      done();
     });
+  });
     
-    after('delete test parent', function(done) {
-      parents.remove({_id: _id}, function(err) {
-        done(err);
-      });
+  after('Delete Parents from collection', function(done) {
+    ids.forEach(function(id) {
+      Parent.remove({ _id: id }).exec();
     });
+    done();
+  });
+  
+  describe('.findByEmail()', function() {
     
-    describe('findById()', function() {
-    
-      it('should return null if no record found', function(done) {
-        Parent.findById('000000000000000000000000', function(err, parent) {
-          expect(parent).to.not.be.ok();
-          done();
-        });
+    it('should find parent by email and return the document', function(done) {
+      Parent.findByEmail('test1@mail.com', function(err, doc) {
+        expect(doc).to.be.a(Parent);
+        done();
       });
-
-      it('should return a Parent', function(done) {
-        Parent.findById('5491b90e8e6a9e01d284a0d1', function(err, parent) {
-          expect(parent).to.be.a(Parent);
-          done();
-        });
-      });
-
-      it('should contain _id key in data', function(done) {
-        Parent.findById('5491b90e8e6a9e01d284a0d1', function(err, parent) {
-          expect(parent.data).to.have.key('_id');
-          done();
-        });
-      });
-    });
-
-    describe('findByUserId()', function() {
-
-      it('should return null if no user_id is found', function(done) {
-        Parent.findByUserId('000000000000000000000000', function(err, parent) {
-          expect(parent).to.not.be.ok();
-          done();
-        });
-      });
-
-      it.skip('should return a Parent when user_id is found', function(done) {
-        Parent.findByUserId('', function(err, parent) {
-          expect(parent).to.be.a(Parent);
-          done();
-        });      
-      });
-
-      it.skip('should return a Parent with an ObjectId', function(done) {
-        Parent.findByUserId('', function(err, parent) {
-          expect(parent.data).to.have.key('_id');
-          done();
-        });
-      });
-    
-    });
-
-    describe('findAll()', function() {
-
-      it('should return an Array', function(done) {
-        Parent.findAll(function(err, parents) {
-          expect(parents).to.be.an(Array);
-          done();
-        });
-      });
-      
-      it('should contain at least 1 Parent', function(done) {
-        Parent.findAll(function(err, parents) {
-          expect(parents).to.not.be.empty();
-          done();
-        });
-      });
-
-    });
-
-    describe('find()', function() {
-
-      it('should return an Array', function(done) {
-        Parent.find({ first_name: test_data.first_name }, function(err, parents) {
-          expect(parents).to.be.an(Array);
-          done();
-        });
-      });
-      
-      it('should contain at least 1 Parent', function(done) {
-        Parent.find({ first_name: test_data.first_name }, function(err, parents) {
-          expect(parents).to.not.be.empty();
-          done();
-        });
-      });
-
     });
     
   });
   
-  
-  describe('Inserting and Modifying Records in Collection', function() {
+  describe('.remove()', function() {
     
-    describe('save()', function() {
-      var newParent = new Parent({ first_name: 'new-test-parent' });
-      
-      after('delete test parent', function(done) {
-        parents.remove({ first_name: newParent.first_name }, function(err) {
-          done(err);
-        });
+    var parent = null;
+    var reader = null;
+    beforeEach('Add Parent and Reader to collections', function(done) {
+      Parent.create({ email: 'testremove@mail.com', password: '123'}, function(err, doc) {
+        if (err) return done(err);
+        
+        parent = doc;
+        Reader.create({ 
+          parent: parent._id, first_name: 'test', last_name: 'reader', gender: 'male', 
+          age: 6, grade: '1', about_me: 'things you should know about me' }, function(err, doc) {
+          if (err) return done(err);
+            
+          reader = doc;
+          parent.readers.push(reader._id);
+          
+          parent.save(function(err, doc) {
+            done();
+          });
+        });              
       });
-
-      it('should save new Parent and return with ObjectId', function(done) {
-        newParent.save(function(err, parent) {
-          newParent = parent;
-          expect(parent.data).to.have.key('_id');
+    });
+    
+    it('should remove parent from Parent collection', function(done) {
+      parent.remove(function(err, doc) {
+        Parent.findById(parent._id, function(err, parent_doc) {
+          expect(parent_doc).to.not.be.ok();
           done();
         });
       });
-      
-      it('should return an empty error object when update is successful', function(done) {
-        parents.findOne({first_name: newParent.first_name}, function(err, doc) {
-          newParent.data = doc;
-          newParent.set('first_name', 'changed');
-          newParent.save(function(err, parent) {
-            expect(err).to.not.be.ok();
-            done();
-          });
+    });
+    
+    it('should remove associated readers from Reader collection', function(done) {
+      parent.remove(function(err, doc) {
+        Reader.findById(reader._id, function(err, reader_doc) {
+          expect(reader_doc).to.not.be.ok();
+          done();
         });
       });
-
+    });
+  
+  });
+  
+  describe('.findAndRemove()', function() {
+    
+    var parent = null;
+    var reader = null;
+    beforeEach('Add Parent and Reader to collections', function(done) {
+      Parent.create({ email: 'testfindAndRemove@mail.com', password: '123'}, function(err, doc) {
+        if (err) return done(err);
+        
+        parent = doc;
+        Reader.create({ 
+          parent: parent._id, first_name: 'test', last_name: 'reader', gender: 'male', 
+          age: 6, grade: '1', about_me: 'things you should know about me' }, function(err, doc) {
+          if (err) return done(err);
+            
+          reader = doc;
+          parent.readers.push(reader._id);
+          
+          parent.save(function(err, doc) {
+            done();
+          });
+        });              
+      });
+    });
+    
+    it('should remove parent from Parent collection', function(done) {
+      parent.remove(function(err, doc) {
+        Parent.findById(parent._id, function(err, parent_doc) {
+          expect(parent_doc).to.not.be.ok();
+          done();
+        });
+      });
+    });
+    
+    it('should remove associated readers from Reader collection', function(done) {
+      parent.remove(function(err, doc) {
+        Reader.findById(reader._id, function(err, reader_doc) {
+          expect(reader_doc).to.not.be.ok();
+          done();
+        });
+      });
     });
     
   });
