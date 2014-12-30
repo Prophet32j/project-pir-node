@@ -25,4 +25,10 @@ app.use(express.static(__dirname + '/public'));
 var parentRoutes = require('./routes/parents');
 app.use('/parents', parentRoutes);
 
+var readerRoutes = require('./routes/readers');
+app.use('/readers', readerRoutes);
+
+var volunteerRoutes = require('./routes/readers');
+app.use('/volunteers', volunteerRoutes);
+
 module.exports = app;
