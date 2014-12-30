@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-  parent: { type: Schema.Types.ObjectId, ref: 'Parent' },
+  parent: { type: Schema.Types.ObjectId, ref: 'Parent', required: true },
   first_name: { type: String, required: true },
   last_name: { type: String, required: true },
   image: { type: String, default: 'default.png' },
@@ -30,7 +30,7 @@ var schema = new Schema({
     day: String,
     time: String
   },
-  metadata: {
+  meta: {
     interests: [String]
   }
 });

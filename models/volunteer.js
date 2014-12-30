@@ -35,7 +35,7 @@ var schema = new Schema({
     day: String,
     time: String
   },
-  metadata: {
+  meta: {
     interests: [String]
   }
 });
