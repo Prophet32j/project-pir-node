@@ -13,7 +13,10 @@ db.on('error', function(err) {
 });
 db.once('open', function() {
   console.log('Connection open');
-})
+});
+
+// initialize all mongoose models
+require('./models/schemas').init();
 
 // static file serving
 app.use(express.static(__dirname + '/public'));
