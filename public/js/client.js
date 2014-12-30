@@ -1,14 +1,13 @@
 $(function() {
   
   // get all users and append to page
-  $.get('/parents', function(parents) {
-    appendToList('parent-list', parents);
+  $.get('/parents', function(json) {
+    appendToList(json.parents);
   });
   
   // form submission to test POST /users
   $('form[name="parent-form"]').on('submit', function(event) {
     var form = $(this);
-    alert('hello');
     event.preventDefault();
     
     var data = form.serialize();
@@ -18,8 +17,8 @@ $(function() {
       url: '/parents',
       data: data
     })
-    .done(function(doc) {
-      appendToList('parent-list', [doc]);
+    .done(function(parent) {
+      appendToList([parent]);
       form.trigger('reset');
     })
     .fail(function(message) {
@@ -45,13 +44,13 @@ $(function() {
 //     });
 //   });
   
-  function appendToList(id, docs) {
+  function appendToList(parents) {
     var list = [];
-    docs.forEach(function(doc) {
-      var html = '<li><a href="/parents/' + doc._id + '">' + doc.email;
+    parents.forEach(function(parent) {
+      var html = '<li><a href="/parents/' + parent._id + '">' + parent.email;
       list.push(html);
     });
-    $('#' + id).append(list);
+    $('#parent-list').append(list);
   }
   
 });
