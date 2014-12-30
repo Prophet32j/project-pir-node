@@ -17,7 +17,6 @@ router.route('/')
   })
   .post(urlencoded, jsonencoded, function(err, docs) {
     var data = req.body;
-    
     Volunteer.create(data, function(err, doc) {
       if (err) return res.status(400).json(err);
       
@@ -29,23 +28,22 @@ router.route('/')
 router.param('id', function(req, res, next, id) {
   // check if id is an hex value or email
   var regex = /@/;
-  if (regex.test(id)) {  // it's an email
+  if (regex.test(id)) {
     Volunteer.findByEmail(id, function(err, doc) {
-      if (err)
-        return next(err);
+      if (err) return next(err);
+      if (!doc) return res.status(404).send('Email not found');
       
       req.parent = doc;
-      next();
-    });
-  } else {  // it's a hex value
-    Volunteer.findById(id, function(err, doc) {
-      if (err)
-        return next(err);
-      
-      req.parent = doc;
-      next();
+      return next();
     });
   }
+  Volunteer.findById(id, function(err, doc) {
+    if (err) return next(err);
+    if (!doc) return res.status(404).send('id not found');
+
+    req.parent = doc;
+    next();
+  });
 });
 
 router.route('/:id')

@@ -11,29 +11,39 @@ var router = express.Router();
 
 router.route('/')
   .get(function(req, res) {
+    // we need to be able to query based on parent first and foremost
     Reader.find(function(err, docs) {
       if (err) return res.status(500).json(err);
       
-      res.json(docs);
+      var json = {
+        readers: docs,
+        meta: {
+          count: docs.length
+        }
+      }
+      res.json(json);
     });
   })
   .post(urlencoded, jsonparser, function(req, res) {
     var data = req.body;
+    console.log(data);
     Reader.create(data, function(err, doc) {
       if (err) return res.status(400).json(err);
       
       // save into parent object this objectid
-      Parent.findById(doc.parent_id, function(err, parent) {
-        parent.readers.push(doc._id);
-        parent.save();
+      Parent.findAndInsertReader(doc.parent, doc._id, function(err, p_doc, numAffected) {
+        if (err) return res.status(500).json(err);
+        
+        res.status(201).json(doc);
       });
-      res.status(201).json(doc);
+      
     });
   });
 
 router.param('id', function(req, res, next, id) {
   Reader.findById(id, function(err, doc) {
     if (err) return next(err);
+    if (!doc) return res.status(404).send('id not found');
     
     req.reader = doc;
     next();
