@@ -12,7 +12,13 @@ router.route('/')
     Volunteer.find(function(err, docs) {
       if (err) return res.status(500).json(err);
       
-      res.json(docs);
+      var json = {
+        volunteers: docs,
+        meta: {
+          count: docs.length
+        }
+      }
+      res.json(json);
     });
   })
   .post(urlencoded, jsonencoded, function(err, docs) {
@@ -33,17 +39,18 @@ router.param('id', function(req, res, next, id) {
       if (err) return next(err);
       if (!doc) return res.status(404).send('Email not found');
       
-      req.parent = doc;
+      req.volunteer = doc;
       return next();
     });
   }
-  Volunteer.findById(id, function(err, doc) {
-    if (err) return next(err);
-    if (!doc) return res.status(404).send('id not found');
+  else
+    Volunteer.findById(id, function(err, doc) {
+      if (err) return next(err);
+      if (!doc) return res.status(404).send('id not found');
 
-    req.parent = doc;
-    next();
-  });
+      req.volunteer = doc;
+      next();
+    });
 });
 
 router.route('/:id')
