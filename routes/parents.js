@@ -42,7 +42,7 @@ router.param('id', function(req, res, next, id) {
   if (regex.test(id)) { 
     Parent.findByEmail(id, function(err, doc) {
       if (err) return next(err);
-      if (!doc) return res.status(404).send('Email not found');
+      if (!doc) return res.status(404).json('Email not found');
       
       req.parent = doc;
       return next();
@@ -51,7 +51,7 @@ router.param('id', function(req, res, next, id) {
   else
     Parent.findById(id, function(err, doc) {
       if (err) return next(err);
-      if (!doc) return res.status(404).send('id not found');
+      if (!doc) return res.status(404).json('id not found');
 
       req.parent = doc;
       next();
@@ -75,12 +75,18 @@ router.route('/:id')
     });
   })
   .put(urlencoded, jsonparser, function(req, res) {
-    res.sendStatus(501);
+    var parent = req.parent;
+    console.log(req.body);
+    Parent.findByIdAndUpdate(parent._id, req.body, function(err, doc, numAffected) {
+      if (err) return res.status(400).json(err);
+
+      res.sendStatus(204);
+    });
   })
   .delete(function(req, res) {
     req.parent.remove(function(err) {
       if (err) return res.status(500).json(err);
-      
+
       res.sendStatus(204);
     });
   });

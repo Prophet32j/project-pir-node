@@ -55,7 +55,12 @@ router.route('/:id')
     res.json(req.reader);
   })
   .put(function(req, res) {
-    res.sendStatus(501);
+    var reader = req.body.reader;
+    Reader.findByIdAndUpdate(reader._id, reader, function(err, doc, numAffected) {
+      if (err) return res.status(400).json(err);
+      
+      res.sendStatus(204);
+    });
   })
   .delete(function(req, res) {
     req.reader.remove(function(err) {

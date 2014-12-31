@@ -21,7 +21,7 @@ router.route('/')
       res.json(json);
     });
   })
-  .post(urlencoded, jsonencoded, function(err, docs) {
+  .post(urlencoded, jsonparser, function(err, docs) {
     var data = req.body;
     Volunteer.create(data, function(err, doc) {
       if (err) return res.status(400).json(err);
@@ -57,8 +57,20 @@ router.route('/:id')
   .get(function(req, res) {
     res.json(req.volunteer);
   })
-  .put(function(req, res) {
-    res.sendStatus(501);
+  .put(urlencoded, jsonparser, function(req, res) {
+    var volunteer = req.body.volunteer;
+    Volunteer.findByIdAndUpdate(volunteer._id, volunteer, function(err, doc, numAffected) {
+      if (err) return res.status(400).json(err);
+      
+      res.sendStatus(204);
+    });
+//     var keys = Object.keys(data.volunteer);
+//     for (var i=0; i<keys.length; i++) {
+//       req.volunteer[keys[i]] = data[i];
+//     }
+//     req.volunteer.save(function(err, doc) {
+//       res.status(204)
+//     });
   })
   .delete(function(req, res) {
     req.volunteer.remove(function(err) {
