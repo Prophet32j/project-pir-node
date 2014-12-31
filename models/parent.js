@@ -66,6 +66,8 @@ schema.statics.findAndRemove = function(id, callback) {
 schema.pre('remove', function(next) {
   // get reference to last reader id to check when to call next()
   // must get it now because Reader model will modify the array
+  if (!this.readers.length) return next();
+  
   var last_id = this.readers[this.readers.length-1];
   this.readers.forEach(function(reader_id) {
     mongoose.model('Reader').findAndRemove(reader_id, function(err) {
