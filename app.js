@@ -28,7 +28,7 @@ app.use('/parents', parentRoutes);
 var readerRoutes = require('./routes/readers');
 app.use('/readers', readerRoutes);
 
-var volunteerRoutes = require('./routes/readers');
+var volunteerRoutes = require('./routes/volunteers');
 app.use('/volunteers', volunteerRoutes);
 
 module.exports = app;
