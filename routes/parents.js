@@ -11,9 +11,9 @@ var router = express.Router();
 
 router.route('/')
   .get(function(req, res) {
-    // get all parents
-    // need to figure out query
-    Parent.find(function(err, docs) {
+    // parse query params and send to find()
+//     console.log(req.originalUrl);
+    Parent.find(parseQuery(req.query), function(err, docs) {
       if (err)
         return res.status(500).json(err);
       var json = {
@@ -76,7 +76,7 @@ router.route('/:id')
   })
   .put(urlencoded, jsonparser, function(req, res) {
     var parent = req.parent;
-    console.log(req.body);
+//     console.log(req.body);
     Parent.findByIdAndUpdate(parent._id, req.body, function(err, doc, numAffected) {
       if (err) return res.status(400).json(err);
 
@@ -90,5 +90,14 @@ router.route('/:id')
       res.sendStatus(204);
     });
   });
+
+function parseQuery(query) {
+  var conditions = {}
+  if (query.ids)
+    conditions._id = { $in: query.ids }
+  if (query.readers)
+    conditions.readers = { $in: query.readers }
+  return conditions;
+}
 
 module.exports = router;
