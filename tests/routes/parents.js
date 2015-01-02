@@ -13,6 +13,17 @@ describe('Parents resource', function() {
   describe('requests to /parents', function() {
     
     describe('GET', function() {
+      var parents = [];
+      before('add test parent', function(done) {
+        Parent.create({ email: 'testget1@mail.com', password: '1234' },
+                      { email: 'testget2@mail.com', password: '1234' },
+                      { email: 'testget3@mail.com', password: '1234' }, function(err, doc1, doc2, doc3) {
+          if (err) return done(err);
+          
+          parents.push(doc1); parents.push(doc2); parents.push(doc3);
+          done();
+        });
+      });
       
       it('should return json format', function(done) {
         request(app)
@@ -21,7 +32,24 @@ describe('Parents resource', function() {
           .expect('Content-Type', /json/, done);
       });
       
-      describe.skip('Query param: ids[]', function() {
+      describe('Query Params', function() {
+        
+        it('should return specific parents from query ids[]', function(done) {
+          var ids = [parents[0].id, parents[1].id];
+          request(app)
+            .get('/parents')
+            .query({ ids: ids })
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .expect(function(res) {
+              if (res.body.parents.length != 2) return "parents length not 2";
+            })
+            .end(done);
+        });
+        
+        it.skip('should return specific parents from query readers[]', function(done) {
+          
+        });
         
       });
       
