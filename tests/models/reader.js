@@ -1,8 +1,7 @@
 // var app = require('./../../app');
 
 var expect = require('expect.js');
-var mongoose = require('mongoose');
-var uri = 'mongodb://localhost/test';
+var testSetup = require('./test-setup');
 
 var Parent = require('./../../models/parent'),
     Reader = require('./../../models/reader');
@@ -12,9 +11,7 @@ describe('Reader', function() {
   var parent = null;
   
   before('Set up MongoDB and Mongoose', function(done) {
-    if (mongoose.connection.db) return done();
-    require('./../../models/schemas').init();
-    mongoose.connect(uri, done);
+    testSetup(done);
   });
   
   before('Add parent to collection', function(done) {
