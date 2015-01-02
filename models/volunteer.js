@@ -63,6 +63,8 @@ schema.statics.findAndRemovePair = function(volunteer_id, reader_id, callback) {
 var Reader = require('./reader');
 
 schema.pre('remove', function(next) {
+  if (!this.pairs.length) return next();
+  
   // need to process all removals before next
   var last_pair = this.pairs[this.pairs.length-1];
   
