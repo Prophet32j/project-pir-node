@@ -28,8 +28,8 @@ Readers Resource
 GET /readers
 GET /readers?ids[] or ?ids - must be an array
 GET /readers?parent - must be single id
-GET /readers?special_needs - must be boolean true/false
-GET /readers?language_needs - must be boolean true false
+GET /readers?special\_needs - must be boolean true/false
+GET /readers?language\_needs - must be boolean true false
 POST /readers
  - must have parent or else it fails
  - same as above
