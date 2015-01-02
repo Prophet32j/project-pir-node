@@ -57,3 +57,23 @@ DELETE /readers/:id
  - same as above
  - removes reader from parent
 
+## Volunteers Resource
+GET /volunteers
+
+GET /volunteers?ids[]= or ?ids= - must be array
+
+GET /volunteers?special\_ed= - must be boolean
+
+GET /volunteers?language\_ed= - must be boolean
+
+POST /volunteers
+ - same as /parents above
+ 
+## Volunteer Resource
+GET /volunteers/:id or :email - same as parent
+
+PUT /readers/:id or :email - same as parent
+ - only send what you are modifying
+
+DELETE /readers/:id or :email - same as parent
+ - also will remove any pairs from readers as well
