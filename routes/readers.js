@@ -26,18 +26,22 @@ router.route('/')
   })
   .post(urlencoded, jsonparser, function(req, res) {
     var data = req.body;
-    console.log(data);
-    Reader.create(data, function(err, doc) {
+    // ensure there is a parent to save the reader to
+    Parent.findById(data.parent, function(err, parent) {
       if (err) return res.status(400).json(err);
+      if (!parent) return res.status(400).json('parent does not exist');
       
-      // save into parent object this objectid
-      Parent.findAndInsertReader(doc.parent, doc._id, function(err, p_doc, numAffected) {
-        if (err) return res.status(500).json(err);
+      Reader.create(data, function(err, doc) {
+        if (err) return res.status(400).json(err);
+      
+        // save into parent object this objectid
+        parent.readers.push(doc._id);
+        parent.save();
         
         res.status(201).json(doc);
-      });
-      
     });
+    });
+    
   });
 
 router.param('id', function(req, res, next, id) {
@@ -54,9 +58,8 @@ router.route('/:id')
   .get(function(req, res) {
     res.json(req.reader);
   })
-  .put(function(req, res) {
-    var reader = req.body.reader;
-    Reader.findByIdAndUpdate(reader._id, reader, function(err, doc, numAffected) {
+  .put(urlencoded, jsonparser, function(req, res) {
+    Reader.findByIdAndUpdate(req.reader._id, req.body, function(err, doc, numAffected) {
       if (err) return res.status(400).json(err);
       
       res.sendStatus(204);
@@ -74,14 +77,13 @@ function parseQuery(query) {
   var conditions = {}
   if (query.ids)
     conditions._id = { $in: query.ids }
-  if (query.parent)
+  else if (query.parent)
     conditions.parent = query.parent;
-  if (query.hasOwnProperty('special_needs'))
+  else if (query.hasOwnProperty('special_needs'))
     conditions.special_needs = query.special_needs;
-  if (query.hasOwnProperty('language_needs'))
+  else if (query.hasOwnProperty('language_needs'))
     conditions.language_needs = query.language_needs;
   return conditions;
-  
 }
 
 module.exports = router;

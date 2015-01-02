@@ -12,7 +12,6 @@ var router = express.Router();
 router.route('/')
   .get(function(req, res) {
     // parse query params and send to find()
-//     console.log(req.originalUrl);
     Parent.find(parseQuery(req.query), function(err, docs) {
       if (err)
         return res.status(500).json(err);
@@ -95,7 +94,7 @@ function parseQuery(query) {
   var conditions = {}
   if (query.ids)
     conditions._id = { $in: query.ids }
-  if (query.readers)
+  else if (query.readers)
     conditions.readers = { $in: query.readers }
   return conditions;
 }
