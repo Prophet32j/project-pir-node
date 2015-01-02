@@ -12,7 +12,7 @@ var router = express.Router();
 router.route('/')
   .get(function(req, res) {
     // we need to be able to query based on parent first and foremost
-    Reader.find(function(err, docs) {
+    Reader.find(parseQuery(req.query), function(err, docs) {
       if (err) return res.status(500).json(err);
       
       var json = {
@@ -69,5 +69,19 @@ router.route('/:id')
       res.sendStatus(204);
     });
   });
+
+function parseQuery(query) {
+  var conditions = {}
+  if (query.ids)
+    conditions._id = { $in: query.ids }
+  if (query.parent)
+    conditions.parent = query.parent;
+  if (query.hasOwnProperty('special_needs'))
+    conditions.special_needs = query.special_needs;
+  if (query.hasOwnProperty('language_needs'))
+    conditions.language_needs = query.language_needs;
+  return conditions;
+  
+}
 
 module.exports = router;

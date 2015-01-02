@@ -2,7 +2,7 @@ var request = require('supertest');
 var app = require('./../../app');
 var Reader = require('./../../models/reader');
 
-describe.skip('Readers resource', function() {
+describe('Readers resource', function() {
   
   after('Remove test readers', function(done) {
     Reader.remove({ first_name: { $regex: /^test/i } }, function(err) {
