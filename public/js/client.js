@@ -17,8 +17,8 @@ $(function() {
       url: '/parents',
       data: data
     })
-    .done(function(parent) {
-      appendToList([parent]);
+    .done(function(json) {
+      appendToList([json.parent]);
       form.trigger('reset');
     })
     .fail(function(message) {
