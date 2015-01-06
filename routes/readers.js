@@ -38,7 +38,7 @@ router.route('/')
         parent.readers.push(doc._id);
         parent.save();
         
-        res.status(201).json(doc);
+        res.status(201).json({ reader: doc });
     });
     });
     
@@ -56,10 +56,11 @@ router.param('id', function(req, res, next, id) {
 
 router.route('/:id')
   .get(function(req, res) {
-    res.json(req.reader);
+    res.json({ reader: req.reader });
   })
   .put(urlencoded, jsonparser, function(req, res) {
-    Reader.findByIdAndUpdate(req.reader._id, req.body, function(err, doc, numAffected) {
+    var json = req.body;
+    Reader.findByIdAndUpdate(req.reader._id, json.reader, function(err, doc, numAffected) {
       if (err) return res.status(400).json(err);
       
       res.sendStatus(204);
@@ -69,7 +70,7 @@ router.route('/:id')
     req.reader.remove(function(err) {
       if (err) return res.status(500).json(err);
       
-      res.sendStatus(204);
+      res.status(204).json({});
     });
   });
 

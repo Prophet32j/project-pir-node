@@ -30,7 +30,7 @@ router.route('/')
       if (err)
         return res.status(400).json(err);
 
-      res.status(201).json(doc);
+      res.status(201).json({ parent: doc });
     });
   });
 
@@ -86,7 +86,7 @@ router.route('/:id')
     req.parent.remove(function(err) {
       if (err) return res.status(500).json(err);
 
-      res.sendStatus(204);
+      res.status(204).json({});
     });
   });
 

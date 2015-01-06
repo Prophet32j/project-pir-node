@@ -21,12 +21,12 @@ router.route('/')
       res.json(json);
     });
   })
-  .post(urlencoded, jsonparser, function(err, docs) {
+  .post(urlencoded, jsonparser, function(req, res) {
     var data = req.body;
     Volunteer.create(data, function(err, doc) {
       if (err) return res.status(400).json(err);
       
-      res.status(201).json(doc);
+      res.status(201).json({ volunteer: doc });
     });
   });
 
@@ -55,28 +55,21 @@ router.param('id', function(req, res, next, id) {
 
 router.route('/:id')
   .get(function(req, res) {
-    res.json(req.volunteer);
+    res.json({ volunteer: req.volunteer });
   })
   .put(urlencoded, jsonparser, function(req, res) {
-    var volunteer = req.body.volunteer;
-    Volunteer.findByIdAndUpdate(volunteer._id, volunteer, function(err, doc, numAffected) {
+    var json = req.body;
+    Volunteer.findByIdAndUpdate(req.volunteer._id, json.volunteer, function(err, doc, numAffected) {
       if (err) return res.status(400).json(err);
       
       res.sendStatus(204);
     });
-//     var keys = Object.keys(data.volunteer);
-//     for (var i=0; i<keys.length; i++) {
-//       req.volunteer[keys[i]] = data[i];
-//     }
-//     req.volunteer.save(function(err, doc) {
-//       res.status(204)
-//     });
   })
   .delete(function(req, res) {
     req.volunteer.remove(function(err) {
       if (err) return res.status(500).json(err);
       
-      res.sendStatus(204);
+      res.status(204).json({});
     });
   });
 
