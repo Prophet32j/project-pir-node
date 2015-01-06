@@ -5,9 +5,7 @@ var Parent = require('./../../models/parent');
 describe('Parents resource', function() {
   
   after('Remove test parents', function(done) {
-    Parent.remove({ email: { $regex: /^test/i } }, function(err) {
-      done(err);
-    });
+    Parent.remove({ email: { $regex: /^test/i } }, done);
   });
   
   describe('requests to /parents', function() {
@@ -67,7 +65,7 @@ describe('Parents resource', function() {
           .end(done);
       });
       
-      it('should respond to JSON body requests', function(done) {
+      it('should respond to JSON body requests and return the saved document', function(done) {
         request(app)
           .post('/parents')
           .type('json')
@@ -139,9 +137,9 @@ describe('Parents resource', function() {
         });
       });
       
-      it('should only update sent fields', function(done) {
+      it('should only modify items sent in request body and respond with status code 204', function(done) {
         request(app)
-          .put('/parents/' + parent._id)
+          .put('/parents/' + parent.id)
           .type('json')
           .send({ last_login: Date.now() })
           .expect(204, done);
@@ -175,5 +173,5 @@ describe('Parents resource', function() {
 });
   
 function hasIdKey(res) {
-  if (!('_id' in res.body)) return "missing _id field in doc response";
+  if (!('_id' in res.body.parent)) return "missing _id field in doc response";
 }

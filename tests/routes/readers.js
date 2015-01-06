@@ -211,5 +211,5 @@ describe('Readers resource', function() {
 });
   
 function hasIdKey(res) {
-  if (!('_id' in res.body)) return "missing _id field in doc response";
+  if (!('_id' in res.body.reader)) return "missing _id field in doc response";
 }
