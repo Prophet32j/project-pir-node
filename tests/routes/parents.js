@@ -1,6 +1,7 @@
 var request = require('supertest');
 var app = require('./../../app');
 var Parent = require('./../../models/parent');
+var Reader = require('./../../models/reader');
 
 describe('Parents resource', function() {
   
@@ -12,13 +13,30 @@ describe('Parents resource', function() {
     
     describe('GET', function() {
       var parents = [];
+      var reader1,reader2;
+      
       before('add test parent', function(done) {
-        Parent.create({ email: 'testget1@mail.com', password: '1234' },
-                      { email: 'testget2@mail.com', password: '1234' },
-                      { email: 'testget3@mail.com', password: '1234' }, function(err, doc1, doc2, doc3) {
+        Parent.create({ email: 'testget1@mail.com', password: '1234', first_name: 'first', last_name: 'last' },
+                      { email: 'testget2@mail.com', password: '1234', first_name: 'first', last_name: 'last' },
+                      { email: 'testget3@mail.com', password: '1234', first_name: 'first', last_name: 'last' }, function(err, doc1, doc2, doc3) {
           if (err) return done(err);
           
           parents.push(doc1); parents.push(doc2); parents.push(doc3);
+          done();
+        });
+      });
+      
+      before('Add test reader', function(done) {
+        Reader.create({ 
+          parent: parents[0]._id, first_name: 'test1', last_name: 'reader', gender: 'male', 
+          age: 6, grade: '1', about_me: 'things you should know about me' } ,{
+            
+          parent: parents[1]._id, first_name: 'test2', last_name: 'reader', gender: 'male', 
+          age: 6, grade: '1', about_me: 'things you should know about me' }, function(err, doc1, doc2) {
+          if (err) return done(err);
+          
+          reader1 = doc1;
+          reader2 = doc2;
           done();
         });
       });
@@ -45,8 +63,19 @@ describe('Parents resource', function() {
             .end(done);
         });
         
-        it.skip('should return specific parents from query readers[]', function(done) {
-          
+        it('returns parents who aren\'t activated from query activated=false', function(done) {
+          request(app)
+            .get('/parents')
+          .query({ activated: false })
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .expect(function(res) {
+              if (res.body.parents.length < 3) throw new Error('didn\'t find 3 parents');
+              res.body.parents.forEach(function(par) {
+                if (par.activated) throw new Error('expected non-activated parent, found activated');
+              });
+            })
+            .end(done);
         });
         
       });
@@ -58,7 +87,7 @@ describe('Parents resource', function() {
       it('should respond to URL-encoded requests and return the saved document', function(done) {
         request(app)
           .post('/parents')
-          .send('email=testurlencoded@mail.com&password=1234')
+          .send('email=testurlencoded@mail.com&password=1234&first_name=first&last_name=last')
           .expect(201)
           .expect('Content-Type', /json/)
           .expect(hasIdKey)
@@ -69,7 +98,7 @@ describe('Parents resource', function() {
         request(app)
           .post('/parents')
           .type('json')
-          .send({ email: 'testjsonparser@mail.com', password: '1234' })
+          .send({ email: 'testjsonparser@mail.com', password: '1234', first_name: 'first', last_name: 'last' })
           .expect(201)
           .expect('Content-Type', /json/)
           .expect(hasIdKey)
@@ -94,7 +123,7 @@ describe('Parents resource', function() {
       var parent = null;
       
       before('add test parent', function(done) {
-        Parent.create({ email: 'testgetbyid@mail.com', password: '1234' }, function(err, doc) {
+        Parent.create({ email: 'testgetbyid@mail.com', password: '1234', first_name: 'first', last_name: 'last' }, function(err, doc) {
           if (err) return done(err);
           
           parent = doc;
@@ -129,7 +158,7 @@ describe('Parents resource', function() {
       var parent = null;
       
       before('Add parent to collection', function(done) {
-        Parent.create({ email: 'testput@mail.com', password: '1234' }, function(err, doc) {
+        Parent.create({ email: 'testput@mail.com', password: '1234', first_name: 'first', last_name: 'last' }, function(err, doc) {
           if (err) return done(err);
           
           parent = doc;
@@ -152,7 +181,7 @@ describe('Parents resource', function() {
       var parent = null;
       
       beforeEach('Add parent to collection', function(done) {
-        Parent.create({ email: 'testdelete@mail.com', password: '1234'}, function(err, doc) {
+        Parent.create({ email: 'testdelete@mail.com', password: '1234', first_name: 'first', last_name: 'last' }, function(err, doc) {
           if (err) return done(err);
           
           parent = doc;

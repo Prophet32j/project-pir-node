@@ -31,4 +31,7 @@ app.use('/readers', readerRoutes);
 var volunteerRoutes = require('./routes/volunteers');
 app.use('/volunteers', volunteerRoutes);
 
+var pairRoutes = require('./routes/pairs');
+app.use('/pairs', pairRoutes);
+
 module.exports = app;

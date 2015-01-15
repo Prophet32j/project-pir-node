@@ -23,11 +23,7 @@ var schema = new Schema({
   language_ed: { type: String, default: false },
   about_me: { type: String, required: true },
   two_children: { type: Boolean, default: false },
-  pairs: [{ 
-    reader: { type: Schema.Types.ObjectId, ref: 'Reader' },
-    day: String,
-    time: String
-  }],
+  pairs: [{ type: Schema.Types.ObjectId, ref: 'Pair' }],
   availability: [],
   reader_request: {
     first_name: String,
@@ -46,21 +42,45 @@ var schema = new Schema({
  * @param callback function(error, doc)
  */   
 schema.statics.findByEmail = function(email, callback) {
-  this.findOne({ email: email}, callback);
+  this.findOne({ email: email }, callback);
 }
 
 /*
- * find Volunteer by id and remove reader from pairs array
- * @param volunteer id of the Volunteer
- * @param reader id of the Reader
+ * find Volunteer by id and remove pair from array
+ * @param Pair to be removed
  * @param callback function(error, doc)
  */
-schema.statics.findAndRemovePair = function(volunteer_id, reader_id, callback) {
-  this.findByIdAndUpdate(volunteer_id, { $pull: { pairs: { reader: reader_id } } }, callback );
+schema.statics.findAndRemovePair = function(pair, callback) {
+  this.findByIdAndUpdate(pair.volunteer, { $pull: { pairs: pair._id } }, callback );
+}
+
+/*
+ * finds Volunteer by id and pushes pair into array
+ * fires any middleware hooks
+ * @param Pair to insert
+ * @param callback function(err, doc)
+ */
+schema.statics.findAndInsertPair = function(pair, callback) {
+  this.findById(pair.volunteer, function(err, doc) {
+    if (err) return callback(err);
+    if (!doc) return callback(new Error('id does not exist!'));
+    
+    // make sure volunteer is not already paired per requested max
+    if ((doc.pairs.length == 1 && !doc.two_children) || (doc.pairs.length == 2))
+      return callback(new Error('Volunteer already paired to requested maximum'));
+
+    doc.pairs.push(pair._id);
+    doc.save(callback);
+  });
+}
+
+schema.statics.findPairableVolunteers = function(callback) {
+  
+  
 }
 
 // middleware hooks
-var Reader = require('./reader');
+var Pair = require('./pair');
 
 schema.pre('remove', function(next) {
   if (!this.pairs.length) return next();
@@ -69,12 +89,24 @@ schema.pre('remove', function(next) {
   var last_pair = this.pairs[this.pairs.length-1];
   
   this.pairs.forEach(function(pair) {
-    Reader.findByIdAndUpdate(pair.reader, { pair: null }, function(err) {
+    Pair.findAndRemove(pair, function(err) {
       if (err) return next(err);
-      if (last_pair.reader === pair.reader)
+      
+      if (last_pair === pair)
         next();
     });
   });
 });
+
+// Validators
+
+/*
+ * validates that pairs length does not violate pairing rule
+ */
+schema.path('pairs').validate(function(id) {
+//   if (this.pairs.count > 1) return false;
+//   if (!this.two_children && this.pairs.count > 0) return false;
+  return ((this.pairs.count > 1) || (!this.two_children && this.pairs.count > 0)) ? false : true;
+}, 'Volunteer has reached maximum pair capacity');
 
 module.exports = mongoose.model('Volunteer', schema);

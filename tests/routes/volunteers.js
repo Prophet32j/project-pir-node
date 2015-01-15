@@ -4,16 +4,19 @@ var Volunteer = require('./../../models/volunteer');
 
 describe('Volunteers Resource', function() {
   
-  var volunteer = null;
+  var volunteer, volunteer1;
     
   before('add test volunteer', function(done) {
     Volunteer.create(
       { email: 'testvolunteer21@mail.com', password: '1234', first_name: 'test', last_name: 'name',
-       phone: '123-123-1234', gender: 'male', affiliation: 'ISU', about_me: 'testing' }, 
-      function (err, doc) {
+       phone: '123-123-1234', gender: 'male', affiliation: 'ISU', about_me: 'testing' },
+      { email: 'testvolunteer22@mail.com', password: '1234', first_name: 'test', last_name: 'name',
+       phone: '123-123-1234', gender: 'male', affiliation: 'ISU', about_me: 'testing' },
+      function (err, doc, doc1) {
         if (err) return done(err);
 
-        volunteer = doc; 
+        volunteer = doc;
+        volunteer1 = doc1;
         done();
       });
   });
@@ -33,10 +36,32 @@ describe('Volunteers Resource', function() {
           .expect('Content-Type', /json/, done);
       });
       
-      describe.skip('Query Parameter', function() {
+      describe('Query Parameter', function() {
         
-        it('should return specific volunteers from query ids[]', function(done) {
-          
+        it('returns specific volunteers from query ids[]', function(done) {
+          request(app)
+            .get('/volunteers')
+            .query({ ids: [volunteer.id]})
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .expect(function(res) {
+              if (res.body.volunteers.length > 1) return 'volunteers length is not right';
+            })
+            .end(done);
+        });
+        
+        it('returns activated volunteers from query activated=true', function(done) {
+          request(app)
+            .get('/volunteers')
+            .query({ activated: true })
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .expect(function(res) {
+              res.body.volunteers.forEach(function(v) {
+                if (!v.activated) throw new Error('found non-activated volunteer');
+              });
+            })
+            .end(done);
         });
         
       });

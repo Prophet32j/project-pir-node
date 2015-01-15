@@ -9,7 +9,7 @@ var router = express.Router();
 
 router.route('/')
   .get(function(req, res) {
-    Volunteer.find(function(err, docs) {
+    Volunteer.find(parseQuery(req.query), null, { lean: true }, function(err, docs) {
       if (err) return res.status(500).json(err);
       
       var json = {
@@ -72,5 +72,14 @@ router.route('/:id')
       res.status(204).json({});
     });
   });
+
+function parseQuery(query) {
+  var conditions = {}
+  if (query.ids)
+    conditions._id = { $in: query.ids };
+  if (query.hasOwnProperty('activated'))
+    conditions.activated = query.activated;
+  return conditions;
+}
 
 module.exports = router;

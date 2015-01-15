@@ -8,7 +8,7 @@ describe('Readers resource', function() {
   var parent = null;
   
   before('Add test parent', function(done) {
-    Parent.create({ email: 'testparent@mail.com', password: '1234' }, function(err, doc) {
+    Parent.create({ email: 'testparent@mail.com', password: '1234', first_name: 'first', last_name: 'last' }, function(err, doc) {
       if (err) return done(err);
       
       parent = doc;
@@ -29,11 +29,10 @@ describe('Readers resource', function() {
           reader2 = null;
       
       before('Add test reader', function(done) {
-        Reader.create({ 
-          parent: parent._id, first_name: 'test1', last_name: 'reader', gender: 'male', 
-          age: 6, grade: '1', about_me: 'things you should know about me' } ,{
-            
-          parent: parent._id, first_name: 'test2', last_name: 'reader', gender: 'male', 
+        Reader.create(
+          { parent: parent._id, first_name: 'test1', last_name: 'reader', gender: 'male', special_needs: true,
+          language_needs: true, age: 6, grade: '1', about_me: 'things you should know about me', pair: parent._id } ,
+          { parent: parent._id, first_name: 'test2', last_name: 'reader', gender: 'male', 
           age: 6, grade: '1', about_me: 'things you should know about me' }, function(err, doc1, doc2) {
           if (err) return done(err);
           
@@ -50,43 +49,43 @@ describe('Readers resource', function() {
           .expect('Content-Type', /json/, done);
       });
       
-      describe.skip('Query Params', function() {
+      describe('Query Params', function() {
         
         it('should return specific readers from query ids[]', function(done) {
           request(app)
             .get('/readers')
-            .query({ ids: [reader1.id, reader2.id] })
+            .query({ ids: [reader1.id] })
             .expect(200)
             .expect('Content-Type', /json/)
-            .expect(function(res) { if (res.body.readers.length != 2) return "readers.length not 2!"; })
+            .expect(function(res) { if (res.body.readers.length != 1) return "readers.length not 2!"; })
             .end(done);
         });
         
         it('should return only related readers from query parent', function(done) {
           request(app)
             .get('/readers')
-            .query({ parent: reader1.parent })
+            .query({ parent: reader1.parent.toString() })
             .expect(200)
             .expect('Content-Type', /json/)
             .expect(function(res) { if (res.body.readers.length != 2) return "readers.length not 2!"; })
-            .done(done);
+            .end(done);
         });
         
-        it.skip('should return only special_needs readers from query special_needs', function(done) {
+        it('returns only special needs readers from query special_needs', function(done) {
           request(app)
             .get('/readers')
-            .query('special_needs=true')
+            .query({ special_needs: true })
             .expect(200)
             .expect('Content-Type', /json/)
             .expect(function(res) { 
               res.body.readers.forEach(function(reader) { 
-                if (reader.special_needs) throw "reader not special!"; 
+                if (!reader.special_needs) throw "reader not special!"; 
               }); 
             })
             .end(done);
         });
         
-        it.skip('should return only language_needs readers from query language_needs', function(done) {
+        it('should return only language_needs readers from query language_needs', function(done) {
           request(app)
             .get('/readers')
             .query('language_needs=true')
@@ -94,8 +93,22 @@ describe('Readers resource', function() {
             .expect('Content-Type', /json/)
             .expect(function(res) { 
               res.body.readers.forEach(function(reader) { 
-                if (reader.language_needs) throw "reader not language needy!"; 
+                if (!reader.language_needs) throw "reader not language needs!"; 
               }); 
+            })
+            .end(done);
+        });
+        
+        it('returns only readers who have been paired', function(done) {
+          request(app)
+            .get('/readers')
+            .query({ paired: true })
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .expect(function(res) {
+              res.body.readers.forEach(function(r) {
+                if (!r.pair) throw 'found unpaired reader';
+              });
             })
             .end(done);
         });

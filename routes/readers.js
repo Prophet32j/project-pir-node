@@ -12,7 +12,7 @@ var router = express.Router();
 router.route('/')
   .get(function(req, res) {
     // we need to be able to query based on parent first and foremost
-    Reader.find(parseQuery(req.query), function(err, docs) {
+    Reader.find(parseQuery(req.query), null, { lean: true }, function(err, docs) {
       if (err) return res.status(500).json(err);
       
       var json = {
@@ -84,6 +84,9 @@ function parseQuery(query) {
     conditions.special_needs = query.special_needs;
   else if (query.hasOwnProperty('language_needs'))
     conditions.language_needs = query.language_needs;
+  else if (query.hasOwnProperty('paired')) {
+    conditions.pair = query.paired ? { $ne: null } : null;
+  }
   return conditions;
 }
 

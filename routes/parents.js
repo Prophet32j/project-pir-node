@@ -12,7 +12,7 @@ var router = express.Router();
 router.route('/')
   .get(function(req, res) {
     // parse query params and send to find()
-    Parent.find(parseQuery(req.query), function(err, docs) {
+    Parent.find(parseQuery(req.query), null, { lean: true }, function(err, docs) {
       if (err)
         return res.status(500).json(err);
       var json = {
@@ -44,7 +44,7 @@ router.param('id', function(req, res, next, id) {
       if (!doc) return res.status(404).json('Email not found');
       
       req.parent = doc;
-      return next();
+      next();
     });
   }
   else
@@ -94,8 +94,8 @@ function parseQuery(query) {
   var conditions = {}
   if (query.ids)
     conditions._id = { $in: query.ids }
-  else if (query.readers)
-    conditions.readers = { $in: query.readers }
+  else if (query.hasOwnProperty('activated'))
+    conditions.activated = query.activated;
   return conditions;
 }
 

@@ -1,10 +1,9 @@
-// var app = require('./../../app');
-
 var expect = require('expect.js');
 var testSetup = require('./test-setup');
 
 var Parent = require('./../../models/parent'),
-    Reader = require('./../../models/reader');
+    Reader = require('./../../models/reader'),
+    Pair = require('./../../models/pair');
 
 describe('Reader', function() {
   
@@ -15,7 +14,7 @@ describe('Reader', function() {
   });
   
   before('Add parent to collection', function(done) {
-    Parent.create({ email: 'parentreadertest@mail.com', password: '123'}, function(err, doc) {
+    Parent.create({ email: 'parentreadertest@mail.com', password: '123', first_name: 'first', last_name: 'last' }, function(err, doc) {
       if (err) return done(err);
 
       parent = doc;

@@ -14,9 +14,9 @@ describe('Parent', function() {
   var ids = [];
   
   before('Add Parents to collection', function(done) {
-    var parents = [{ email: 'test1@mail.com', password: '123' },
-                   { email: 'test2@mail.com', password: '123' },
-                   { email: 'test3@mail.com', password: '123' }];
+    var parents = [{ email: 'test1@mail.com', password: '123', first_name: 'first', last_name: 'last' },
+                   { email: 'test2@mail.com', password: '123', first_name: 'first', last_name: 'last' },
+                   { email: 'test3@mail.com', password: '123', first_name: 'first', last_name: 'last' }];
     Parent.create(parents, function(err, doc1, doc2, doc3) {
       ids.push(doc1._id, doc2._id, doc3._id);
       done();
@@ -43,7 +43,7 @@ describe('Parent', function() {
     var parent = null;
     var reader = null;
     beforeEach('Add Parent and Reader to collections', function(done) {
-      Parent.create({ email: 'testremove@mail.com', password: '123'}, function(err, doc) {
+      Parent.create({ email: 'testremove@mail.com', password: '123', first_name: 'first', last_name: 'last'}, function(err, doc) {
         if (err) return done(err);
         
         parent = doc;
@@ -87,7 +87,7 @@ describe('Parent', function() {
     var parent = null;
     var reader = null;
     beforeEach('Add Parent and Reader to collections', function(done) {
-      Parent.create({ email: 'testfindAndRemove@mail.com', password: '123'}, function(err, doc) {
+      Parent.create({ email: 'testfindAndRemove@mail.com', password: '123', first_name: 'first', last_name: 'last'}, function(err, doc) {
         if (err) return done(err);
         
         parent = doc;

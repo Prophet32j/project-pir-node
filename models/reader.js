@@ -17,11 +17,7 @@ var schema = new Schema({
   special_needs: { type: String, default: false },
   language_needs: { type: String, default: false },
   about_me: { type: String, required: true },
-  pair: {
-    volunteer: { type: Schema.Types.ObjectId, ref: 'Volunteer' },
-    day: String,
-    time: String
-  },
+  pair: { type: Schema.Types.ObjectId, ref: 'Pair' },
   
   availability: [],
   reader_request: {
@@ -66,22 +62,18 @@ schema.statics.findAndRemove = function(id, callback) {
  */
 schema.pre('remove', function(next) {
   var Parent = mongoose.model('Parent');
-  Parent.findAndRemoveReader(this.parent, this._id, next);
+  Parent.findAndRemoveReader(this, next);
 });
 
 /*
- * middleware hook to remove reader pair from volunteer
+ * middleware hook to find and remove pair if exists
  */
 schema.pre('remove', function(next) {
   // make sure there's a pair to remove
-  if(!this.pair.volunteer)
+  if(!this.pair)
     return next();
   
-  mongoose.model('Volunteer').findAndRemovePair(this.pair.volunteer, this._id, next);
+  mongoose.model('Pair').findAndRemove(this.pair, next);
 });
-
-// schema.post('remove', function(doc) {
-//   console.log('removed reader: ' + doc._id);
-// });
 
 module.exports = mongoose.model('Reader', schema);

@@ -1,8 +1,9 @@
 var expect = require('expect.js');
 var testSetup = require('./test-setup');
 
-var Volunteer = require('./../../models/volunteer')
-var Reader = require('./../../models/reader');
+var Volunteer = require('./../../models/volunteer'),
+    Reader = require('./../../models/reader'),
+    Pair = require('./../../models/pair');
 
 describe('Volunteer', function() {
   

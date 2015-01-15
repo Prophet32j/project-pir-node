@@ -6,6 +6,8 @@ var Schema = mongoose.Schema;
 var schema = new Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true, select: false },
+  first_name: { type: String, required: true },
+  last_name: { type: String, required: true },
   created: { type: Date, default: Date.now },
   last_login: { type: Date, default: null },
   activated: { type: Boolean, default: false },
@@ -23,23 +25,21 @@ schema.statics.findByEmail = function(email, callback) {
 
 /*
  * find Parent by id and insert the reader id into readers[]
- * @param parent id of the parent
- * @param reader id of the reader
+ * @param Reader to insert
  * @param callback function(error, doc, numberAffected)
  */
-schema.statics.findAndInsertReader = function(parent_id, reader_id, callback) {
-  this.findByIdAndUpdate(parent_id, { $push: { readers: reader_id} }, callback);
+schema.statics.findAndInsertReader = function(reader, callback) {
+  this.findByIdAndUpdate(reader.parent, { $push: { readers: reader._id} }, callback);
 }
 
 /* 
  * finds Parent by id and removes reader from readers[]
  * http://docs.mongodb.org/manual/reference/operator/update/pull/#up._S_pull
- * @param parent id of the parent
- * @param reader id of the reader
+ * @param Reader to be removed
  * @param callback function(err, doc)
  */
-schema.statics.findAndRemoveReader = function(parent_id, reader_id, callback) {
-  this.findByIdAndUpdate(parent_id, { $pull: { readers: reader_id } }, callback);
+schema.statics.findAndRemoveReader = function(reader, callback) {
+  this.findByIdAndUpdate(reader.parent, { $pull: { readers: reader._id } }, callback);
 }
 
 /*
