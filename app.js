@@ -4,7 +4,7 @@ var app = express();
 var mongoose = require('mongoose');
 var config = require('./config/config.json');
 
-mongoose.connect('mongodb://localhost/' + config.db.name);
+mongoose.connect(process.env.MONGOLAB_URI || config.db.uri);
 
 // make sure everything connected correctly
 var db = mongoose.connection;
