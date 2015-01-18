@@ -18,6 +18,8 @@ describe('Parent', function() {
                    { email: 'test2@mail.com', password: '123', first_name: 'first', last_name: 'last' },
                    { email: 'test3@mail.com', password: '123', first_name: 'first', last_name: 'last' }];
     Parent.create(parents, function(err, doc1, doc2, doc3) {
+      if (err) return done(err);
+      
       ids.push(doc1._id, doc2._id, doc3._id);
       done();
     });

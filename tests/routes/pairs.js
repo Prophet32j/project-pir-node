@@ -185,6 +185,7 @@ describe('Pairs resource', function() {
             .expect(201)
             .expect(hasIdKey)
             .expect(function(res) {
+//               console.log(res);
               pair = res.body.pair;
             })
             .end(done);
