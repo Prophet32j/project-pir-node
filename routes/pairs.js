@@ -13,7 +13,7 @@ router.route('/')
     Pair.find(parseQuery(req.query), null, { lean: true })
     .populate('volunteer reader', 'first_name last_name')
     .exec(function(err, docs) {
-      if (err) {console.log(err);return res.status(500).json(err);}
+      if (err) {return res.status(500).json(err);}
       
       var json = {
         pairs: docs,
