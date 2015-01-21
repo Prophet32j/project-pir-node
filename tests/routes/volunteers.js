@@ -110,13 +110,13 @@ describe('Volunteers Resource', function() {
     
     describe('GET', function() {
       
-      it('should respond with a status code 404 when no volunteer found', function(done) {
+      it.skip('should respond with a status code 404 when no volunteer found', function(done) {
         request(app)
           .get('/volunteers/test404@mail.com')
           .expect(404, done);
       });
       
-      it('should find a volunteer based on email', function(done) {
+      it.skip('should find a volunteer based on email', function(done) {
         request(app)
           .get('/volunteers/' + volunteer.email)
           .expect(200)

@@ -4,24 +4,20 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-  email: { type: String, unique: true, required: true },
-  password: { type: String, required: true, select: false },
-  created: { type: Date, default: Date.now },
-  last_login: { type: Date, default: null },
-  activated: { type: Boolean, default: false },
+  email: { type: String, required: '{PATH} is required' },
   
-  first_name: { type: String, required: true },
-  last_name: { type: String, required: true },
-  phone: { type: String, required: true },
+  first_name: { type: String, required: '{PATH} is required' },
+  last_name: { type: String, required: '{PATH} is required' },
+  phone: { type: String, required: '{PATH} is required' },
   image: { type: String, default: 'default.png' },
-  gender: { type: String, required: true },
+  gender: { type: String, required: '{PATH} is required' },
   first_time: { type: String, default: true },
   orientation_complete: { type: String, default: false },
   background_complete: { type: String, default: false },
-  affiliation: { type: String, required: true },
+  affiliation: { type: String, required: '{PATH} is required' },
   special_ed: { type: String, default: false },
   language_ed: { type: String, default: false },
-  about_me: { type: String, required: true },
+  about_me: { type: String, required: '{PATH} is required' },
   two_children: { type: Boolean, default: false },
   pairs: [{ type: Schema.Types.ObjectId, ref: 'Pair' }],
   availability: [],
@@ -71,6 +67,29 @@ schema.statics.findAndInsertPair = function(pair, callback) {
 
     doc.pairs.push(pair._id);
     doc.save(callback);
+  });
+}
+
+/*
+ * find Volunteer by id or email and remove the document.
+ * This method will fire any middleware hooks
+ * @param id/email of the Volunteer
+ * @param callback function(error, doc)
+ */
+schema.statics.findAndRemove = function(id, callback) {
+  if (/@/.test(id)) {
+    this.findByEmail(id, function(err, doc) {
+      if (err) return callback(err);
+      if (!doc) return callback();
+      
+      return doc.remove(callback);
+    });
+  }
+  this.findById(id, function(err, doc) {
+    if (err) return callback(err);
+    if (!doc) return callback();
+    
+    doc.remove(callback);
   });
 }
 

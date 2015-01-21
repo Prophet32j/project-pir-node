@@ -131,13 +131,13 @@ describe('Parents resource', function() {
         });
       });
       
-      it('should respond with a status code 404 when no parent found', function(done) {
+      it.skip('should respond with a status code 404 when no parent found', function(done) {
         request(app)
           .get('/parents/test404@mail.com')
           .expect(404, done);
       });
       
-      it('should find a parent based on email', function(done) {
+      it.skip('should find a parent based on email', function(done) {
         request(app)
           .get('/parents/' + parent.email)
           .expect(200)
@@ -146,7 +146,7 @@ describe('Parents resource', function() {
       
       it('should find a parent based on document id', function(done) {
         request(app)
-          .get('/parents/' + parent._id)
+          .get('/parents/' + parent.id)
           .expect(200)
           .expect('Content-Type', /json/, done);
       });
@@ -191,7 +191,7 @@ describe('Parents resource', function() {
       
       it('should respond with status code 204 when parent is successfully deleted', function(done) {
         request(app)
-          .delete('/parents/' + parent._id)
+          .delete('/parents/' + parent.id)
           .expect(204, done);
       });
       

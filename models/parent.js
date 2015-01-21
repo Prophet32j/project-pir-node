@@ -4,13 +4,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-  email: { type: String, unique: true, required: true },
-  password: { type: String, required: true, select: false },
-  first_name: { type: String, required: true },
-  last_name: { type: String, required: true },
-  created: { type: Date, default: Date.now },
-  last_login: { type: Date, default: null },
-  activated: { type: Boolean, default: false },
+  email: { type: String, required: '{PATH} is required' },
+  first_name: { type: String, required: '{PATH} is required' },
+  last_name: { type: String, required: '{PATH} is required' },
   readers: [{ type: Schema.Types.ObjectId, ref: 'Reader' }]  
 });
 
@@ -43,14 +39,23 @@ schema.statics.findAndRemoveReader = function(reader, callback) {
 }
 
 /*
- * find Parent by id and remove the document.
+ * find Parent by id or email and remove the document.
  * This method will fire any middleware hooks
- * @param id of the Parent
+ * @param id/email of the Parent
  * @param callback function(error, doc)
  */
 schema.statics.findAndRemove = function(id, callback) {
+  if (/@/.test(id)) {
+    this.findByEmail(id, function(err, doc) {
+      if (err) return callback(err);
+      if (!doc) return callback();
+      
+      return doc.remove(callback);
+    });
+  }
   this.findById(id, function(err, doc) {
     if (err) return callback(err);
+    if (!doc) return callback();
     
     doc.remove(callback);
   });

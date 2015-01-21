@@ -4,19 +4,19 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-  parent: { type: Schema.Types.ObjectId, ref: 'Parent', required: true },
-  first_name: { type: String, required: true },
-  last_name: { type: String, required: true },
+  parent: { type: Schema.Types.ObjectId, ref: 'Parent', required: '{PATH} is required' },
+  first_name: { type: String, required: '{PATH} is required' },
+  last_name: { type: String, required: '{PATH} is required' },
   image: { type: String, default: 'default.png' },
   
-  gender: { type: String, required: true },
-  age: { type: Number, required: true },
-  grade: { type: String, required: true },
+  gender: { type: String, required: '{PATH} is required' },
+  age: { type: Number, required: '{PATH} is required' },
+  grade: { type: String, required: '{PATH} is required' },
   alt_phone: String,
   alt_parent: String,
   special_needs: { type: String, default: false },
   language_needs: { type: String, default: false },
-  about_me: { type: String, required: true },
+  about_me: { type: String, required: '{PATH} is required' },
   pair: { type: Schema.Types.ObjectId, ref: 'Pair' },
   
   availability: [],

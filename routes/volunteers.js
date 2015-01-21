@@ -33,24 +33,24 @@ router.route('/')
 // parse param value to determine if it's email or id
 router.param('id', function(req, res, next, id) {
   // check if id is an hex value or email
-  var regex = /@/;
-  if (regex.test(id)) {
-    Volunteer.findByEmail(id, function(err, doc) {
-      if (err) return next(err);
-      if (!doc) return res.status(404).send('Email not found');
+  // var regex = /@/;
+  // if (regex.test(id)) {
+  //   Volunteer.findByEmail(id, function(err, doc) {
+  //     if (err) return next(err);
+  //     if (!doc) return res.status(404).send('Email not found');
       
-      req.volunteer = doc;
-      return next();
-    });
-  }
-  else
-    Volunteer.findById(id, function(err, doc) {
-      if (err) return next(err);
-      if (!doc) return res.status(404).send('id not found');
+  //     req.volunteer = doc;
+  //     return next();
+  //   });
+  // }
+  // else
+  Volunteer.findById(id, function(err, doc) {
+    if (err) return next(err);
+    if (!doc) return res.status(404).send('id not found');
 
-      req.volunteer = doc;
-      next();
-    });
+    req.volunteer = doc;
+    next();
+  });
 });
 
 router.route('/:id')

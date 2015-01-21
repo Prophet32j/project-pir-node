@@ -1,154 +1,63 @@
-// // var app = require('./../../app');
-
-// // database is Mongo
-// var monk = require('monk');
-// // getting users collection in Mongo
-// var db = monk('localhost/test'),
-//     users = db.get('users');
-
+// // var testSetup = require('./test-setup');
 // var expect = require('expect.js');
-
 // var User = require('./../../models/user');
 
-// describe('User Model', function() {
+// describe('User', function() {
   
-//   describe('Finding Users in collection', function() {
-//     var _id = users.id('5491b90e8e6a9e01d284a0d1');
-//     var test_email = 'test.email@email.com';
-//     var test_data = { _id: _id, username: 'test-user', email: test_email }
-    
-//     before('insert test user', function(done) {
-//       users.insert(test_data, function(err, doc) {
-//         done(err);
-//       });
-//     });
-    
-//     after('delete test user', function(done) {
-//       users.remove({_id: _id}, function(err) {
-//         done(err);
-//       });
-//     });
-    
-//     describe('findById()', function() {
-    
-//       it('should return null if no record found', function(done) {
-//         User.findById('000000000000000000000000', function(err, user) {
-//           expect(user).to.not.be.ok();
-//           done();
-//         });
-//       });
-
-//       it('should return a User', function(done) {
-//         User.findById('5491b90e8e6a9e01d284a0d1', function(err, user) {
-//           expect(user).to.be.a(User);
-//           done();
-//         });
-//       });
-
-//       it('should contain _id key in data', function(done) {
-//         User.findById('5491b90e8e6a9e01d284a0d1', function(err, user) {
-//           expect(user.data).to.have.key('_id');
-//           done();
-//         });
-//       });
-//     });
-
-//     describe('findByEmail()', function() {
-
-//       it('should return null if no email is found', function(done) {
-//         User.findByEmail('youshallnotpass@mail.com', function(err, user) {
-//           expect(user).to.not.be.ok();
-//           done();
-//         });
-//       });
-
-//       it('should return a User when email is found', function(done) {
-//         User.findByEmail(test_email, function(err, user) {
-//           expect(user).to.be.a(User);
-//           done();
-//         });      
-//       });
-
-//       it('should return a User with an ObjectId', function(done) {
-//         User.findByEmail(test_email, function(err, user) {
-//           expect(user.data).to.have.key('_id');
-//           done();
-//         });
-//       });
-    
-//     });
-
-//     describe('findAll()', function() {
-
-//       it('should return an Array', function(done) {
-//         User.findAll(function(err, users) {
-//           expect(users).to.be.an(Array);
-//           done();
-//         });
-//       });
-      
-//       it('should contain at least 1 User', function(done) {
-//         User.findAll(function(err, users) {
-//           expect(users).to.not.be.empty();
-//           done();
-//         });
-//       });
-
-//     });
-
-//     describe('find()', function() {
-
-//       it('should return an Array', function(done) {
-//         User.find({ username: test_data.username }, function(err, users) {
-//           expect(users).to.be.an(Array);
-//           done();
-//         });
-//       });
-      
-//       it('should contain at least 1 User', function(done) {
-//         User.find({ username: test_data.username }, function(err, users) {
-//           expect(users).to.not.be.empty();
-//           done();
-//         });
-//       });
-
-//     });
-    
+//   before('Set up MongoDB and Mongoose', function(done) {
+//     require('./test-setup')(done);
 //   });
-  
-  
-//   describe('Inserting and Modifying Records in Collection', function() {
-    
-//     describe('save()', function() {
-//       var newUser = new User({ username: 'new-test-user', email: 'new_email@mail.com'});
-      
-//       after('delete test user', function(done) {
-//         users.remove({ username: newUser.data.username }, function(err) {
-//           done(err);
-//         });
-//       });
 
-//       it('should save new User and return with ObjectId', function(done) {
-//         newUser.save(function(err, user) {
-//           newUser = user;
-//           expect(user.data).to.have.key('_id');
-//           done();
-//         });
-//       });
-      
-//       it('should return an empty error object when update is successful', function(done) {
-//         users.findOne({username: newUser.data.username}, function(err, doc) {
-//           newUser.data = doc;
-//           newUser.set('email', 'changed_email@email.com');
-//           newUser.save(function(err, user) {
-//             expect(err).to.not.be.ok();
-//             done();
-//           });
-//         });
-//       });
+//   var user1,user2,user3;
 
-//     });
-    
+//   before('add test users', function(done) {
+//   	User.create({ email: 'testuser1@mail.com', password: '1234', type: 'p' },
+//   				{ email: 'testuser1@mail.com', password: '1234', type: 'p' },
+//   				{ email: 'testuser1@mail.com', password: '1234', type: 'p' }, 
+//   				function(err, doc1, doc2, doc3) {
+//   					if (err) return done(err);
+
+//   					user1 = doc1;
+//   					user2 = doc2;
+//   					user3 = doc3;
+//   					done();
+//   				});
 //   });
-  
+
+//   after('remove test users', function(done) {
+//   	User.remove({ email: { $regex: /^test/i } }, done);
+//   });
+
+//   describe('.findByEmail()', function() {
+
+//   	it('finds and returns user by email', function(done) {
+//   		User.findByEmail(user1.email, function(err, doc) {
+//   			expect(err).to.not.be.ok();
+//   			expect(doc).to.be.a(User);
+//   			done();
+//   		});
+//   	});
+
+//   });
+
+//   describe('.remove()', function() {
+
+//   	var parent, volunteer;
+
+//   	before('add parent', function(done) {
+//   		Parent.create({ email: user1.email, first_name: 'test', last_name: 'parent' }, function(err, doc) {
+//   			if (err) return done(err);
+
+//   			parent = doc;
+//   			done();
+//   		});
+//   	});
+
+//   	it('removes related parent')
+
+//   });
+
+
+
+
 // });

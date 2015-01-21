@@ -4,10 +4,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-  volunteer: { type: Schema.Types.ObjectId, ref: 'Volunteer', required: true },
-  reader: { type: Schema.Types.ObjectId, ref: 'Reader', required: true, index: { unique: true } },
-  day: { type: String, required: true },
-  time: { type: String, required: true },
+  volunteer: { type: Schema.Types.ObjectId, ref: 'Volunteer', required: '{PATH} is required' },
+  reader: { type: Schema.Types.ObjectId, ref: 'Reader', required: '{PATH} is required', index: { unique: true } },
+  day: { type: String, required: '{PATH} is required' },
+  time: { type: String, required: '{PATH} is required' },
   approved: { type: Boolean, default: false }
 });
 

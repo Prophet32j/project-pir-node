@@ -36,25 +36,13 @@ router.route('/')
 
 // parse param value to determine if it's email or id
 router.param('id', function(req, res, next, id) {
-  // check if id is an hex value or email
-  var regex = /@/;
-  if (regex.test(id)) { 
-    Parent.findByEmail(id, function(err, doc) {
-      if (err) return next(err);
-      if (!doc) return res.status(404).json('Email not found');
-      
-      req.parent = doc;
-      next();
-    });
-  }
-  else
-    Parent.findById(id, function(err, doc) {
-      if (err) return next(err);
-      if (!doc) return res.status(404).json('id not found');
+  Parent.findById(id, function(err, doc) {
+    if (err) return next(err);
+    if (!doc) return res.status(404).json('id not found');
 
-      req.parent = doc;
-      next();
-    });
+    req.parent = doc;
+    next();
+  });
 });
 
 router.route('/:id')
@@ -79,7 +67,7 @@ router.route('/:id')
     Parent.findByIdAndUpdate(parent._id, req.body, function(err, doc, numAffected) {
       if (err) return res.status(400).json(err);
 
-      res.sendStatus(204);
+      res.status(204).json({});
     });
   })
   .delete(function(req, res) {
@@ -90,12 +78,33 @@ router.route('/:id')
     });
   });
 
+router.route('/:id/readers')
+  .get(function(req, res) {
+    Reader.find({ parent: req.parent._id }, null, { lean: true }, function(err, docs) {
+      if (err) return res.status(500).json(err);
+
+      res.json({ readers: docs });
+    });
+  })
+  .post(urlencoded, jsonparser, function(res, res) {
+    var reader = req.body.reader;
+    Reader.create(reader, function(err, doc) {
+      if (err) return res.status(400).json(err);
+
+      // save new doc into parent
+      req.parent.readers.push(doc._id);
+      req.parent.save(function(err) {
+        if (err) return res.status(400).json(err);
+
+        res.json({ reader: doc });
+      });
+    });
+  });
+
 function parseQuery(query) {
   var conditions = {}
   if (query.ids)
     conditions._id = { $in: query.ids }
-  else if (query.hasOwnProperty('activated'))
-    conditions.activated = query.activated;
   return conditions;
 }
 

@@ -73,6 +73,26 @@ router.route('/:id')
     });
   });
 
+var Reader = require('./../models/reader');
+
+router.get('/:id/reader', function(req, res) {
+    Reader.findOne({ pair: req.pair._id}, function(err, doc) {
+      if (err) return res.status(500).json(err);
+
+      res.json({ reader: doc });
+    });
+  });
+
+var Volunteer = require('./../models/volunteer');
+
+router.get('/:id/volunteer', function(req, res) {
+    Volunteer.findOne({ pairs: req.pair._id }, function(err, doc) {
+      if (err) return res.status(500).json(err);
+
+      res.json({ volunteer: doc });
+    });
+  });
+
 function parseQuery(query) {
   var conditions = {}
   if (query.ids)

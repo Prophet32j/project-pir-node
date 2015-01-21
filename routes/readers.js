@@ -74,6 +74,14 @@ router.route('/:id')
     });
   });
 
+router.get('/:id/parent', function(req, res) {
+  Parent.findOne({ readers: req.reader._id }, function(err, doc) {
+    if (err) return res.status(500).json(err);
+
+    res.json({ parent: doc });
+  });
+});
+
 function parseQuery(query) {
   var conditions = {}
   if (query.ids)
