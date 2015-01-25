@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-  email: { type: String, required: '{PATH} is required' },
+  email: { type: String, index: { unique: true }, required: '{PATH} is required' },
   first_name: { type: String, required: '{PATH} is required' },
   last_name: { type: String, required: '{PATH} is required' },
   readers: [{ type: Schema.Types.ObjectId, ref: 'Reader' }]  
@@ -62,9 +62,21 @@ schema.statics.findAndRemove = function(id, callback) {
 }
 
 // schema middleware hooks
-// use mongoose.model
-// see http://stackoverflow.com/questions/14307953/mongoose-typeerror-on-a-models-findone-method
 
+/*
+ * middleware hook to check email exists
+ */
+schema.pre('save', function(next) {
+  if (!this.isNew)
+    return next();
+
+  mongoose.model('User').findByEmail(this.email, function(err, doc) {
+    if (err) return next(err);
+    if (!doc) return next(new Error('email not found'));
+
+    next();
+  });
+});
 /*
  * middleware hook to remove all readers related to parent
  */

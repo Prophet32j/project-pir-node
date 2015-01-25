@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-  email: { type: String, required: '{PATH} is required' },
+  email: { type: String, index: { unique: true }, required: '{PATH} is required' },
   
   first_name: { type: String, required: '{PATH} is required' },
   last_name: { type: String, required: '{PATH} is required' },
@@ -97,6 +97,18 @@ schema.statics.findPairableVolunteers = function(callback) {
   
   
 }
+
+schema.pre('save', function(next) {
+  if (!this.isNew)
+    return next();
+
+  mongoose.model('User').findByEmail(this.email, function(err, doc) {
+    if (err) return next(err);
+    if (!doc) return next(new Error('email does not exist'));
+
+    next();
+  });
+});
 
 // middleware hooks
 var Pair = require('./pair');

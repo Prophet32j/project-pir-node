@@ -18,9 +18,12 @@ router.route('/')
   })
   .post(urlencoded, jsonparser, function(req, res) {
     var data = req.body;
-//     console.log(userData);
+    // need to validate submitted data...later
+
     User.create(data, function(err, doc) {
       if (err) return res.status(400).json(err);
+
+      // need to send email here to set up email validation
       
       res.status(201).json({ user: doc });
     });

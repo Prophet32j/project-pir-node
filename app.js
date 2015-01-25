@@ -23,6 +23,9 @@ db.once('open', function() {
   app.use(express.static(__dirname + '/public'));
 
   // routes
+  var userRoutes = require('./routes/users');
+  app.use('/users', userRoutes);
+  
   var parentRoutes = require('./routes/parents');
   app.use('/parents', parentRoutes);
 

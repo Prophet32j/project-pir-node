@@ -1,5 +1,6 @@
 var express = require('express');
 
+var User = require('./../models/user');
 var Parent = require('./../models/parent');
 var Reader = require('./../models/reader');
 
