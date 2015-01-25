@@ -1,0 +1,46 @@
+a{
+  cursor: pointer;
+}
+
+.pir-logo-nav {
+    background-image: url('/img/pir-logo.png');
+    background-repeat: no-repeat;
+    background-size: 35px;
+    height: 40px;
+    width: 50px;
+    margin-top: 5px;
+}
+
+/* Customize the Footer */
+.footer {
+  /* position: absolute; */
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 40px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #e7e7e7;
+}
+
+/* CUSTOMIZE THE NAVBAR
+-------------------------------------------------- */
+.navbar {
+    margin-bottom: 0px;
+}
+
+.inverse-dropdown {
+  background-color: #222;
+  border-color: #080808;
+}
+.inverse-dropdown > li > a {
+    color: #999;
+}
+
+.inverse-dropdown > li > a:hover {
+    color: #fff;
+    background-color: #000;
+}
+
+.inverse-dropdown > .divider {
+    background-color: #000;
+}
