@@ -19,7 +19,7 @@ var schema = new Schema({
   about_me: { type: String, required: '{PATH} is required' },
   pair: { type: Schema.Types.ObjectId, ref: 'Pair' },
   
-  availability: [],
+  availability: {},
   reader_request: {
     first_name: String,
     last_name: String,

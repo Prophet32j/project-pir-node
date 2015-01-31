@@ -1,5 +1,11 @@
 // User Model for handling data layer
 
+var bcrypt = require('bcrypt');
+var jwt = require('jsonwebtoken');
+var config = require('./../config/config.json');
+var NotActivatedError = require('./../errors/NotActivatedError');
+var redisClient = require('./../bin/redis-client')();
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -51,7 +57,72 @@ schema.statics.findAndRemove = function(id, callback) {
   });
 }
 
+/*
+ * verifies credentials and issues a json web token
+ * @param email of the User
+ * @param password of the User
+ * @param callback function(error, User, token)
+ */
+schema.statics.login = function(email, password, callback) {
+  this.findByEmail(email, function(err, doc) {
+    if (err) return callback(err);
+    if (!doc) return callback();
+    if (!doc.activated) 
+      return callback(new NotActivatedError('account_not_activated', { message: 'User account not activated, check your email' }));
+
+    doc.verifyPassword(password, function(err, matched) {
+      if (err) return callback(err);
+      if (!matched) return callback();
+
+      var token = jwt.sign({ email: email }, config.jwt_secret);
+
+      // save to database, redis
+      redisClient.hset('jwt_tokens', token, email, function(err, result) {
+        if (err) return callback(err);
+        if (!result) return callback(new Error('json token not added to redis'));
+
+        callback(null, doc, token);
+      });
+    });
+  });
+}
+
+/*
+ * logs out user by removing token from Redis store
+ * @param token to remove
+ * @param callback function(err, result)
+ */
+schema.statics.logout = function(token, callback) {
+  redisClient.hdel('jwt_tokens', token, callback);
+}
+
+/*
+ * verifies password by comparing to stored hash
+ * @param password to compare
+ * @param callback function(error, boolean)
+ */
+schema.methods.verifyPassword = function(password, callback) {
+  bcrypt.compare(password, this.password, callback);
+}
+
 // middleware hooks
+
+schema.pre('save', function(next) {
+  if (!this.isModified('password')) return next();
+
+  var user = this;
+
+  bcrypt.genSalt(5, function(err, salt) {
+    if (err) return next(err);
+
+    bcrypt.hash(user.password, salt, function(err, hash) {
+      if (err) return next(err);
+
+      user.password = hash;
+      next();
+    });
+  });
+});
 
 /*
  * remove related parent/volunteer
