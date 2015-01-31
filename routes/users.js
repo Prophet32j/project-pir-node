@@ -1,25 +1,24 @@
 var express = require('express');
 var User = require('./../models/user');
 
-var bodyParser = require('body-parser');
-var urlencoded = bodyParser.urlencoded({ extended: true });
-var jsonparser = bodyParser.json();
+// var bodyParser = require('body-parser');
+// var urlencoded = bodyParser.urlencoded({ extended: true });
+// var jsonparser = bodyParser.json();
 
 var router = express.Router();
 
 router.route('/')
   .get(function(req, res) {
-    User.find(function(err, docs) {
-      if (err) 
-        return res.status(500).send(err);
+    User.find(parseQuery(req.query), null, { lean: true }, function(err, docs) {
+      if (err) return res.status(500).send(err);
 
       res.json({ users: docs });
     });
   })
-  .post(urlencoded, jsonparser, function(req, res) {
+  .post(/*urlencoded, jsonparser, */function(req, res) {
     var data = req.body;
     // need to validate submitted data...later
-
+    console.log(data);
     User.create(data, function(err, doc) {
       if (err) return res.status(400).json(err);
 
@@ -55,7 +54,7 @@ router.route('/:id')
   .get(function(req, res) {
     res.json({ user: req.user });
   })
-  .put(urlencoded, function(req, res) {
+  .put(/*urlencoded, */function(req, res) {
     User.findByIdAndUpdate(req.user._id, req.body, function(err, doc, numAffected) {
       if (err) return res.status(400).json(err);
 
@@ -69,6 +68,13 @@ router.route('/:id')
       res.status(204).json({});
     });
   });
+
+router.get('/verify', function(req, res) {
+  if (!req.query.key)
+    return res.sendStatus(403);
+
+  var key = req.query.key;
+});
 
 function parseQuery(query) {
   var conditions = {};

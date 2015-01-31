@@ -1,9 +1,9 @@
 var express = require('express');
 var Pair = require('./../models/pair');
 
-var bodyParser = require('body-parser');
-var urlencoded = bodyParser.urlencoded({ extended: true });
-var jsonparser = bodyParser.json();
+// var bodyParser = require('body-parser');
+// var urlencoded = bodyParser.urlencoded({ extended: true });
+// var jsonparser = bodyParser.json();
 
 var router = express.Router();
 
@@ -24,7 +24,7 @@ router.route('/')
       res.json(json);
     });
   })
-  .post(urlencoded, jsonparser, function(req, res) {
+  .post(/*urlencoded, jsonparser, */function(req, res) {
     var pair = req.body
 
     // need to save this reference into Reader and Volunteer
@@ -51,7 +51,7 @@ router.route('/:id')
   .get(function(req, res) {
     res.json({ pair: req.pair });
   })
-  .put(urlencoded, jsonparser, function(req, res) {
+  .put(/*urlencoded, jsonparser, */function(req, res) {
     var pair = req.body.pair;
 
     // iterate through sent pair properties and modify pair

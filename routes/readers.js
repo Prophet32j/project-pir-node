@@ -3,9 +3,9 @@ var express = require('express');
 var Reader = require('./../models/reader');
 var Parent = require('./../models/parent');
 
-var bodyParser = require('body-parser');
-var urlencoded = bodyParser.urlencoded({ extended: false });
-var jsonparser = bodyParser.json();
+// var bodyParser = require('body-parser');
+// var urlencoded = bodyParser.urlencoded({ extended: false });
+// var jsonparser = bodyParser.json();
 
 var router = express.Router();
 
@@ -24,7 +24,7 @@ router.route('/')
       res.json(json);
     });
   })
-  .post(urlencoded, jsonparser, function(req, res) {
+  .post(/*urlencoded, jsonparser, */function(req, res) {
     var data = req.body;
     // ensure there is a parent to save the reader to
     Parent.findById(data.parent, function(err, parent) {
@@ -58,7 +58,7 @@ router.route('/:id')
   .get(function(req, res) {
     res.json({ reader: req.reader });
   })
-  .put(urlencoded, jsonparser, function(req, res) {
+  .put(/*urlencoded, jsonparser, */function(req, res) {
     var json = req.body;
     Reader.findByIdAndUpdate(req.reader._id, json.reader, function(err, doc, numAffected) {
       if (err) return res.status(400).json(err);

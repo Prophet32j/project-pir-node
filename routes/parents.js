@@ -4,9 +4,9 @@ var User = require('./../models/user');
 var Parent = require('./../models/parent');
 var Reader = require('./../models/reader');
 
-var bodyParser = require('body-parser');
-var urlencoded = bodyParser.urlencoded({ extended: false });
-var jsonparser = bodyParser.json();
+// var bodyParser = require('body-parser');
+// var urlencoded = bodyParser.urlencoded({ extended: false });
+// var jsonparser = bodyParser.json();
 
 var router = express.Router();
 
@@ -25,7 +25,7 @@ router.route('/')
       res.json(json);
     });
   })
-  .post(urlencoded, jsonparser, function(req, res) {
+  .post(/*urlencoded, jsonparser, */function(req, res) {
     var data = req.body;
     Parent.create(data, function(err, doc) {
       if (err)
@@ -62,7 +62,7 @@ router.route('/:id')
       res.json(json);
     });
   })
-  .put(urlencoded, jsonparser, function(req, res) {
+  .put(/*urlencoded, jsonparser, */function(req, res) {
     var parent = req.parent;
 //     console.log(req.body);
     Parent.findByIdAndUpdate(parent._id, req.body, function(err, doc, numAffected) {
@@ -87,7 +87,7 @@ router.route('/:id/readers')
       res.json({ readers: docs });
     });
   })
-  .post(urlencoded, jsonparser, function(res, res) {
+  .post(/*urlencoded, jsonparser, */function(res, res) {
     var reader = req.body.reader;
     Reader.create(reader, function(err, doc) {
       if (err) return res.status(400).json(err);
