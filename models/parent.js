@@ -7,6 +7,7 @@ var schema = new Schema({
   email: { type: String, index: { unique: true }, required: '{PATH} is required' },
   first_name: { type: String, required: '{PATH} is required' },
   last_name: { type: String, required: '{PATH} is required' },
+  phone: { type: String, required: '{PATH} is required'},
   readers: [{ type: Schema.Types.ObjectId, ref: 'Reader' }]  
 });
 
