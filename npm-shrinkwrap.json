@@ -480,6 +480,11 @@
         }
       }
     },
+    "mandrill-api": {
+      "version": "1.0.41",
+      "from": "mandrill-api@",
+      "resolved": "https://registry.npmjs.org/mandrill-api/-/mandrill-api-1.0.41.tgz"
+    },
     "mongodb": {
       "version": "1.4.23",
       "from": "https://registry.npmjs.org/mongodb/-/mongodb-1.4.23.tgz",
@@ -697,6 +702,11 @@
           "resolved": "https://registry.npmjs.org/mpromise/-/mpromise-0.5.1.tgz"
         }
       }
+    },
+    "node-uuid": {
+      "version": "1.4.2",
+      "from": "node-uuid@",
+      "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.2.tgz"
     },
     "passport": {
       "version": "0.2.1",
