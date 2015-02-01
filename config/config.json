@@ -6,5 +6,6 @@
   "redistogo": {
   	"url": "redis://redistogo:ef92663948c49c0143d639c2b6c97d69@cod.redistogo.com:10588/"
   	},
-  "jwt_secret": "secretkey"
+  "jwt_secret": "secretkey",
+  "mandrill_api_key": "xPjTf6andJhboaRZltNs0w"
 }

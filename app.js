@@ -33,6 +33,7 @@ db.once('open', function() {
   app.post('/login', index.login);
   app.get('/logout', index.logout);
   app.post('/register', index.register);
+  app.get('/verify', index.verify);
 
 
   // application routes
