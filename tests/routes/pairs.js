@@ -2,10 +2,11 @@ var request = require('supertest');
 var app = require('./../../app');
 var expect = require('expect.js');
 
-var Pair = require('./../../models/pair');
-var Parent = require('./../../models/parent');
-var Reader = require('./../../models/reader');
-var Volunteer = require('./../../models/volunteer');
+var models = require('./../../models'), 
+    Pair = models.pair;
+    Parent = models.parent;
+    Reader = models.reader;
+    Volunteer = models.volunteer;
 
 describe('Pairs resource', function() {
   

@@ -4,6 +4,6 @@ var uri = 'mongodb://localhost/test';
 module.exports = function(callback) {
   if (mongoose.connection.db) return callback();
   
-    require('./../../models')();
+    // require('./../../models');
     mongoose.connect(uri, callback);
 }

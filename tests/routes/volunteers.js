@@ -1,6 +1,8 @@
 var request = require('supertest');
 var app = require('./../../app');
-var Volunteer = require('./../../models/volunteer');
+
+var models = require('./../../models'),
+    Volunteer = models.volunteer;
 
 describe('Volunteers Resource', function() {
   

@@ -1,9 +1,10 @@
 var expect = require('expect.js');
 var testSetup = require('./test-setup');
 
-var Parent = require('./../../models/parent'),
-    Reader = require('./../../models/reader'),
-    Pair = require('./../../models/pair');
+var models = require('./../../models'),
+    Parent = models.parent,
+    Reader = models.reader,
+    Pair = models.pair;
 
 describe('Reader', function() {
   

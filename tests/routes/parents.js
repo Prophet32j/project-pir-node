@@ -1,7 +1,9 @@
 var request = require('supertest');
 var app = require('./../../app');
-var Parent = require('./../../models/parent');
-var Reader = require('./../../models/reader');
+
+var models = require('./../../models'),
+    Parent = models.parent,
+    Reader = models.reader;
 
 describe('Parents resource', function() {
   
