@@ -1,5 +1,5 @@
 var express = require('express');
-var Volunteer = require('./../models/volunteer');
+var Volunteer = require('./../models').volunteer;
 
 // var bodyParser = require('body-parser');
 // var urlencoded = bodyParser.urlencoded({ extended: false });

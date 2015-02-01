@@ -1,11 +1,8 @@
 var express = require('express');
 
-var Reader = require('./../models/reader');
-var Parent = require('./../models/parent');
-
-// var bodyParser = require('body-parser');
-// var urlencoded = bodyParser.urlencoded({ extended: false });
-// var jsonparser = bodyParser.json();
+var models = require('./../models'),
+    Reader = models.reader,
+    Parent = models.parent;
 
 var router = express.Router();
 

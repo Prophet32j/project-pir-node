@@ -1,4 +1,4 @@
-var User = require('./../models/user');
+var User = require('./../models').user;
 var redisClient = require('./../bin/redis-client')();
 var mailer = require('./../mailer');
 
@@ -64,7 +64,9 @@ exports.verify = function(req, res) {
   var key = req.query.key;
   User.activate(key, function(err, doc) {
     if (err)
-      return res.status(400).json({ error: err });
+      return res.status(500).json({ error: err });
+    if (!doc)
+      return res.status(400).json({ error: new Error('uid not found') });
 
     res.status(204).json({ user: doc });
   });

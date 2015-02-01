@@ -19,7 +19,7 @@ db.once('open', function() {
   console.log('Connection open');
   
   // initialize all mongoose models
-  require('./models')();
+  // require('./models');
   
   // static file serving
   app.use(express.static(__dirname + '/public'));

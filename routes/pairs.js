@@ -1,9 +1,5 @@
 var express = require('express');
-var Pair = require('./../models/pair');
-
-// var bodyParser = require('body-parser');
-// var urlencoded = bodyParser.urlencoded({ extended: true });
-// var jsonparser = bodyParser.json();
+var Pair = require('./../models').pair;
 
 var router = express.Router();
 
