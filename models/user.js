@@ -5,6 +5,7 @@ var jwt = require('jsonwebtoken');
 var config = require('./../config/config.json');
 var NotActivatedError = require('./../errors/NotActivatedError');
 var redisClient = require('./../bin/redis-client')();
+var uuid = require('node-uuid');
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -96,6 +97,50 @@ schema.statics.logout = function(token, callback) {
   redisClient.hdel('jwt_tokens', token, callback);
 }
 
+
+schema.statics.register = function(user_data, callback) {
+  // validate type
+  var type = user_data.type;
+  if (!type || !(type === 'p' || type === 'v'))
+    return callback(new Error('invalid User type'));
+
+
+  this.create(user_data, function(err, doc) {
+    if (err) 
+      return callback(err);
+
+    var uid = uuid.v4();
+    redisClient.hset('uuid', uid, doc.id, function(err, result) {
+      if (err)
+        return callback(err);
+      if (!result)
+        return callback(new Error('something happened saving to database. uuid: ' + uid));
+
+      callback(null, doc, uid);
+    });
+  });
+}
+
+schema.statics.activate = function(uid, callback) {
+  redisClient.hget('uuid', uid, function(err, id) {
+    if (err) 
+      return callback(err);
+    if (!id)
+      return callback(new Error('uid not found'));
+
+    mongoose.model('User').findById(id, function(err, doc) {
+      if (err)
+        return callback(err);
+      if (!doc)
+        return callback(new Error('id not found'));
+
+      doc.activated = true;
+      redisClient.hdel('uuid', uid);
+      doc.save(callback);
+    });
+  });
+}
+
 /*
  * verifies password by comparing to stored hash
  * @param password to compare
@@ -137,5 +182,6 @@ schema.pre('remove', function(next) {
       next();
   }
 });
+
 
 module.exports = mongoose.model("User", schema);
