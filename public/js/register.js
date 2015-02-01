@@ -5,14 +5,28 @@ $(function() {
     event.preventDefault();
 
     var form_data = form.serialize();
-    console.log(form_data);
+    // console.log(form_data);
 
-    // if (validateEmail(form.))
+    if (!validateEmail(document.getElementById('emailaddress').value)) {
+      alert('failed Email validation');
+      return false;
+    }
+    var pass = document.getElementById('password').value;
+    var conf_pass = document.getElementById('password-conf').value
+    if (!validatePassword(pass, conf_pass)) {
+      alert('failed Password validation');
+      return false;
+    }
+
+    if (!validateAccountType($('#account').val())) {
+      alert('failed account validation');
+      return false;
+    }
 
     // make the AJAX call to save user
     $.ajax({
       type: 'POST',
-      url: '/users',
+      url: '/register',
       data: form_data
     })
     .done(function(json) {
@@ -27,11 +41,16 @@ $(function() {
     });
   });
 
-  function validateEmail(email) {
-    return true;
-  }
-
-  function validatePassword(pass, conf_pass) {
-    return pass === conf_pass;
-  }
 });
+
+function validateEmail(email) {
+  return true;
+}
+
+function validatePassword(pass, conf_pass) {
+  return pass && pass === conf_pass;
+}
+
+function validateAccountType(type) {
+  return type === 'p' || type === 'v';
+}
