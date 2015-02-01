@@ -69,13 +69,6 @@ router.route('/:id')
     });
   });
 
-router.get('/verify', function(req, res) {
-  if (!req.query.key)
-    return res.sendStatus(403);
-
-  var key = req.query.key;
-});
-
 function parseQuery(query) {
   var conditions = {};
   if (query.ids)

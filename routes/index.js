@@ -1,4 +1,6 @@
-var User = require ('./../models/user');
+var User = require('./../models/user');
+var redisClient = require('./../bin/redis-client')();
+var mailer = require('./../mailer');
 
 // not REST routes for logging in, logging out, verifying email
 exports.login = function(req, res) {
@@ -39,10 +41,31 @@ exports.logout = function(req, res) {
 exports.register = function(req, res) {
   var data = req.body;
 
-  User.create(data, function(err, doc) {
+  User.register(data, function(err, doc, uid) {
     if (err)
       return res.status(400).json({ error: err });
 
-    res.status(201).json({ user: doc });
+    // send email to confirm email address
+    var subject = 'Confirm Your Email Address';
+    var link = req.hostname + '/verify?key=' + uid;
+    mailer.sendEmail({ email: data.email }, subject, link, function(err, status) {
+      if (err)
+        return res.status(500).json({ error: err });
+
+      res.status(201).json({ status: status });
+    });
+  });
+}
+
+exports.verify = function(req, res) {
+  if (!req.query.key)
+    return res.status(400).json({ error: 'no key found, please check your email for the link' });
+
+  var key = req.query.key;
+  User.activate(key, function(err, doc) {
+    if (err)
+      return res.status(400).json({ error: err });
+
+    res.status(204).json({ user: doc });
   });
 }
