@@ -97,7 +97,11 @@ schema.statics.logout = function(token, callback) {
   redisClient.hdel('jwt_tokens', token, callback);
 }
 
-
+/*
+ * creates a new user and generates a UID so an email can be sent
+ * @param user_data object{email,password,type}
+ * @param callback function(err, doc, uid)
+ */
 schema.statics.register = function(user_data, callback) {
   // validate type
   var type = user_data.type;
@@ -126,13 +130,13 @@ schema.statics.activate = function(uid, callback) {
     if (err) 
       return callback(err);
     if (!id)
-      return callback(new Error('uid not found'));
+      return callback();
 
     mongoose.model('User').findById(id, function(err, doc) {
       if (err)
         return callback(err);
       if (!doc)
-        return callback(new Error('id not found'));
+        return callback();
 
       doc.activated = true;
       redisClient.hdel('uuid', uid);
