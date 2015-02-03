@@ -84,13 +84,14 @@ schema.statics.findAndRemove = function(id, callback) {
       
       return doc.remove(callback);
     });
-  }
-  this.findById(id, function(err, doc) {
-    if (err) return callback(err);
-    if (!doc) return callback();
-    
-    doc.remove(callback);
-  });
+  } else {
+    this.findById(id, function(err, doc) {
+      if (err) return callback(err);
+      if (!doc) return callback();
+      
+      doc.remove(callback);
+    });
+  } 
 }
 
 schema.statics.findPairableVolunteers = function(callback) {
@@ -103,8 +104,10 @@ schema.pre('save', function(next) {
     return next();
 
   mongoose.model('User').findByEmail(this.email, function(err, doc) {
-    if (err) return next(err);
-    if (!doc) return next(new Error('email does not exist'));
+    if (err) 
+      return next(err);
+    if (!doc)
+      return next(new errors.NotFoundError('email_not_found', { message: 'Email not found' }));
 
     next();
   });

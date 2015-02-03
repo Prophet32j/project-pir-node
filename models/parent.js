@@ -1,5 +1,6 @@
 // Parent Model for handling data layer
 
+var errors = require('./../errors');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -53,13 +54,14 @@ schema.statics.findAndRemove = function(id, callback) {
       
       return doc.remove(callback);
     });
+  } else {
+    this.findById(id, function(err, doc) {
+      if (err) return callback(err);
+      if (!doc) return callback();
+      
+      doc.remove(callback);
+    });
   }
-  this.findById(id, function(err, doc) {
-    if (err) return callback(err);
-    if (!doc) return callback();
-    
-    doc.remove(callback);
-  });
 }
 
 // schema middleware hooks
@@ -72,12 +74,15 @@ schema.pre('save', function(next) {
     return next();
 
   mongoose.model('User').findByEmail(this.email, function(err, doc) {
-    if (err) return next(err);
-    if (!doc) return next(new Error('email not found'));
+    if (err) 
+      return next(err);
+    if (!doc) 
+      return next(new errors.NotFoundError('email_not_found', { message: 'Email not found' }));
 
     next();
   });
 });
+
 /*
  * middleware hook to remove all readers related to parent
  */
