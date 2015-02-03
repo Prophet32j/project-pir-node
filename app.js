@@ -30,7 +30,8 @@ db.once('open', function() {
   
   // non-REST utility routes
   var index = require('./routes');
-  app.post('/login', index.login);
+  var loginRoute = require('./routes/login');
+  app.use('/login', loginRoute);
   app.get('/logout', index.logout);
   app.post('/register', index.register);
   app.get('/verify', index.verify);
@@ -40,20 +41,9 @@ db.once('open', function() {
   // secure all API routes with tokens
   app.use('/api', authjwt(config.jwt_secret));
 
-  var userRoutes = require('./routes/users');
-  app.use('/api/users', userRoutes);
-  
-  var parentRoutes = require('./routes/parents');
-  app.use('/api/parents', parentRoutes);
+  // mount API routes
+  require('./routes/api')(app);
 
-  var readerRoutes = require('./routes/readers');
-  app.use('/api/readers', readerRoutes);
-
-  var volunteerRoutes = require('./routes/volunteers');
-  app.use('/api/volunteers', volunteerRoutes);
-
-  var pairRoutes = require('./routes/pairs');
-  app.use('/api/pairs', pairRoutes);
 });
 
 module.exports = app;
