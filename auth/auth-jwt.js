@@ -36,7 +36,7 @@ module.exports = function(secret) {
         if (!result)
           return next(new UnauthorizedError('invalid_token', { message: 'Token is invalid' }));
 
-        req['email'] = decoded;
+        req['user'] = decoded;
         next();
       });
     });
