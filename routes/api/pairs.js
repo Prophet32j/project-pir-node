@@ -1,5 +1,9 @@
 var express = require('express');
-var Pair = require('./../models').pair;
+
+var models = require('./../../models'),
+    Pair = models.pair,
+    Reader = models.reader,
+    Volunteer = models.volunteer;
 
 var router = express.Router();
 
@@ -69,7 +73,6 @@ router.route('/:id')
     });
   });
 
-var Reader = require('./../models/reader');
 
 router.get('/:id/reader', function(req, res) {
     Reader.findOne({ pair: req.pair._id}, function(err, doc) {
@@ -79,7 +82,6 @@ router.get('/:id/reader', function(req, res) {
     });
   });
 
-var Volunteer = require('./../models/volunteer');
 
 router.get('/:id/volunteer', function(req, res) {
     Volunteer.findOne({ pairs: req.pair._id }, function(err, doc) {

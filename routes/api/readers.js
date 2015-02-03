@@ -1,6 +1,6 @@
 var express = require('express');
 
-var models = require('./../models'),
+var models = require('./../../models'),
     Reader = models.reader,
     Parent = models.parent;
 

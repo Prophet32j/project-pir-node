@@ -1,5 +1,6 @@
 var express = require('express');
-var User = require('./../models').user;
+var models = require('./../../models'),
+    User = models.user;
 
 // var bodyParser = require('body-parser');
 // var urlencoded = bodyParser.urlencoded({ extended: true });
