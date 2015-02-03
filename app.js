@@ -18,31 +18,19 @@ db.on('error', function(err) {
 db.once('open', function() {
   console.log('Connection open');
   
-  // initialize all mongoose models
-  // require('./models');
-  
   // static file serving
   app.use(express.static(__dirname + '/public'));
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
 
-  
-  // non-REST utility routes
-  var index = require('./routes');
-  var loginRoute = require('./routes/login');
-  app.use('/login', loginRoute);
-  app.get('/logout', index.logout);
-  app.post('/register', index.register);
-  app.get('/verify', index.verify);
-
 
   // application routes
   // secure all API routes with tokens
   app.use('/api', authjwt(config.jwt_secret));
 
-  // mount API routes
-  require('./routes/api')(app);
+  // mount routes
+  require('./routes')(app);
 
 });
 
