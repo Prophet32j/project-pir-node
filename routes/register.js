@@ -13,13 +13,20 @@ router.route('/')
         return res.status(400).json({ error: err });
 
       // send email to confirm email address
+      var from = { email: 'josh.hardy.ufen@gmail.com', name: 'Partners In Reading' };
       var subject = 'Confirm Your Email Address';
       var link = req.hostname + '/verify?key=' + uid;
-      mailer.sendEmail({ email: data.email }, subject, link, function(err, status) {
-        if (err)
-          return res.status(500).json({ error: err });
 
-        res.status(201).json({ status: status });
+      mailer.getTemplate('confirm-email.hbs', function(err, hbs) {
+        if (err) throw err;
+        var html = mailer.compileHbs(hbs, { "url": link });
+
+        mailer.sendEmail([{ email: data.email }], from, subject, html, function(err, emails) {
+          if (err)
+            return res.status(500).json({ error: err });
+
+          res.status(201).json({ status: emails[0] });
+        });
       });
     });
   });
