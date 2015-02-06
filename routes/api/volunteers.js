@@ -27,7 +27,7 @@ router.route('/')
       }
 
       var mailer = new Mailer();
-      mailer.loadTemplateAndCompile('volunteer-confirmation', doc.toJSON(), function(err, html) {
+      mailer.loadTemplateAndCompile('volunteer-confirmation', { "volunteer": doc.toJSON() }, function(err, html) {
         if (err) {
           err.status = 500;
           return next(err);
