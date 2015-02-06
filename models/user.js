@@ -75,7 +75,7 @@ schema.statics.login = function(email, password, callback) {
       if (err) return callback(err);
       if (!matched) return callback();
 
-      console.log(doc.toJSON());
+      // console.log(doc.toJSON());
       var token = jwt.sign(doc.toJSON(), config.jwt_secret);
 
       // save to database, redis

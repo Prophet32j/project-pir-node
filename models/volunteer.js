@@ -18,7 +18,7 @@ var schema = new Schema({
   special_ed: { type: String, default: false },
   language_ed: { type: String, default: false },
   about_me: { type: String, required: '{PATH} is required' },
-  two_children: { type: Boolean, default: false },
+  two_readers: { type: Boolean, default: false },
   pairs: [{ type: Schema.Types.ObjectId, ref: 'Pair' }],
   availability: {},
   reader_request: {

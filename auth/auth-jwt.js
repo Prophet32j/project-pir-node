@@ -1,5 +1,7 @@
 var jwt = require('jsonwebtoken');
-var UnauthorizedError = require('./../errors/UnauthorizedError');
+var errors = require('./../errors'),
+    UnauthorizedError = errors.UnauthorizedError;
+    
 var client = require('./../bin/redis-client')();
 
 module.exports = function(secret) {
