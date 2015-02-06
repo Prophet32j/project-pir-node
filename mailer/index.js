@@ -32,11 +32,12 @@ Mailer.prototype.loadTemplateSync = function(templateName) {
 }
 
 Mailer.prototype.loadTemplateAndCompile = function(templateName, data, callback) {
+  var mailer = this;
   this.loadTemplate(templateName, function(err, hbs) {
     if (err)
       return callback(err);
 
-    callback(null, this.compile(hbs, data));
+    callback(null, mailer.compile(hbs, data));
   });
 }
 
