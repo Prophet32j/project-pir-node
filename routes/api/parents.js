@@ -28,7 +28,7 @@ router.route('/')
       }
 
       var mailer = new Mailer();
-      mailer.loadTemplateAndCompile('parent-confirmation', doc.toJSON(), function(err, html) {
+      mailer.loadTemplateAndCompile('parent-confirmation', { "parent": doc.toJSON() }, function(err, html) {
         if (err) {
           err.status = 500;
           return next(err);
