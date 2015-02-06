@@ -32,6 +32,21 @@ db.once('open', function() {
   // mount routes
   require('./routes')(app);
 
+  // error handling middleware
+  app.use(errorLogger);
+  app.use(errorHandler);
+
 });
 
 module.exports = app;
+
+
+function errorLogger(err, req, res, next) {
+  console.error(err.stack);
+  next(err);
+}
+
+function errorHandler(err, req, res, next) {
+  res.status(err.status || 404);
+  res.json({ error: err });
+}
