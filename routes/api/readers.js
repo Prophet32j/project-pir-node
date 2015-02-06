@@ -1,35 +1,34 @@
-var express = require('express');
-
+var express = require('express'),
+    router = express.Router();
 var models = require('./../../models'),
     Reader = models.reader,
-    Parent = models.parent;
-
-var router = express.Router();
+    Parent = models.parent,
+    Pair = models.pair;
+var Mailer = require('./../../mailer');
+var errors = require('./../../errors');
 
 router.route('/')
   .get(function(req, res) {
     // we need to be able to query based on parent first and foremost
     Reader.find(parseQuery(req.query), null, { lean: true }, function(err, docs) {
-      if (err) return res.status(500).json(err);
+      if (err) r
+        return res.status(500).json({ error: err });
       
-      var json = {
-        readers: docs,
-        meta: {
-          count: docs.length
-        }
-      }
-      res.json(json);
+      res.json({ readers: docs });
     });
   })
-  .post(/*urlencoded, jsonparser, */function(req, res) {
+  .post(function(req, res) {
     var data = req.body;
     // ensure there is a parent to save the reader to
     Parent.findById(data.parent, function(err, parent) {
-      if (err) return res.status(400).json(err);
-      if (!parent) return res.status(400).json('parent does not exist');
+      if (err) 
+        return res.status(400).json({ error: err });
+      if (!parent) 
+        return res.status(400).json({ error: new errors.NotFoundError('parent_not_found', { message: 'Parent ID not found' }) });
       
       Reader.create(data, function(err, doc) {
-        if (err) return res.status(400).json(err);
+        if (err) 
+          return res.status(400).json({ error: err });
       
         // save into parent object this objectid
         parent.readers.push(doc._id);
@@ -43,8 +42,10 @@ router.route('/')
 
 router.param('id', function(req, res, next, id) {
   Reader.findById(id, function(err, doc) {
-    if (err) return next(err);
-    if (!doc) return res.status(404).send('id not found');
+    if (err) 
+      return next(err);
+    if (!doc) 
+      return res.status(404).send({ error: new errors.NotFoundError('reader_not_found', { message: 'Reader ID not found' }) });
     
     req.reader = doc;
     next();
@@ -55,27 +56,42 @@ router.route('/:id')
   .get(function(req, res) {
     res.json({ reader: req.reader });
   })
-  .put(/*urlencoded, jsonparser, */function(req, res) {
+  .put(function(req, res) {
     var json = req.body;
     Reader.findByIdAndUpdate(req.reader._id, json.reader, function(err, doc, numAffected) {
-      if (err) return res.status(400).json(err);
+      if (err) 
+        return res.status(400).json({ error: err });
       
-      res.sendStatus(204);
+      res.status(204).json({});
     });
   })
   .delete(function(req, res) {
     req.reader.remove(function(err) {
-      if (err) return res.status(500).json(err);
+      if (err) 
+        return res.status(500).json({ error: err });
       
       res.status(204).json({});
     });
   });
 
 router.get('/:id/parent', function(req, res) {
-  Parent.findOne({ readers: req.reader._id }, function(err, doc) {
-    if (err) return res.status(500).json(err);
+  Parent.findById(req.reader.parent, function(err, doc) {
+    if (err) 
+      return res.status(500).json({ error: err });
 
     res.json({ parent: doc });
+  });
+});
+
+router.get('/:id/pair', function(req, res) {
+  if (!req.reader.pair)
+    return res.status(404).send({ error: new errors.NotFoundError('pair_not_found', { message: 'Pair ID not found' }) });
+
+  Pair.findById(req.reader.pair, function(err, doc) {
+    if (err)
+      return res.status(500).json({ error: err });
+
+    res.json({ pair: doc });
   });
 });
 

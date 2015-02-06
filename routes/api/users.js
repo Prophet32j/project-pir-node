@@ -1,31 +1,53 @@
-var express = require('express');
+var express = require('express'),
+    router = express.Router();
 var models = require('./../../models'),
     User = models.user;
-
-// var bodyParser = require('body-parser');
-// var urlencoded = bodyParser.urlencoded({ extended: true });
-// var jsonparser = bodyParser.json();
-
-var router = express.Router();
+var Mailer = require('./../../mailer');
+var mailer_config = require('./../../mailer/config.json');
+var errors = require('./../../errors');
 
 router.route('/')
-  .get(function(req, res) {
+  .get(function(req, res, next) {
     User.find(parseQuery(req.query), null, { lean: true }, function(err, docs) {
-      if (err) return res.status(500).send(err);
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
 
       res.json({ users: docs });
     });
   })
-  .post(/*urlencoded, jsonparser, */function(req, res) {
+  .post(function(req, res, next) {
     var data = req.body;
-    // need to validate submitted data...later
-    console.log(data);
-    User.create(data, function(err, doc) {
-      if (err) return res.status(400).json(err);
 
-      // need to send email here to set up email validation
-      
-      res.status(201).json({ user: doc });
+    User.register(data, function(err, doc, uid) {
+      if (err) {
+        err.status = 400;
+        return next(err);
+      }
+
+      // send email to confirm email address
+      // var from = mailer_config.system_email;
+      var subject = 'Confirm Your Email Address';
+      var link = req.hostname + '/verify?key=' + uid;
+
+      var mailer = new Mailer();
+      mailer.loadTemplateAndCompile('email-confirmation', { "url": link }, function(err, html) {
+        if (err) {
+          err.status = 500;
+          return next(err);
+        }
+
+        mailer.sendEmail([{ email: data.email }], null, subject, html, function(err, emails) {
+          if (err) {
+            err.status = 500;
+            return next(err);
+          }
+
+          res.status(201).json({ user: doc });
+        });
+      });
+
     });
   });
 
@@ -34,37 +56,44 @@ router.param('id', function(req, res, next, id) {
   var regex = /@/;
   if (regex.test(id)) { 
     User.findByEmail(id, function(err, doc) {
-      if (err) return next(err);
-      if (!doc) return res.status(404).json('Email not found');
+      if (err) 
+        return next(err);
+      if (!doc) 
+        return res.status(404).json({ error: new errors.NotFoundError('user_not_found', { message: 'Email not found' }) });
       
       req.user = doc;
       next();
     });
   }
-  else
+  else {
     User.findById(id, function(err, doc) {
-      if (err) return next(err);
-      if (!doc) return res.status(404).json('id not found');
+      if (err) 
+        return next(err);
+      if (!doc) 
+        return res.status(404).json({ error: new errors.NotFoundError('user_not_found', { message: 'User ID not found' }) });
 
       req.user = doc;
       next();
     });
+  }
 });
 
 router.route('/:id')
   .get(function(req, res) {
     res.json({ user: req.user });
   })
-  .put(/*urlencoded, */function(req, res) {
+  .put(function(req, res) {
     User.findByIdAndUpdate(req.user._id, req.body, function(err, doc, numAffected) {
-      if (err) return res.status(400).json(err);
+      if (err) 
+        return res.status(400).json({ error: err });
 
       res.status(204).json({});
     });
   })
   .delete(function(req, res) {
     req.user.remove(function(err) {
-      if (err) return res.status(500).json(err);
+      if (err) 
+        return res.status(500).json({ error: err });
 
       res.status(204).json({});
     });
