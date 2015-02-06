@@ -8,27 +8,31 @@ var Mailer = require('./../../mailer');
 var errors = require('./../../errors');
 
 router.route('/')
-  .get(function(req, res) {
+  .get(function(req, res, next) {
     // parse query params and send to find()
     Parent.find(parseQuery(req.query), null, { lean: true }, function(err, docs) {
-      if (err)
-        return res.status(500).json(err);
-      var json = {
-        parents: docs,
+      if (err) {
+        err.status = 500;
+        return next(err);
       }
-      res.json(json);
+
+      res.json({ parents: docs });
     });
   })
-  .post(function(req, res) {
+  .post(function(req, res, next) {
     var data = req.body;
     Parent.create(data, function(err, doc) {
-      if (err)
-        return res.status(400).json(err);
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
 
       var mailer = new Mailer();
       mailer.loadTemplateAndCompile('parent-confirmation', doc.toJSON(), function(err, html) {
-        if (err) 
-          return res.status(500).json({ error: err });
+        if (err) {
+          err.status = 500;
+          return next(err);
+        }
 
         var to = [{
           email: doc.email,
@@ -37,8 +41,9 @@ router.route('/')
         var subject = 'Parent Registration Confirmation';
 
         mailer.sendEmail(to, null, subject, html, function(err, emails) {
-          if (err)
-            console.log('Mandrill API Error: ', err);
+          if (err) {
+            console.err('Mandrill API Error: ', err.stack);
+          }
 
           res.status(201).json({ parent: doc });
         });
@@ -54,8 +59,9 @@ router.param('id', function(req, res, next, id) {
     Parent.findByEmail(id, function(err, doc) {
       if (err) 
         return next(err);
-      if (!doc) 
-        return res.status(404).json({ error: new errors.NotFoundError('parent_not_found', { message: 'Email not found' }) });
+      if (!doc) {
+        return next(new errors.NotFoundError('parent_not_found', { message: 'Email not found' }));
+      }
       
       req.parent = doc;
       next();
@@ -65,8 +71,9 @@ router.param('id', function(req, res, next, id) {
     Parent.findById(id, function(err, doc) {
       if (err) 
         return next(err);
-      if (!doc) 
-        return res.status(404).json({ error: new errors.NotFoundError('parent_not_found', { message: 'Parent ID not found' }) });
+      if (!doc) {
+        return next(new errors.NotFoundError('parent_not_found', { message: 'Parent ID not found' }));
+      }
 
       req.parent = doc;
       next();
@@ -84,8 +91,10 @@ router.route('/:id')
       return res.json(json);
     
     Reader.findByParentId(req.parent._id, function(err, docs) {
-      if (err) 
-        return res.status(500).json({ error: err });
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
       if (docs.length)
         json.readers = docs;
 
@@ -96,16 +105,20 @@ router.route('/:id')
     var parent = req.parent;
 
     Parent.findByIdAndUpdate(parent._id, req.body, function(err, doc, numAffected) {
-      if (err) 
-        return res.status(400).json({ error: err });
+      if (err) {
+        err.status = 400;
+        return next(err);
+      }
 
       res.status(204).json({});
     });
   })
   .delete(function(req, res) {
     req.parent.remove(function(err) {
-      if (err) 
-        return res.status(500).json({ error: err });
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
 
       res.status(204).json({});
     });
@@ -114,8 +127,10 @@ router.route('/:id')
 router.route('/:id/readers')
   .get(function(req, res) {
     Reader.find({ parent: req.parent._id }, null, { lean: true }, function(err, docs) {
-      if (err) 
-        return res.status(500).json({ error: err });
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
 
       res.json({ readers: docs });
     });
@@ -123,19 +138,25 @@ router.route('/:id/readers')
   .post(function(res, res) {
     var reader = req.body.reader;
     Reader.create(reader, function(err, doc) {
-      if (err) 
-        return res.status(400).json({ error: err });
+      if (err) {
+        err.status = 400;
+        return next(err);
+      }
 
       // save new doc into parent
       req.parent.readers.push(doc._id);
       req.parent.save(function(err) {
-        if (err) 
-          return res.status(400).json({ error: err });
+        if (err) {
+          err.status = 400;
+          return next(err);
+        }
 
         var mailer = new Mailer();
         mailer.loadTemplateAndCompile('reader-confirmation', doc.toJSON(), function(err, html) {
-          if (err) 
-            return res.status(500).json({ error: err });
+          if (err) {
+            err.status = 500;
+            return next(err);
+          }
 
           var to = [{
             email: req.parent.email,
@@ -144,8 +165,9 @@ router.route('/:id/readers')
           var subject = 'Reader Registration Confirmation';
 
           mailer.sendEmail(to, null, subject, html, function(err, emails) {
-            if (err)
-              console.log('Mandrill API Error: ', err);
+            if (err) {
+              console.error('Mandrill API Error: ', err.stack);
+            }
 
             res.status(201).json({ reader: doc });
           });

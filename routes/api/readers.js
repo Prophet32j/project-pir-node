@@ -11,8 +11,10 @@ router.route('/')
   .get(function(req, res) {
     // we need to be able to query based on parent first and foremost
     Reader.find(parseQuery(req.query), null, { lean: true }, function(err, docs) {
-      if (err) r
-        return res.status(500).json({ error: err });
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
       
       res.json({ readers: docs });
     });
@@ -21,14 +23,19 @@ router.route('/')
     var data = req.body;
     // ensure there is a parent to save the reader to
     Parent.findById(data.parent, function(err, parent) {
-      if (err) 
-        return res.status(400).json({ error: err });
-      if (!parent) 
-        return res.status(400).json({ error: new errors.NotFoundError('parent_not_found', { message: 'Parent ID not found' }) });
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
+      if (!parent) {
+        return next(new errors.NotFoundError('parent_not_found', { message: 'Parent ID not found' }));
+      }
       
       Reader.create(data, function(err, doc) {
-        if (err) 
-          return res.status(400).json({ error: err });
+        if (err) {
+          err.status = 400;
+          return next(err);
+        }
       
         // save into parent object this objectid
         parent.readers.push(doc._id);
@@ -42,10 +49,12 @@ router.route('/')
 
 router.param('id', function(req, res, next, id) {
   Reader.findById(id, function(err, doc) {
-    if (err) 
+    if (err) {
       return next(err);
-    if (!doc) 
-      return res.status(404).send({ error: new errors.NotFoundError('reader_not_found', { message: 'Reader ID not found' }) });
+    }
+    if (!doc) {
+      return next(new errors.NotFoundError('reader_not_found', { message: 'Reader ID not found' }));
+    }
     
     req.reader = doc;
     next();
@@ -59,16 +68,20 @@ router.route('/:id')
   .put(function(req, res) {
     var json = req.body;
     Reader.findByIdAndUpdate(req.reader._id, json.reader, function(err, doc, numAffected) {
-      if (err) 
-        return res.status(400).json({ error: err });
+      if (err) {
+        err.status = 400;
+        return next(err);
+      }
       
       res.status(204).json({});
     });
   })
   .delete(function(req, res) {
     req.reader.remove(function(err) {
-      if (err) 
-        return res.status(500).json({ error: err });
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
       
       res.status(204).json({});
     });
@@ -76,20 +89,25 @@ router.route('/:id')
 
 router.get('/:id/parent', function(req, res) {
   Parent.findById(req.reader.parent, function(err, doc) {
-    if (err) 
-      return res.status(500).json({ error: err });
+    if (err) {
+      err.status = 500;
+      return next(err);
+    }
 
     res.json({ parent: doc });
   });
 });
 
 router.get('/:id/pair', function(req, res) {
-  if (!req.reader.pair)
+  if (!req.reader.pair) {
     return res.status(404).send({ error: new errors.NotFoundError('pair_not_found', { message: 'Pair ID not found' }) });
+  }
 
   Pair.findById(req.reader.pair, function(err, doc) {
-    if (err)
-      return res.status(500).json({ error: err });
+    if (err) {
+        err.status = 500;
+        return next(err);
+      }
 
     res.json({ pair: doc });
   });

@@ -3,7 +3,7 @@
 var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 var config = require('./../config/config.json');
-var NotActivatedError = require('./../errors/NotActivatedError');
+var errors = require('./../errors');
 var redisClient = require('./../bin/redis-client')();
 var uuid = require('node-uuid');
 
@@ -66,22 +66,40 @@ schema.statics.findAndRemove = function(id, callback) {
  */
 schema.statics.login = function(email, password, callback) {
   this.findByEmail(email, function(err, doc) {
-    if (err) return callback(err);
-    if (!doc) return callback();
-    if (!doc.activated) 
-      return callback(new NotActivatedError('account_not_activated', { message: 'User account not activated, check your email' }));
+    if (err) {
+      err.status = 500;
+      return callback(err);
+    }
+    if (!doc) {
+      return callback(new errors.NotFoundError('user_not_found', { message: 'Email not found' }));
+    }
+    if (!doc.activated) {
+      return callback(new errors.NotActivatedError('account_not_activated', { message: 'User account not activated, check your email' }));
+    }
 
     doc.verifyPassword(password, function(err, matched) {
-      if (err) return callback(err);
-      if (!matched) return callback();
+      if (err) {
+        err.status = 500;
+        return callback(err);
+      }
+      if (!matched) {
+        return callback(new errors.UnauthorizedError('invalid_password', { message: 'Invalid password' }));
+      }
 
       // console.log(doc.toJSON());
       var token = jwt.sign(doc.toJSON(), config.jwt_secret);
 
       // save to database, redis
       redisClient.hset('jwt_tokens', token, email, function(err, result) {
-        if (err) return callback(err);
-        if (!result) return callback(new Error('json token not added to redis'));
+        if (err) {
+          err.status = 500;
+          return callback(err);
+        }
+        if (!result) {
+          err = new Error('JWT not added to redis');
+          err.status = 500;
+          return calback(err);
+        }
 
         callback(null, doc, token);
       });
@@ -106,20 +124,30 @@ schema.statics.logout = function(token, callback) {
 schema.statics.register = function(user_data, callback) {
   // validate type
   var type = user_data.type;
-  if (!type || !(type === 'p' || type === 'v'))
-    return callback(new Error('invalid User type'));
+  if (!type || !(type === 'p' || type === 'v')) {
+    var err = new Error('invalid User type');
+    err.status = 400;
+    return callback(err);
+  }
 
 
   this.create(user_data, function(err, doc) {
-    if (err) 
+    if (err) {
+      err.status = 400;
       return callback(err);
+    }
 
     var uid = uuid.v4();
     redisClient.hset('uuid', uid, doc.id, function(err, result) {
-      if (err)
+      if (err) {
+        err.status = 500;
         return callback(err);
-      if (!result)
-        return callback(new Error('something happened saving to database. uuid: ' + uid));
+      }
+      if (!result) {
+        err = new Error('something happened saving to database. uuid: ' + uid);
+        err.status = 500;
+        return callback(err);
+      }
 
       callback(null, doc, uid);
     });
@@ -128,16 +156,22 @@ schema.statics.register = function(user_data, callback) {
 
 schema.statics.activate = function(uid, callback) {
   redisClient.hget('uuid', uid, function(err, id) {
-    if (err) 
+    if (err) {
+      err.status = 500;
       return callback(err);
-    if (!id)
-      return callback();
+    }
+    if (!id) {
+      return callback(new errors.NotFoundError('uid_not_found', { message: 'Activation Key not found' }));
+    }
 
     mongoose.model('User').findById(id, function(err, doc) {
-      if (err)
+      if (err) {
+        err.status = 500;
         return callback(err);
-      if (!doc)
-        return callback();
+      }
+      if (!doc) {
+        return callback(new errors.NotFoundError('user_not_found', { message: 'User ID not found' }));
+      }
 
       doc.activated = true;
       redisClient.hdel('uuid', uid);

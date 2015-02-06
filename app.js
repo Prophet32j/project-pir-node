@@ -46,7 +46,7 @@ function errorLogger(err, req, res, next) {
   next(err);
 }
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res, next) {  
   res.status(err.status || 404);
   res.json({ error: err });
 }

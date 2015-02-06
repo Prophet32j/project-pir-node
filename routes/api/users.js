@@ -56,10 +56,12 @@ router.param('id', function(req, res, next, id) {
   var regex = /@/;
   if (regex.test(id)) { 
     User.findByEmail(id, function(err, doc) {
-      if (err) 
+      if (err) {
         return next(err);
-      if (!doc) 
-        return res.status(404).json({ error: new errors.NotFoundError('user_not_found', { message: 'Email not found' }) });
+      }
+      if (!doc) {
+        return next(new errors.NotFoundError('user_not_found', { message: 'Email not found' }));
+      }
       
       req.user = doc;
       next();
@@ -67,10 +69,12 @@ router.param('id', function(req, res, next, id) {
   }
   else {
     User.findById(id, function(err, doc) {
-      if (err) 
+      if (err) {
         return next(err);
-      if (!doc) 
-        return res.status(404).json({ error: new errors.NotFoundError('user_not_found', { message: 'User ID not found' }) });
+      }
+      if (!doc) {
+        return next(new errors.NotFoundError('user_not_found', { message: 'User ID not found' }));
+      }
 
       req.user = doc;
       next();
@@ -84,16 +88,20 @@ router.route('/:id')
   })
   .put(function(req, res) {
     User.findByIdAndUpdate(req.user._id, req.body, function(err, doc, numAffected) {
-      if (err) 
-        return res.status(400).json({ error: err });
+      if (err) {
+        err.status = 400;
+        return next(err);
+      }
 
       res.status(204).json({});
     });
   })
   .delete(function(req, res) {
     req.user.remove(function(err) {
-      if (err) 
-        return res.status(500).json({ error: err });
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
 
       res.status(204).json({});
     });

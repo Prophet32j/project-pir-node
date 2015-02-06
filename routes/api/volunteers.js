@@ -10,8 +10,10 @@ var router = express.Router();
 router.route('/')
   .get(function(req, res) {
     Volunteer.find(parseQuery(req.query), null, { lean: true }, function(err, docs) {
-      if (err) 
-        return res.status(500).json({ error: err });
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
       
       res.json({ volunteers: docs });
     });
@@ -19,13 +21,17 @@ router.route('/')
   .post(function(req, res) {
     var data = req.body;
     Volunteer.create(data, function(err, doc) {
-      if (err) 
-        return res.status(400).json({ error: err });
+      if (err) {
+        err.status = 400;
+        return next(err);
+      }
 
       var mailer = new Mailer();
       mailer.loadTemplateAndCompile('volunteer-confirmation', doc.toJSON(), function(err, html) {
-        if (err)
-          return res.status(500).json({ error: err });
+        if (err) {
+          err.status = 500;
+          return next(err);
+        }
 
         var to = [{
           email: doc.email,
@@ -38,8 +44,10 @@ router.route('/')
         var subject = 'Volunteer Registration Confirmation';
 
         mail.sendEmail(to, from, subject, html, function(err, emails) {
-          if (err) 
-            return res.status(500).json({ error: err });
+          if (err) {
+            err.status = 500;
+            return next(err);
+          }
           
           res.status(201).json({ volunteer: doc });
         });
@@ -54,10 +62,12 @@ router.param('id', function(req, res, next, id) {
   var regex = /@/;
   if (regex.test(id)) { 
     Volunteer.findByEmail(id, function(err, doc) {
-      if (err) 
+      if (err) {
         return next(err);
-      if (!doc) 
-        return res.status(404).json({ error: new errors.NotFoundError('volunteer_not_found', { message: 'Email not found' }) });
+      }
+      if (!doc) {
+        return next(new errors.NotFoundError('volunteer_not_found', { message: 'Email not found' }));
+      }
       
       req.volunteer = doc;
       next();
@@ -65,10 +75,12 @@ router.param('id', function(req, res, next, id) {
   }
   else {
     Volunteer.findById(id, function(err, doc) {
-      if (err) 
+      if (err) {
         return next(err);
-      if (!doc) 
-        return res.status(404).json({ error: new errors.NotFoundError('volunteer_not_found', { message: 'Volunteer ID not found' }) });
+      }
+      if (!doc) {
+        return next(new errors.NotFoundError('volunteer_not_found', { message: 'Volunteer ID not found' }));
+      }
 
       req.volunteer = doc;
       next();
@@ -83,16 +95,20 @@ router.route('/:id')
   .put(function(req, res) {
     var json = req.body;
     Volunteer.findByIdAndUpdate(req.volunteer._id, json.volunteer, function(err, doc, numAffected) {
-      if (err) 
-        return res.status(400).json({ error: err });
+      if (err) {
+        err.status = 400;
+        return next(err);
+      }
       
       res.sendStatus(204);
     });
   })
   .delete(function(req, res) {
     req.volunteer.remove(function(err) {
-      if (err) 
-        return res.status(500).json({ error: err });
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
       
       res.status(204).json({});
     });
@@ -100,8 +116,10 @@ router.route('/:id')
 
 router.get('/:id/pairs', function(req, res) {
     Pair.find({ volunteer: req.volunteer._id }, null, { lean: true }, function(err, docs) {
-      if (err)
-        return res.status(500).json({ error: err });
+      if (err) {
+        err.status = 500;
+        return next(err);
+      }
 
       res.json({ pairs: docs });
     });

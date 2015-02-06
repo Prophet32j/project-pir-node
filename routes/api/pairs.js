@@ -46,8 +46,7 @@ router.param('id', function(req, res, next, id) {
       return next(err);
     }
     if (!doc) {
-      err = new NotFoundError('id_not_found', { message: 'ID not found' });
-      return next(err);
+      return next(new NotFoundError('id_not_found', { message: 'ID not found' }));
     }
     
     req.pair = doc;

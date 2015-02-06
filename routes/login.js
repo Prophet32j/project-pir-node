@@ -14,9 +14,6 @@ router.route('/')
         err.status = err.status || 500;
         return next(err);
       }
-      if (!doc || !token) {
-        return res.status(401).send({ error: 'invalid email or password' });
-      }
 
       res.json({ token: token, user: doc });
     });

@@ -6,7 +6,9 @@ var models = require('./../models'),
 router.route('/')
   .get(function(req, res, next) {
     if (!req.query.key) {
-      return res.status(400).json({ error: new Error('no key found, please check your email for the link') });
+      var err = new Error('no key found, please check your email for the link');
+      err.status(400);
+      return next(err);
     }
 
     var key = req.query.key;
@@ -16,7 +18,9 @@ router.route('/')
         return next(err);
       }
       if (!doc) {
-        return res.status(400).json({ error: new Error('uid not found') });
+        err = new Error('uid not found');
+        err.status = 400;
+        return next(err);
       }
 
       res.status(200).json({});
