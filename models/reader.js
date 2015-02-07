@@ -1,7 +1,8 @@
 // Reader Model for handling data layer
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
+var errors = require('./../errors');
 
 var schema = new Schema({
   parent: { type: Schema.Types.ObjectId, ref: 'Parent', required: '{PATH} is required' },
@@ -49,9 +50,31 @@ schema.statics.findByParentId = function(id, callback) {
 schema.statics.findAndRemove = function(id, callback) {
   this.findById(id, function(err, doc) {
     if (err) return callback(err);
-    if(!doc) return callback();
+    if (!doc) return callback();
     
     doc.remove(callback);
+  });
+}
+
+/*
+ * find Reader by id and add pair
+ * @param id of the Reader
+ * @param pair to add
+ * @param callback function(err, doc)
+ */
+schema.statics.findAndPair = function(pair, callback) {
+  this.findById(pair.reader, function(err, doc) {
+    if (err) {
+      return callback(err);
+    }
+    if (!doc) {
+      return callback(new errors.NotFoundError('reader_not_found', { message: 'Reader ID not found' }));
+    }
+    if (doc.pair) {
+      return callback(new Error('Reader already paired!'));
+    }
+    doc.pair = pair._id;
+    doc.save(callback);
   });
 }
 
@@ -75,5 +98,7 @@ schema.pre('remove', function(next) {
   
   mongoose.model('Pair').findAndRemove(this.pair, next);
 });
+
+
 
 module.exports = mongoose.model('Reader', schema);

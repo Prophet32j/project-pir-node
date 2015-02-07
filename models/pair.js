@@ -21,7 +21,7 @@ schema.statics.findByReaderId = function(id, callback) {
 }
 
 /*
- * find Pair by volunteer
+ * find pairs by volunteer
  * @param id of the Volunteer
  * @param callback function(error, docs[])
  */   
@@ -42,37 +42,58 @@ schema.statics.findAndRemove = function(id, callback) {
   });
 }
 
+/*
+ * finds pair by id and sets approved to true
+ * @param id of the pair
+ * @param callback function(err, doc)
+ */
+schema.statics.approve = function(id, callback) {
+  this.findById(id, function(err, doc) {
+    if (err) {
+      return callback(err);
+    }
+
+    doc.approved = true;
+    doc.save(callback);
+  });
+}
+
 // middleware functions
 
 /*
- * middleware hook to remove reading pair from volunteer and reader
+ * remove reading pair from volunteer
  */
 schema.pre('remove', function(next) {
   mongoose.model('Volunteer').findAndRemovePair(this, next);
 });
 
+/*
+ * remove reading pair from reader
+ */
 schema.pre('remove', function(next) {
   mongoose.model('Reader').findByIdAndUpdate(this.reader, { pair: null }, next);
 });
 
+/*
+ * add pair to reader
+ */
 schema.pre('save',function(next) {
   if (!this.isNew) 
     return next();
   
-  mongoose.model('Reader').findById(this.reader, function(err, doc) {
-    if (err) return next(err);
-    if (!doc) return next(new Error('id not found'));
-    
-    doc.pair = this._id;
-    doc.save(next);
-  });
-});
+  mongoose.model('Reader').findAndPair(this, next);
+}
 
+/*
+ * add pair to volunteer
+ */
 schema.pre('save', function(next) {
   if (!this.isNew) 
     return next();
   
   mongoose.model('Volunteer').findAndInsertPair(this, next);
 });
+
+
 
 module.exports = mongoose.model('Pair', schema);

@@ -1,7 +1,8 @@
 // Volunteer Model for handling data layer
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
+var errors = require('./../errors');
 
 var schema = new Schema({
   email: { type: String, index: { unique: true }, required: '{PATH} is required' },
@@ -58,12 +59,18 @@ schema.statics.findAndRemovePair = function(pair, callback) {
  */
 schema.statics.findAndInsertPair = function(pair, callback) {
   this.findById(pair.volunteer, function(err, doc) {
-    if (err) return callback(err);
-    if (!doc) return callback(new Error('id does not exist!'));
+    if (err) {
+      return callback(err);
+    }
+    if (!doc) {
+      return callback(new errors.NotFoundError('volunteer_not_found', { message: 'Volunteer ID not found' }));
+    }
     
+    /// this is handled by validator now
     // make sure volunteer is not already paired per requested max
-    if ((doc.pairs.length == 1 && !doc.two_children) || (doc.pairs.length == 2))
-      return callback(new Error('Volunteer already paired to requested maximum'));
+    // if ((doc.pairs.length == 1 && !doc.two_children) || (doc.pairs.length == 2)) {
+    //   return callback(new Error('Volunteer already paired to requested maximum'));
+    // }
 
     doc.pairs.push(pair._id);
     doc.save(callback);
@@ -104,27 +111,32 @@ schema.pre('save', function(next) {
     return next();
 
   mongoose.model('User').findByEmail(this.email, function(err, doc) {
-    if (err) 
+    if (err) {
       return next(err);
-    if (!doc)
+    }
+    if (!doc) {
       return next(new errors.NotFoundError('email_not_found', { message: 'Email not found' }));
+    }
 
     next();
   });
 });
 
 // middleware hooks
-var Pair = require('./pair');
 
 schema.pre('remove', function(next) {
-  if (!this.pairs.length) return next();
+  if (!this.pairs.length) {
+    return next();
+  }
   
   // need to process all removals before next
   var last_pair = this.pairs[this.pairs.length-1];
   
   this.pairs.forEach(function(pair) {
-    Pair.findAndRemove(pair, function(err) {
-      if (err) return next(err);
+    mongoose.model('Pair').findAndRemove(pair, function(err) {
+      if (err) {
+        return next(err);
+      }
       
       if (last_pair === pair)
         next();
@@ -142,5 +154,7 @@ schema.path('pairs').validate(function(id) {
 //   if (!this.two_children && this.pairs.count > 0) return false;
   return ((this.pairs.count > 1) || (!this.two_children && this.pairs.count > 0)) ? false : true;
 }, 'Volunteer has reached maximum pair capacity');
+
+
 
 module.exports = mongoose.model('Volunteer', schema);
