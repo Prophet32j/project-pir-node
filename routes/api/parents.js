@@ -28,26 +28,23 @@ router.route('/')
       }
 
       var mailer = new Mailer();
-      mailer.loadTemplateAndCompile('parent-confirmation', { "parent": doc.toJSON() }, function(err, html) {
+      var message = {
+        to: [{
+              email: doc.email,
+              name: doc.first_name + ' ' + doc.last_name 
+            }],
+        subject: 'Parent Registration Confirmation'
+      };
+      var email_data = { "parent": doc.toJSON() };
+
+      mailer.sendEmail('parent-confirmation', email_data, message, function(err, emails) {
         if (err) {
-          err.status = 500;
-          return next(err);
+          console.err('Mandrill API Error: ', err.stack);
         }
 
-        var to = [{
-          email: doc.email,
-          name: doc.first_name + ' ' + doc.last_name
-        }];
-        var subject = 'Parent Registration Confirmation';
-
-        mailer.sendEmail(to, null, subject, html, function(err, emails) {
-          if (err) {
-            console.err('Mandrill API Error: ', err.stack);
-          }
-
-          res.status(201).json({ parent: doc });
-        });
+        res.status(201).json({ parent: doc });
       });
+
     });
   });
 

@@ -8,64 +8,55 @@ var email_config = require('./config.json');
 
 var Mailer = function() { }
 
+
+/*
+ * sends a single email to recipients
+ * @param template name string
+ * @param data of the template to load
+ * @param email struct{to[]{email,name}, subject, [from_email], [from_name]}
+ * @param callback function(error, emails[])
+ */
+Mailer.prototype.sendEmail = function(template, data, email, callback) {
+  var mailer = this;
+  loadTemplateAndCompile(template, data, function(err, html) {
+    var message = {
+      to: email.to,
+      from_email: (email.from && email.from.email) || email_config.system_email.email,
+      from_name: (email.from && email.from.name) || email_config.system_email.name,
+      subject: email.subject,
+      html: html
+    };
+
+    client.messages.send({ "message": message, "async": true }, function(emails) {
+      return callback(null, emails);
+    }, callback);
+  });
+}
+
 /*
  * compiles raw handlebars and data into usable html
  * @param source to compile
  * @param data to insert
  * @return html
  */
-Mailer.prototype.compile = function(source, data) {
+ function _compile(source, data) {
   var template = Handlebars.compile(source);
   var html = template(data);
 
   return html;
 }
 
-Mailer.prototype.loadTemplate = function(templateName, callback) {
+function _loadTemplate(templateName, callback) {
   var filePath = path.resolve('mailer/templates', './' + templateName + '.hbs');
   fs.readFile(filePath, { encoding: 'utf-8' }, callback);
 }
 
-Mailer.prototype.loadTemplateSync = function(templateName) {
-  var filePath = path.resolve('mailer/templates', './' + templateName);
-  return fs.readFileSync(filePath, { encoding: 'utf-8' });
-}
-
-Mailer.prototype.loadTemplateAndCompile = function(templateName, data, callback) {
-  var mailer = this;
-  this.loadTemplate(templateName, function(err, hbs) {
+function loadTemplateAndCompile(templateName, data, callback) {
+  _loadTemplate(templateName, function(err, hbs) {
     if (err)
       return callback(err);
 
-    callback(null, mailer.compile(hbs, data));
-  });
-}
-
-/*
- * sends a single email to a recipient
- * @param to[] struct{email, name}
- * @param from struct{email, name}
- * @param subject of the email
- * @param html of the email
- * @param callback function(error, emails[])
- */
-Mailer.prototype.sendEmail = function(to, from, subject, html, callback) {
-  if (!from) {
-    from = email_config.system_email;
-  }
-  var message = {
-    to: to,
-    html: html,
-    subject: subject,
-    from_email: from.email,
-    from_name: from.name
-  };
-
-  client.messages.send({ 'message': message, 'async': true }, function(emails) {
-    return callback(null, emails);
-  },
-  function(err) {
-    return callback(err);  
+    callback(null, _compile(hbs, data));
   });
 }
 

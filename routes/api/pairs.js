@@ -6,6 +6,7 @@ var models = require('./../../models'),
     Volunteer = models.volunteer;
 var errors = require('./../../errors'),
     NotFoundError = models.NotFoundError;
+var Mailer = require('./../../mailer');
 
 var router = express.Router();
 
@@ -32,8 +33,24 @@ router.route('/')
         err.status = 400;
         return next(err);
       }
+
+      var message = {
+
+      };
+      var email_data = {
+
+      };
       
-      res.status(201).json({ pair: doc });
+      var mailer = new Mailer();
+      mailer.sendEmail('pair-confirmation', email_data, message, function(err, emails) {
+        if (err) {
+          err.status = 500;
+          return next(err);
+        }
+
+        res.status(201).json({ pair: doc });
+      });
+
     });
   });
 
