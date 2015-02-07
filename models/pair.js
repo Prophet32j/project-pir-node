@@ -1,7 +1,7 @@
 // Pair Model for handling data layer
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
 
 var schema = new Schema({
   volunteer: { type: Schema.Types.ObjectId, ref: 'Volunteer', required: '{PATH} is required' },
@@ -82,7 +82,7 @@ schema.pre('save',function(next) {
     return next();
   
   mongoose.model('Reader').findAndPair(this, next);
-}
+});
 
 /*
  * add pair to volunteer
