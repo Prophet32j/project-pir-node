@@ -27,27 +27,23 @@ router.route('/')
       }
 
       // send email to confirm email address
-      // var from = mailer_config.system_email;
-      var subject = 'Confirm Your Email Address';
-      var link = req.hostname + '/verify?key=' + uid;
+      var message = {
+        to: [{ email: doc.email }],
+        subject: 'Confirm Your Email Address',
+      }
+      var email_data = {
+        "url": req.hostname + '/verify?key=' + uid
+      }
 
       var mailer = new Mailer();
-      mailer.loadTemplateAndCompile('email-confirmation', { "url": link }, function(err, html) {
+
+      mailer.sendEmail('email-confirmation', email_data, message, function(err, emails) {
         if (err) {
-          err.status = 500;
-          return next(err);
+          console.err('Mandrill API Error: ', err.stack);
         }
-
-        mailer.sendEmail([{ email: data.email }], null, subject, html, function(err, emails) {
-          if (err) {
-            err.status = 500;
-            return next(err);
-          }
-
-          res.status(201).json({ user: doc });
-        });
       });
 
+      res.status(201).json({ user: doc });
     });
   });
 

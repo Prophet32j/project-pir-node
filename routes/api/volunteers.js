@@ -27,32 +27,24 @@ router.route('/')
       }
 
       var mailer = new Mailer();
-      mailer.loadTemplateAndCompile('volunteer-confirmation', { "volunteer": doc.toJSON() }, function(err, html) {
+      var email_data = { 
+        "volunteer": doc.toJSON()
+      };
+      var message = {
+        to: [{
+              email: doc.email,
+              name: doc.first_name + ' ' + doc.last_name
+            }],
+        subject: 'Volunteer Registration Confirmation'
+      };
+
+      mailer.sendEmail('volunteer-confirmation', email_data, message, function(err, emails) {
         if (err) {
-          err.status = 500;
-          return next(err);
+          console.err('Mandrill API Error: ', err.stack);
         }
-
-        var to = [{
-          email: doc.email,
-          name: doc.first_name + ' ' + doc.last_name
-        }];
-        var from = {
-          email: 'josh.hardy.ufen@gmail.com',
-          name: 'Partners In Reading'
-        };
-        var subject = 'Volunteer Registration Confirmation';
-
-        mail.sendEmail(to, from, subject, html, function(err, emails) {
-          if (err) {
-            err.status = 500;
-            return next(err);
-          }
-          
-          res.status(201).json({ volunteer: doc });
-        });
-
       });
+   
+      res.status(201).json({ volunteer: doc });
     });
   });
 
