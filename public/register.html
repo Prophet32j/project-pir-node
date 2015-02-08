@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Partners In Reading - User Registration</title>
+    <title>Partners In Reading - Registration</title>
 
     <!-- jQuery and registration script -->
     <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
@@ -15,9 +15,25 @@
 
     <!-- Bootstrap -->
     <link href="styles/bootstrap/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    <!-- Jasny Bootstrap Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
+
+    <!-- Jasny Bootstrap Latest compiled and minified JavaScript -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
     
     <!-- Navigation and common styles -->
     <link href="styles/bootstrap/main.css" rel="stylesheet">
+
+    <style>
+    .div-registration-hidden {
+      display: none;
+    }
+
+    .error-icon-hidden {
+      display: none;
+    }
+    </style>
     
   </head>
   
@@ -52,55 +68,210 @@
     
     <div class="container" style="margin: 10px;">
       <div class="row">
-        <h2>Account Registration</h2>
+        <h3>Account Registration</h3>
       </div>
- 
-      <!-- Registration Form -->
-      <form name="user-registration">
-      
-        <!-- Email -->
-        <div class="form-group">
-          <label for="emailaddress">Email address: </label>
-          <div>
-            <input type="email" class="form-control" id="emailaddress" name="email" placeholder="Enter email address" autofocus>
-            <p class="help-block">
-              Example: ulid@illinoisstate.edu
-            </p>
+
+      <!-- <div class="col-md-3"></div> -->
+
+      <div id="user-registration-div" class="col-md-6">
+        <!-- User Registration Form -->
+        <form id="user-form">
+          <h4>User Details</h4>
+          <!-- Email -->
+          <div class="form-group has-feedback">
+            <label class="control-label" for="user-email">Email address </label>
+            <div>
+              <input type="email" class="form-control" id="user-email" name="email" placeholder="Enter email address" autofocus>
+              <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+              <p id="user-email-info"></p>
+            </div>
           </div>
-        </div>
-        
-        <!-- Password -->
-        <div class="form-group">
-          <label for="password">Password: </label>
-          <div>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password">
-            <p class="help-block">
-              Min: 6 characters
-            </p>
+          
+          <!-- Password -->
+          <div class="form-group has-feedback">
+            <label class="control-label" for="user-password">Password </label>
+            <input type="password" class="form-control" id="user-password" name="password" placeholder="Enter Password">
+            <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+            <p id="user-password-info"></p>
           </div>
-        </div>
-        
-        <!-- Password Confirmation -->
-        <div class="form-group">
-          <label for="password-conf">Confirm Password: </label>
-          <input type="password" class="form-control" id="password-conf" name="password_conf" placeholder="Confirm Password">
-        </div>
-        
-        <!-- User Account Type -->
-        <div class="form-group">
-          <label for="account">Account Type: </label>
-          <select name="type" id="account" class="form-control">
-            <option>Select Account</option>
-            <option value="p">Parent</option>
-            <option value="v">Volunteer</option>
-          </select>
-        </div>
-     
-        <div class="form-group">
-          <button type="submit" class="btn btn-info">Register</button>
-        </div>
-        
-      </form>
+          
+          <!-- Password Confirmation -->
+          <div class="form-group has-feedback">
+            <label class="control-label" for="user-password-conf">Confirm password </label>
+            <input type="password" class="form-control" id="user-password-conf" name="password_conf" placeholder="Confirm Password">
+            <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+            <p id="user-password-conf-info"></p>
+          </div>
+          
+          <!-- User Account Type -->
+          <div class="form-group">
+            <label class="control-label" for="user-type">Account type </label>
+            <select name="type" id="user-type" class="form-control">
+              <option>Select Account</option>
+              <option value="p">Parent</option>
+              <option value="v">Volunteer</option>
+            </select>
+            <p id="user-type-info"></p>
+          </div>
+       
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+          
+        </form>
+      </div> <!-- end user-registration-div -->
+
+
+      <div id="parent-registration-div" class="col-md-6 div-registration-hidden">
+        <h4>Parent Details</h4>
+        <!-- Parent Registration Form -->
+        <form id="parent-form">
+
+          <!-- Static email -->
+          <div class="form-group">
+            <label for="parent-email">Email </label>
+            <input class="form-control" id="parent-email" name="email" readonly>
+          </div>
+
+          <!-- First Name -->
+          <div class="form-group has-feedback">
+            <label for="parent-first-name">First name </label>
+            <input class="form-control" id="parent-first-name" name="first_name" placeholder="First Name">
+            <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+            <p id="parent-first-name-info"></p>
+          </div>
+
+          <!-- Last Name -->
+          <div class="form-group has-feedback">
+            <label for="parent-last-name">Last name </label>
+            <input class="form-control" id="parent-last-name" name="last_name" placeholder="Last Name">
+            <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+            <p id="parent-last-name-info"></p>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-group has-feedback">
+            <label for="parent-phone">Phone number </label>
+            <input type="tel" class="form-control" data-mask="999-999-9999" id="parent-phone" name="phone" placeholder="Phone Number">
+            <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+            <p id="parent-phone-info"></p>
+          </div>
+
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+
+        </form>
+      </div> <!-- end parent-registration-div -->
+
+      <div id="volunteer-registration-div" class="col-md-6 div-registration-hidden">
+        <h4>Volunteer Details</h4>
+        <!-- Volunteer Registration Form -->
+        <form id="volunteer-form">
+
+          <!-- Static email -->
+          <div class="form-group">
+            <label for="volunteer-email">Email </label>
+            <input class="form-control" id="volunteer-email" name="email" readonly>
+          </div>
+
+          <!-- First Name -->
+          <div class="form-group has-feedback">
+            <label for="volunteer-first-name">First name </label>
+            <input class="form-control" id="volunteer-first-name" name="first_name" placeholder="First Name">
+            <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+            <p id="volunteer-first-name-info"></p>
+          </div>
+
+          <!-- Last Name -->
+          <div class="form-group has-feedback">
+            <label for="volunteer-last-name">Last name </label>
+            <input class="form-control" id="volunteer-last-name" name="last_name" placeholder="Last Name">
+            <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+            <p id="volunteer-last-name-info"></p>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-group has-feedback">
+            <label for="volunteer-phone">Phone number </label>
+            <input type="tel" class="form-control" data-mask="999-999-9999" id="volunteer-phone" name="phone" placeholder="Phone Number">
+            <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+            <p id="volunteer-phone-info"></p>
+          </div>
+
+          <!-- Gender -->
+          <div class="form-group">
+            <label for="volunteer-gender">Gender </label>
+            <select name="gender" id="volunteer-gender" class="form-control">
+              <option>Select Gender</option>
+              <option value="m">Male</option>
+              <option value="f">Female</option>
+            </select>
+            <p id="volunteer-gender-info"></p>
+          </div>
+
+          <!-- Affiliation -->
+          <div class="form-group has-feedback">
+            <label for="volunteer-affiliation">Affiliation </label>
+            <input class="form-control" id="volunteer-affiliation" name="affiliation" placeholder="College">
+            <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+            <p id="volunteer-affiliation-info"></p>
+          </div>
+
+          <!-- Special Ed -->
+          <div class="form-group">
+            <label for="volunteer-special-ed">Are you special education? </label>
+            <select name="special_ed" id="volunteer-special-ed" class="form-control">
+              <option>Select</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <p id="volunteer-special-ed-info"></p>
+          </div>
+
+          <!-- Lanuage Ed -->
+          <div class="form-group">
+            <label for="volunteer-lanuage-ed">Are you language education? </label>
+            <select name="language_ed" id="volunteer-language-ed" class="form-control">
+              <option>Select</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <p id="volunteer-language-ed-info"></p>
+          </div>
+
+          <!-- Two Readers -->
+          <div class="form-group">
+            <label for="volunteer-two-readers">Would you like two readers?</label>
+            <select name="two_readers" id="volunteer-two-readers" class="form-control">
+              <option>Select</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <p id="volunteer-two-readers-info"></p>
+          </div>
+
+          <div class="form-group has-feedback">
+          <label for="volunteer-about-me">Tell us about yourself</label>
+          <textarea name="about_me" id="volunteer-about-me" class="form-control" rows="4"></textarea>
+          <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+          <p id="volunteer-about-me-info"></p>
+          </div>
+
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div> <!-- end volunteer-registration-div -->
+
+      <div id="registration-success-div" class="div-registration-hidden">
+        <h3>Successful Registration!</h3>
+        <p>
+        Please check your email for your verification email. You will not be allowed to continue with 
+        the application until you have verified your email address.
+        </p>
+      </div>
+
     </div>
     
   </body>

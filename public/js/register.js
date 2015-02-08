@@ -1,27 +1,31 @@
 $(function() {
+  var user = null;
 
-  $('form[name="user-registration"]').on('submit', function(event) {
+  $('#user-form').submit(function(event) {
     var form = $(this);
     event.preventDefault();
 
-    var form_data = form.serialize();
     // console.log(form_data);
 
-    if (!validateEmail(document.getElementById('emailaddress').value)) {
-      alert('failed Email validation');
-      return false;
-    }
-    var pass = document.getElementById('password').value;
-    var conf_pass = document.getElementById('password-conf').value
+    // if (!validateEmail(document.getElementById('user-email').value)) {
+    //   alert('failed Email validation');
+    //   return false;
+    // }
+
+    var pass = document.getElementById('user-password').value;
+    var conf_pass = document.getElementById('user-password-conf').value
+
     if (!validatePassword(pass, conf_pass)) {
-      alert('failed Password validation');
+      
       return false;
     }
 
-    if (!validateAccountType($('#account').val())) {
+    if (!validateAccountType($('#user-type').val())) {
       alert('failed account validation');
       return false;
     }
+
+    var form_data = form.serialize();
 
     // make the AJAX call to save user
     $.ajax({
@@ -30,14 +34,75 @@ $(function() {
       data: form_data
     })
     .done(function(json) {
-      // bring up new page, or hide form and show success
-      // user needs to go validate their email
+      // bring up next form
+      user = json.user;
+      $('#user-registration-div').hide();
+      switch (user.type) {
+        case 'p': {
+          $('#parent-email').val(user.email);
+          $('#parent-registration-div').show();
+          break;
+        }
+        case 'v': {
+          $('#volunteer-email').val(user.email);
+          $('#volunteer-registration-div').show();
+          break;
+        }
+      }
       console.log(json.user);
-      alert(json.user);
     })
-    .fail(function(message) {
-      // figure out what went wrong, handle this later
-      console.log(message);
+    .fail(function(json) {
+      // figure out what went wrong
+
+      console.log(json);
+    });
+  });
+
+  $('#parent-form').submit(function(event) {
+    var form = $(this);
+    event.preventDefault();
+
+
+    // do some validations here
+
+    var form_data = form.serialize();
+
+    // make the call
+    $.ajax({
+      type: 'POST',
+      url: '/register/' + user._id,
+      data: form_data
+    })
+    .done(function(json) {
+      $('#parent-form').hide();
+      $('#registration-success-div').show();
+    })
+    .fail(function(json) {
+
+    });
+  });
+
+  $('#volunteer-form').submit(function(event) {
+    var form = $(this);
+    event.preventDefault();
+
+
+    // do some validations here
+
+    var form_data = form.serialize();
+
+    // make the call
+    $.ajax({
+      type: 'POST',
+      url: '/register/' + user._id,
+      data: form_data
+    })
+    .done(function(json) {
+      $('#volunteer-form').hide();
+      $('#registration-success-div').show();
+    })
+    .fail(function(json) {
+
     });
   });
 
