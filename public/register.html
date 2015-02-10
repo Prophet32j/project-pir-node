@@ -78,12 +78,12 @@
         <form id="user-form">
           <h4>User Details</h4>
           <!-- Email -->
-          <div class="form-group has-feedback">
+          <div id="user-email-div" class="form-group has-feedback">
             <label class="control-label" for="user-email">Email address </label>
             <div>
               <input type="email" class="form-control" id="user-email" name="email" placeholder="Enter email address" autofocus>
-              <span class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
-              <p id="user-email-info"></p>
+              <span id="user-email-span" class="glyphicon glyphicon-remove form-control-feedback error-icon-hidden"></span>
+              <p id="user-email-info" class="text-danger"></p>
             </div>
           </div>
           

@@ -1,4 +1,5 @@
 $(function() {
+  
   var user = null;
 
   $('#user-form').submit(function(event) {
@@ -16,7 +17,7 @@ $(function() {
     var conf_pass = document.getElementById('user-password-conf').value
 
     if (!validatePassword(pass, conf_pass)) {
-      
+
       return false;
     }
 
@@ -51,10 +52,28 @@ $(function() {
       }
       console.log(json.user);
     })
-    .fail(function(json) {
+    .fail(function(jqxhr) {
       // figure out what went wrong
-
-      console.log(json);
+      var err = jqxhr.responseJSON.error;
+      switch (err.name) {
+        case 'MongoError': {
+          if (err.code == 11000) { // duplicate email
+            // add styles to email div and show glyph
+            $('#user-email-div').addClass('has-error');
+            $('#user-email-span').removeClass('error-icon-hidden');
+            $('#user-email-info').text('Email already in use');
+          }
+          break;
+        }
+        case 'NotFoundError': {
+          // need to alert the user that the email/id wasn't found
+        }
+        default: {
+          console.log('something else went wrong');
+          console.error(err);
+        }
+      }
+      // console.log(jqxhr.responseJSON.error);
     });
   });
 
@@ -66,7 +85,7 @@ $(function() {
     // do some validations here
 
     var form_data = form.serialize();
-
+    console.log(form_data);
     // make the call
     $.ajax({
       type: 'POST',
@@ -74,11 +93,11 @@ $(function() {
       data: form_data
     })
     .done(function(json) {
-      $('#parent-form').hide();
+      $('#parent-registration-div').hide();
       $('#registration-success-div').show();
     })
-    .fail(function(json) {
-
+    .fail(function(jqxhr) {
+      console.log(jqxhr.responseJSON);
     });
   });
 

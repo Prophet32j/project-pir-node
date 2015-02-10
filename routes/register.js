@@ -57,7 +57,7 @@ router.route('/:id')
   .post(function(req, res, next) {
     switch (req.user.type) {
       case 'p': {
-        Parent.create(req.data, function(err, doc) {
+        Parent.create(req.body, function(err, doc) {
           if (err) {
             err.status = 500;
             return next(err);
