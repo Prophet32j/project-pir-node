@@ -1,22 +1,17 @@
-var fs = require('fs');
+var express = require('express');
+var router = express.Router();
 
-module.exports = function(app) {
-  mountDirectory(__dirname, '', app);
-}
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Home' });
+});
 
-function mountDirectory(directory, root, app) {
-  fs.readdirSync(directory).forEach(function(file) {
-    var parts = file.split('.');
-    var moduleName = parts[0];
-    if (moduleName !== 'index') { 
-      var path = root + '/' + moduleName;
-      // console.log('path: ' + path);
-      // console.log('directory: ' + directory);
-      if (parts.length < 2) // it's a directory
-        mountDirectory(directory + '/' + moduleName, path, app);
-      else {
-        app.use(path, require('.' + path));
-      }
-    }
-  });
-}
+router.get('/about', function(req, res, next) {
+  res.render('about', { title: 'About' });
+});
+
+router.get('/contact', function(req, res, next) {
+  res.render('contact', { title: 'Contact' });
+});
+
+module.exports = router;

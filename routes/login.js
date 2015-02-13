@@ -5,6 +5,9 @@ var models = require('./../models'),
     User = models.user;
 
 router.route('/')
+  .get(function(req, res, next) {
+    res.render('login', { title: 'Sign-in' });
+  })
   .post(function(req, res, next) {
     var email = req.body.email;
     var password = req.body.password;

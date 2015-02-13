@@ -8,6 +8,9 @@ var Mailer = require('./../mailer');
 var errors = require('./../errors');
 
 router.route('/')
+  .get(function(req, res, next) {
+    res.render('register', { title: 'Register' });
+  })
   .post(function(req, res, next) {
     var data = req.body;
 
