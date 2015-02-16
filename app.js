@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // application routes
 // secure all API routes with tokens
-app.use('/api', authjwt(config.jwt_secret));
+app.use('/api', authjwt(config.jwt_secret).unless({ path: /\/api\/users\/exists/i }));
 
 
 app.use('/', require('./routes'));

@@ -1,6 +1,7 @@
 var jwt = require('jsonwebtoken');
 var errors = require('./../errors'),
     UnauthorizedError = errors.UnauthorizedError;
+var unless = require('express-unless');
     
 var client = require('./../bin/redis-client')();
 
@@ -43,6 +44,8 @@ module.exports = function(secret) {
       });
     });
   };
+
+  middleware.unless = unless;
 
   return middleware;
 };
