@@ -79,10 +79,10 @@ router.param('id', function(req, res, next, id) {
 });
 
 router.route('/:id')
-  .get(function(req, res) {
+  .get(function(req, res, next) {
     res.json({ user: req.user });
   })
-  .put(function(req, res) {
+  .put(function(req, res, next) {
     User.findByIdAndUpdate(req.user._id, req.body, function(err, doc, numAffected) {
       if (err) {
         err.status = 400;
@@ -92,7 +92,7 @@ router.route('/:id')
       res.status(204).json({});
     });
   })
-  .delete(function(req, res) {
+  .delete(function(req, res, next) {
     req.user.remove(function(err) {
       if (err) {
         err.status = 500;
@@ -102,6 +102,10 @@ router.route('/:id')
       res.status(204).json({});
     });
   });
+
+router.get('/exists/:id', function(req, res, next) {
+  res.json({ status: true });
+});
 
 function parseQuery(query) {
   var conditions = {};
