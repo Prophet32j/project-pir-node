@@ -8,15 +8,13 @@ $(function() {
   $('#user-email').blur(function() {
     var email = $(this).val();
     if (email) {
-      if (validateEmail(email)) {
-        $('#user-email-div').addClass('has-error');
-        $('#user-email-span').removeClass('error-icon-hidden');
-        $('#user-email-info').text('Email already in use');
-      } else {
-        $('#user-email-div').removeClass('has-error');
-        $('#user-email-span').addClass('error-icon-hidden');
-        $('#user-email-info').text('');
-      }
+      emailExists(email, function(exists) {
+        if (exists) {
+          addErrorOnEmail('Email already in use');
+        } else {
+          removeErrorOnEmail();
+        }
+      });
     }
   });
 
@@ -40,7 +38,7 @@ $(function() {
     var password = $('#user-password').val();
     var password_conf = $('#user-password-conf').val();
 
-    if (validateEmail(email) || !validatePassword(password, password_conf)) {
+    if (!validatePassword(password, password_conf)) {
       return false;
     }
 
@@ -86,16 +84,7 @@ $(function() {
     var first_name = $('#first-name').val();
     var last_name = $('#last-name').val();
     var phone = $('#phone').val();
-
-    // validate they aren't blank
-    if (!first_name) {
-
-      return false;
-    } else if (!last_name) {
-
-      return false;
-    } else if (!phone) {
-
+    if (!validateBasicInfo(first_name, last_name, phone)) {
       return false;
     }
 
@@ -113,16 +102,7 @@ $(function() {
     var first_name = $('#first-name').val();
     var last_name = $('#last-name').val();
     var phone = $('#phone').val();
-
-    // validate they aren't blank
-    if (!first_name) {
-
-      return false;
-    } else if (!last_name) {
-
-      return false;
-    } else if (!phone) {
-
+    if (!validateBasicInfo(first_name, last_name, phone)) {
       return false;
     }
 
@@ -134,6 +114,17 @@ $(function() {
     // make the POST calls to register user and parent
     var json = registerUser(user, function(err, doc) {
       if (err) {
+        // figure out what to display
+        switch(err.name) {
+          case 'MongoError': {
+            if (err.code == 11000) {
+              addErrorOnEmail();
+              $('#step-1').removeClass('hidden');
+              $('#step-3').addClass('hidden');
+              break;
+            }
+          }
+        }
         return false;
       }
       registerAccount(doc._id, parent, function(err, account) {
@@ -145,30 +136,6 @@ $(function() {
       });
     });
   });
-  //   .fail(function(jqxhr) {
-  //     // figure out what went wrong
-  //     var err = jqxhr.responseJSON.error;
-  //     switch (err.name) {
-  //       case 'MongoError': {
-  //         if (err.code == 11000) { // duplicate email
-  //           // add styles to email div and show glyph
-  //           $('#user-email-div').addClass('has-error');
-  //           $('#user-email-span').removeClass('error-icon-hidden');
-  //           $('#user-email-info').text('Email already in use');
-  //         }
-  //         break;
-  //       }
-  //       case 'NotFoundError': {
-  //         // need to alert the user that the email/id wasn't found
-  //       }
-  //       default: {
-  //         console.log('something else went wrong');
-  //         console.error(err);
-  //       }
-  //     }
-  //     // console.log(jqxhr.responseJSON.error);
-  //   });
-  // });
   
   // register back button clicks
   $('#back-2').click(function() {
@@ -193,26 +160,26 @@ function validateAccountType(type) {
   return type === 'p' || type === 'v';
 }
 
-function validateEmail(email) {
+function emailExists(email, callback) {
   var uri = "/api/users/exists/";
   var encoded = uri + encodeURIComponent(email)
-  console.log(encoded);
+
   $.ajax({
     type: 'GET',
     url: encoded
   })
   .done(function(json) {
-    return true;
+    return callback(true);
   })
   .fail(function(jqXHR) {
-    return false;
+    return callback(false);
   });
 }
 
 function registerUser(data, callback) {
   $.ajax({
     type: 'POST',
-    url: '/register',
+    url: '/api/register',
     data: data
   })
   .done(function(json) {
@@ -226,7 +193,7 @@ function registerUser(data, callback) {
 function registerAccount(user_id, account, callback) {
   $.ajax({
     type: 'POST',
-    url: '/register/' + user_id,
+    url: '/api/register/' + user_id,
     data: account
   })
   .done(function(json) {
@@ -235,4 +202,41 @@ function registerAccount(user_id, account, callback) {
   .fail(function(jqxhr) {
     return callback(jqxhr.responseJSON.error);
   });
+}
+
+function addErrorOnEmail(text) {
+  $('#user-email-div').addClass('has-error');
+  $('#user-email-span').removeClass('error-icon-hidden');
+  $('#user-email-info').text(text);
+}
+
+function removeErrorOnEmail() {
+  $('#user-email-div').removeClass('has-error');
+  $('#user-email-span').addClass('error-icon-hidden');
+  $('#user-email-info').text('');
+}
+
+function validateBasicInfo(first_name, last_name, phone) {
+
+  // validate they aren't blank
+  var flag = true;
+  if (!first_name) {
+    $('#first-name-div').addClass('has-error');
+    $('#first-name-span').removeClass('error-icon-hidden');
+    $('#first-name-info').text('Please enter a first name');
+    flag = false;
+  }
+  if (!last_name) {
+    $('#last-name-div').addClass('has-error');
+    $('#last-name-span').removeClass('error-icon-hidden');
+    $('#last-name-info').text('Please enter a last name');
+    flag = false;
+  }
+  if (!phone) {
+    $('#phone-div').addClass('has-error');
+    $('#phone-span').removeClass('error-icon-hidden');
+    $('#phone-info').text('Please enter a phone number');
+    flag = false;
+  }
+  return flag;
 }

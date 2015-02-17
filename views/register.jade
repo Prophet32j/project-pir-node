@@ -66,20 +66,20 @@ block content
         #step-3.hidden
           h4 Basic Information
           #first-name-div.form-group.has-feedback
-            label(for='first-name') First name
+            label.control-label(for='first-name') First name
             input#first-name.form-control(name='first_name' placeholder='First Name')
             span#first-name-span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#first-name-info
+            p#first-name-info.text-danger
           #last-name-div.form-group.has-feedback
-            label(for='last-name') Last name
+            label.control-label(for='last-name') Last name
             input#last-name.form-control(name='last_name' placeholder='Last Name')
             span#last-name-span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#last-name-info
+            p#last-name-info.text-danger
           #phone-div.form-group.has-feedback
-            label(for='phone') Phone number
+            label.control-label(for='phone') Phone number
             input#phone.form-control(name='phone' type='tel' data-mask='999-999-9999' placeholder='Phone Number')
             span#phone-span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#phone-info
+            p#phone-info.text-danger
           .form-group
             button#next-3.btn.btn-primary.pull-right.hidden Next
             button#done-1.btn.btn-primary.pull-right.hidden Done
@@ -87,12 +87,12 @@ block content
         #step-4.hidden
           h4 Volunteer Information
           .form-group.has-feedback
-            label(for='volunteer-affiliation') What college are you attending?
+            label.control-label(for='volunteer-affiliation') What college are you attending?
             input#volunteer-affiliation.form-control(name='affiliation' placeholder='College')
             span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#volunteer-affiliation-info
+            p#volunteer-affiliation-info.text-danger
           .form-group.has-feedback
-            label What is your gender?
+            label.control-label What is your gender?
             <br>
             label.radio-inline
               input#gender-female(name='gender' type='radio' value='f')
@@ -101,9 +101,9 @@ block content
               input#gender-male(name='gender' type='radio' value='m')
               | Male
             span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#volunteer-gender-info
+            p#volunteer-gender-info.text-danger
           .form-group
-            label Would you like to be paired with two children?
+            label.control-label Would you like to be paired with two children?
             <br>
             label.radio-inline
               input#two-children-yes(name='two_readers' type='radio' value='true')
@@ -112,7 +112,7 @@ block content
               input#two-children-no(name='two_readers' type='radio' value='false')
               | No
           .form-group
-            label Are you special education?
+            label.control-label Are you special education?
             <br>
             label.radio-inline
               input#special-education-yes(name='special_ed' type='radio' value='true')
@@ -121,7 +121,7 @@ block content
               input#special_education-no(name='special_ed' type='radio' value='false')
               | No
           .form-group
-            label Are you language education?
+            label.control-label Are you language education?
             <br>
             label.radio-inline
               input#language-education-yes(name='language_ed' type='radio' value='true')
@@ -130,10 +130,10 @@ block content
               input#language_education-no(name='language_ed' type='radio' value='false')
               | No
           .form-group.has-feedback
-            label(for='volunteer-about-me') Tell us about yourself
+            label.control-label(for='volunteer-about-me') Tell us about yourself
             textarea#volunteer-about-me.form-control(name='about_me' rows='4')
             span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#volunteer-about-me-info
+            p#volunteer-about-me-info.text-danger
           .form-group
             button#done-2.btn.btn-primary.pull-right Done
             button#back-4.btn.btn-primary.pull-right Back
@@ -142,5 +142,5 @@ block content
         h4 You're registered!
         p.
           Thank you for registering for the program.<br>
-          Please check your email for your verification email.<br>
+          Please check for your verification email.<br>
           You will not be allowed to log in until you have verified your email address.
