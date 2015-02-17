@@ -1,45 +1,41 @@
 var express = require('express'),
     router = express.Router();
-var models = require('./../models'),
+var models = require('./../../models'),
     User = models.user,
     Parent = models.parent,
     Volunteer = models.volunteer;
-var Mailer = require('./../mailer');
-var errors = require('./../errors');
+var Mailer = require('./../../mailer');
+var errors = require('./../../errors');
 
-router.route('/')
-  .get(function(req, res, next) {
-    res.render('register', { title: 'Register' });
-  })
-  .post(function(req, res, next) {
-    var data = req.body;
+router.post('/', function(req, res, next) {
+  var data = req.body;
 
-    User.register(data, function(err, doc, uid) {
+  User.register(data, function(err, doc, uid) {
+    if (err) {
+      err.status = 400;
+      return next(err);
+    }
+
+    // send email to confirm email address
+    var message = {
+      to: [{ email: doc.email }],
+      subject: 'Confirm Your Email Address',
+    }
+    var email_data = {
+      "url": req.hostname + '/verify?key=' + uid
+    }
+
+    var mailer = new Mailer();
+
+    mailer.sendEmail('email-confirmation', email_data, message, function(err, emails) {
       if (err) {
-        err.status = 400;
-        return next(err);
+        console.err('Mandrill API Error: ', err.stack);
       }
-
-      // send email to confirm email address
-      var message = {
-        to: [{ email: doc.email }],
-        subject: 'Confirm Your Email Address',
-      }
-      var email_data = {
-        "url": req.hostname + '/verify?key=' + uid
-      }
-
-      var mailer = new Mailer();
-
-      mailer.sendEmail('email-confirmation', email_data, message, function(err, emails) {
-        if (err) {
-          console.err('Mandrill API Error: ', err.stack);
-        }
-      });
-
-      res.status(201).json({ user: doc });
     });
+
+    res.status(201).json({ user: doc });
   });
+});
 
 router.param('id', function(req, res, next, id) {
   User.findById(id, function(err, doc) {

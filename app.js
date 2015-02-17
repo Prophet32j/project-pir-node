@@ -26,12 +26,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // application routes
 // secure all API routes with tokens
-app.use('/api', authjwt(config.jwt_secret).unless({ path: /\/api\/users\/exists/i }));
+var allows = [
+  /\/api\/users\/exists/i,
+  /\/api\/register/i
+];
+app.use('/api', authjwt(config.jwt_secret).unless({ path: allows }));
 
 
 app.use('/', require('./routes'));
 app.use('/login', require('./routes/login'));
-app.use('/register', require('./routes/register'));
 app.use('/verify', require('./routes/verify'));
 
 

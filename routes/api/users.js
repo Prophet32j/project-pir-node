@@ -104,7 +104,7 @@ router.route('/:id')
   });
 
 router.get('/exists/:id', function(req, res, next) {
-  res.json({ status: true });
+  res.status(204).json({});
 });
 
 function parseQuery(query) {
