@@ -12,7 +12,7 @@ router.post('/', function(req, res, next) {
 
   User.register(data, function(err, doc, uid) {
     if (err) {
-      err.status = 400;
+      err.status = err.status || 400;
       return next(err);
     }
 
@@ -22,14 +22,14 @@ router.post('/', function(req, res, next) {
       subject: 'Confirm Your Email Address',
     }
     var email_data = {
-      "url": req.hostname + '/verify?key=' + uid
+      "url": req.hostname + '/verify?key=' + uid + '&email=' + doc.email
     }
 
     var mailer = new Mailer();
 
     mailer.sendEmail('email-confirmation', email_data, message, function(err, emails) {
       if (err) {
-        console.err('Mandrill API Error: ', err.stack);
+        console.error('Mandrill API Error: ', err.stack);
       }
     });
 

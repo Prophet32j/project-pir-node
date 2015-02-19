@@ -124,10 +124,8 @@ schema.statics.logout = function(token, callback) {
 schema.statics.register = function(user_data, callback) {
   // validate type
   var type = user_data.type;
-  if (!type || !(type === 'p' || type === 'v')) {
-    var err = new Error('invalid User type');
-    err.status = 400;
-    return callback(err);
+  if (!type || !/[pv]/i.test(type)) {
+    return callback(new errors.InvalidRequestError('invalid_user_type', { message: 'User type is invalid' }));
   }
 
 
@@ -138,7 +136,7 @@ schema.statics.register = function(user_data, callback) {
     }
 
     var uid = uuid.v4();
-    redisClient.hset('uuid', uid, doc.id, function(err, result) {
+    redisClient.hset('activations', doc.email, uid, function(err, result) {
       if (err) {
         err.status = 500;
         return callback(err);
@@ -154,17 +152,23 @@ schema.statics.register = function(user_data, callback) {
   });
 }
 
-schema.statics.activate = function(uid, callback) {
-  redisClient.hget('uuid', uid, function(err, id) {
+schema.statics.activate = function(email, uid, callback) {
+  redisClient.hget('activations', email, function(err, uuid) {
     if (err) {
       err.status = 500;
       return callback(err);
     }
-    if (!id) {
-      return callback(new errors.NotFoundError('uid_not_found', { message: 'Activation Key not found' }));
+    if (!uuid) {
+      return callback(new errors.NotFoundError('email_not_found', { message: 'Email or Activation Key not found' }));
     }
+    // make sure keys match
+    if (uid !== uuid) {
+      return callback (new errors.UnauthorizedError('uid_mismatch', { message: 'Activation keys do not match' }));
+    }
+    redisClient.hdel('activations', email);
 
-    mongoose.model('User').findById(id, function(err, doc) {
+    // good to go, activate the user
+    mongoose.model('User').findByEmail(email, function(err, doc) {
       if (err) {
         err.status = 500;
         return callback(err);
@@ -174,7 +178,6 @@ schema.statics.activate = function(uid, callback) {
       }
 
       doc.activated = true;
-      redisClient.hdel('uuid', uid);
       doc.save(callback);
     });
   });
@@ -191,6 +194,9 @@ schema.methods.verifyPassword = function(password, callback) {
 
 // middleware hooks
 
+/*
+ * hash password before saving
+ */
 schema.pre('save', function(next) {
   if (!this.isModified('password')) return next();
 
@@ -206,6 +212,18 @@ schema.pre('save', function(next) {
       next();
     });
   });
+});
+
+/*
+ * validate that user type is correct
+ */
+schema.pre('save', function(next) {
+  if (!this.isModified('type')) return next();
+
+  if (!/[afpv]/i.test(this.type)) {
+    return next(new errors.InvalidRequestError('invalid_user_type', { message: 'User type is invalid '}));
+  }
+  next();
 });
 
 /*
