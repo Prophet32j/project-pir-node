@@ -18,4 +18,8 @@ router.get('/register', function(req, res, next) {
     res.render('register', { title: 'Register' });
 });
 
+router.get('/forgot-password', function(req, res, next) {
+  res.render('forgot-password', { title: 'Forgot Password' });
+});
+
 module.exports = router;
