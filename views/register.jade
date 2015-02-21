@@ -23,15 +23,14 @@ block content
         .step-4
           span Step 4
     .row
-      #step-contents.col-md-6.well
+      #step-contents.col-md-6.col-xs-12.well
         #step-1
           h4 User Information
           #user-email-div.form-group.has-feedback
             label.control-label(for='user-email') Email address
-            div
-              input#user-email.form-control(type='email' name='email' placeholder='Email address' autofocus)
-              span#user-email-span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-              p#user-email-info.text-danger
+            input#user-email.form-control(type='email' name='email' placeholder='Email address' autofocus)
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
           #user-password-div.has-feedback
             .form-group.has-feedback
               label.control-label(for='user-password') Password
@@ -52,14 +51,14 @@ block content
             label Are you a parent or volunteer?
             .radio
               label
-                input#user-type-parent(name='type' type='radio' value='p')
+                input(name='type' type='radio' value='p')
                 | Parent
             .radio
               label
-                input#user-type-volunteer(name='type' type='radio' value='v')
+                input(name='type' type='radio' value='v')
                 | Volunteer
-            span#user-type-span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#user-type-info.text-danger
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
           .form-group
             button#next-2.btn.btn-primary.pull-right Next
             button#back-2.btn.btn-primary.pull-right Back
@@ -68,72 +67,72 @@ block content
           #first-name-div.form-group.has-feedback
             label.control-label(for='first-name') First name
             input#first-name.form-control(name='first_name' placeholder='First Name')
-            span#first-name-span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#first-name-info.text-danger
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
           #last-name-div.form-group.has-feedback
             label.control-label(for='last-name') Last name
             input#last-name.form-control(name='last_name' placeholder='Last Name')
-            span#last-name-span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#last-name-info.text-danger
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
           #phone-div.form-group.has-feedback
             label.control-label(for='phone') Phone number
             input#phone.form-control(name='phone' type='tel' data-mask='999-999-9999' placeholder='Phone Number')
-            span#phone-span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#phone-info.text-danger
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
           .form-group
             button#next-3.btn.btn-primary.pull-right.hidden Next
             button#done-1.btn.btn-primary.pull-right.hidden Done
             button#back-3.btn.btn-primary.pull-right Back
         #step-4.hidden
           h4 Volunteer Information
-          .form-group.has-feedback
+          #volunteer-affiliation-div.form-group.has-feedback
             label.control-label(for='volunteer-affiliation') What college are you attending?
             input#volunteer-affiliation.form-control(name='affiliation' placeholder='College')
             span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#volunteer-affiliation-info.text-danger
-          .form-group.has-feedback
+            p.text-danger
+          #volunteer-gender-div.form-group.has-feedback
             label.control-label What is your gender?
             <br>
             label.radio-inline
-              input#gender-female(name='gender' type='radio' value='f')
+              input(name='gender' type='radio' value='f')
               | Female
             label.radio-inline
-              input#gender-male(name='gender' type='radio' value='m')
+              input(name='gender' type='radio' value='m')
               | Male
             span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#volunteer-gender-info.text-danger
+            p.text-danger
           .form-group
             label.control-label Would you like to be paired with two children?
             <br>
             label.radio-inline
-              input#two-children-yes(name='two_readers' type='radio' value='true')
+              input(name='two_readers' type='radio' value='true')
               | Yes
             label.radio-inline
-              input#two-children-no(name='two_readers' type='radio' value='false')
+              input(name='two_readers' type='radio' value='false')
               | No
           .form-group
             label.control-label Are you special education?
             <br>
             label.radio-inline
-              input#special-education-yes(name='special_ed' type='radio' value='true')
+              input(name='special_ed' type='radio' value='true')
               | Yes
             label.radio-inline
-              input#special_education-no(name='special_ed' type='radio' value='false')
+              input(name='special_ed' type='radio' value='false')
               | No
           .form-group
             label.control-label Are you language education?
             <br>
             label.radio-inline
-              input#language-education-yes(name='language_ed' type='radio' value='true')
+              input(name='language_ed' type='radio' value='true')
               | Yes
             label.radio-inline
-              input#language_education-no(name='language_ed' type='radio' value='false')
+              input(name='language_ed' type='radio' value='false')
               | No
-          .form-group.has-feedback
+          #volunteer-about-me-div.form-group.has-feedback
             label.control-label(for='volunteer-about-me') Tell us about yourself
             textarea#volunteer-about-me.form-control(name='about_me' rows='4')
             span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
-            p#volunteer-about-me-info.text-danger
+            p.text-danger
           .form-group
             button#done-2.btn.btn-primary.pull-right Done
             button#back-4.btn.btn-primary.pull-right Back

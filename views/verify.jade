@@ -6,9 +6,9 @@ block append stylesheets
   link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css')
 
 block content
-  .container
+  .container-fluid
     .row
-      .col-lg-6
+      .col-sm-6.col-xs-12
         h3 Email Activation
         br
         if status == 'error'
@@ -26,3 +26,5 @@ block content
           button#btn-submit.btn.btn-primary Submit
         else
           h4 Success!
+          p.
+            Your account has been successfully activated! Please sign into your account to continue using the program.

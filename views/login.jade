@@ -4,20 +4,21 @@ block append scripts
   script(src='javascripts/login.js')
 
 block content
-  .container(style='margin: 10px')
+  .container-fluid(style='margin: 10px')
     .row
-      h3 User Sign-in
-    .col-sm-6.well
-      form(name='login')
-        .form-group
-          label(for='emailaddress') Email
-          input#emailaddress.form-control(type='email' name='email' placeholder='Email address' autofocus)
-        .form-group
-          label(for='password') Password
-          input#password.form-control(type='password' name='password' placeholder='Password')
-        p.
-          Forgot password? #[a(href='/reset-password') Click here]
-        .form-group
-          button.btn.btn-success(type='submit') Sign In
+      //- h3 User Sign-in
+      .col-md-6.col-xs-12.well
+        h3 Dashboard Log-in
         #login-error.alert.alert-danger(role='alert' style='display: none') 
-          | <strong>Error! </strong>Incorrect email or password
+          p <strong>Error! </strong>Incorrect email or password
+        form#login-form(name='login')
+          .form-group
+            label(for='emailaddress') Email
+            input#emailaddress.form-control(type='email' name='email' placeholder='Email address' autofocus)
+          .form-group
+            label(for='password') Password
+            input#password.form-control(type='password' name='password' placeholder='Password')
+          p.
+            Forgot password? #[a(href='/forgot-password') Click here]
+          .form-group
+            button.btn.btn-success(type='submit') Sign In
