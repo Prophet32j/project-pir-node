@@ -1,6 +1,6 @@
 $(function() {
 
-  $('form[name="login"]').on('submit', function(event) {
+  $('#login-form').submit(function(event) {
 
     var form = $(this);
     event.preventDefault();
