@@ -9,7 +9,7 @@ var errors = require('./../../errors');
 
 router.post('/', function(req, res, next) {
   var data = req.body;
-
+  console.log(data);
   User.register(data, function(err, doc, uid) {
     if (err) {
       err.status = err.status || 400;
@@ -54,11 +54,12 @@ router.param('id', function(req, res, next, id) {
 
 router.route('/:id')
   .post(function(req, res, next) {
+    console.log(req.body);
     switch (req.user.type) {
       case 'p': {
         Parent.create(req.body, function(err, doc) {
           if (err) {
-            err.status = 500;
+            err.status = 400;
             return next(err);
           }
 

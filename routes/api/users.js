@@ -19,7 +19,6 @@ router.route('/')
   })
   .post(function(req, res, next) {
     var data = req.body;
-
     User.register(data, function(err, doc, uid) {
       if (err) {
         err.status = 400;
@@ -32,7 +31,7 @@ router.route('/')
         subject: 'Confirm Your Email Address',
       }
       var email_data = {
-        "url": req.hostname + '/verify?key=' + uid
+        "url": req.hostname + '/verify?key=' + uid + '&email=' + encodeURIComponent(doc.email)
       }
 
       var mailer = new Mailer();

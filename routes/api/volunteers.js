@@ -8,7 +8,7 @@ var Mailer = require('./../../mailer');
 var router = express.Router();
 
 router.route('/')
-  .get(function(req, res) {
+  .get(function(req, res, next) {
     Volunteer.find(parseQuery(req.query), null, { lean: true }, function(err, docs) {
       if (err) {
         err.status = 500;
@@ -18,7 +18,7 @@ router.route('/')
       res.json({ volunteers: docs });
     });
   })
-  .post(function(req, res) {
+  .post(function(req, res, next) {
     var data = req.body;
     Volunteer.create(data, function(err, doc) {
       if (err) {
@@ -81,10 +81,10 @@ router.param('id', function(req, res, next, id) {
 });
 
 router.route('/:id')
-  .get(function(req, res) {
+  .get(function(req, res, next) {
     res.json({ volunteer: req.volunteer });
   })
-  .put(function(req, res) {
+  .put(function(req, res, next) {
     var json = req.body;
     Volunteer.findByIdAndUpdate(req.volunteer._id, json.volunteer, function(err, doc, numAffected) {
       if (err) {
@@ -95,7 +95,7 @@ router.route('/:id')
       res.sendStatus(204);
     });
   })
-  .delete(function(req, res) {
+  .delete(function(req, res, next) {
     req.volunteer.remove(function(err) {
       if (err) {
         err.status = 500;
@@ -106,7 +106,7 @@ router.route('/:id')
     });
   });
 
-router.get('/:id/pairs', function(req, res) {
+router.get('/:id/pairs', function(req, res, next) {
     Pair.find({ volunteer: req.volunteer._id }, null, { lean: true }, function(err, docs) {
       if (err) {
         err.status = 500;

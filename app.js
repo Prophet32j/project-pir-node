@@ -27,8 +27,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // application routes
 // secure all API routes with tokens
 var allows = [
-  /\/api\/users\/exists/i,
-  /\/api\/register/i
+  // /\/api\/users\/exists/i,
+  /\/api\/register/i,
+  /\/api\/users/i,
+  /\/api\/parents/i,
+  /\/api\/volunteers/i
 ];
 app.use('/api', authjwt(config.jwt_secret).unless({ path: allows }));
 

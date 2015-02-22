@@ -8,11 +8,11 @@ $(function() {
   $('#user-email').blur(function() {
     var email = $(this).val();
     if (email) {
-      emailExists(email, function(exists) {
+      validateEmail(email, function(exists) {
         if (exists) {
-          addErrorOnEmail('Email already in use');
+          displayFormError('user-email-div', 'Email already in use');
         } else {
-          removeErrorOnEmail();
+          hideFormError('user-email-div');
         }
       });
     }
@@ -23,13 +23,10 @@ $(function() {
     password = $('#user-password').val();
     confPass = $(this).val();
     if (!validatePassword(password, confPass)) {
-      $('#user-password-div').addClass('has-error');
-      $('.user-password-span').removeClass('error-icon-hidden');
-      $('#user-password-info').text('Passwords do not match');
+      displayFormError('user-password-div', 'Password do not match');
+      return false;
     } else {
-      $('#user-password-div').removeClass('has-error');
-      $('.user-password-span').addClass('error-icon-hidden');
-      $('#user-password-info').text('');
+      hideFormError('user-password-div');
     }
   });
 
@@ -42,27 +39,32 @@ $(function() {
       return false;
     }
 
-    // everything checks out
-    user.email = email;
-    user.password = password;
+    return validateEmail(email, function(exists) {
+      if (exists) {
+        displayFormError('user-email-div', 'Email already exists');
+        return false;
+      }
+      hideFormError('user-email-div');
 
-    // move to step 2
-    $('#step-1').addClass('hidden');
-    $('#step-2').removeClass('hidden');
+      // everything checks out
+      user.email = email;
+      user.password = password;
+
+      // move to step 2
+      $('#step-1').addClass('hidden');
+      $('#step-2').removeClass('hidden');
+      return true;
+    });
   });
 
   $('#next-2').click(function() {
     var type = $('input[name=type]:checked').val();
     // make sure something is selected
     if(!type) {
-      $('#user-type-div').addClass('has-error');
-      $('#user-type-span').removeClass('error-icon-hidden');
-      $('#user-type-info').text('Please select your account type');
+      displayFormError('user-type-div', 'Please select your account type');
       return false;
     } else {
-      $('#user-type-div').removeClass('has-error');
-      $('#user-type-span').addClass('error-icon-hidden');
-      $('#user-type-info').text('');
+      hideFormError('user-type-div');
     }
     user['type'] = type;
 
@@ -112,27 +114,55 @@ $(function() {
     parent.phone = phone;
 
     // make the POST calls to register user and parent
-    var json = registerUser(user, function(err, doc) {
+    registerUser(user, function(err, doc) {
       if (err) {
-        // figure out what to display
-        switch(err.name) {
-          case 'MongoError': {
-            if (err.code == 11000) {
-              addErrorOnEmail();
-              $('#step-1').removeClass('hidden');
-              $('#step-3').addClass('hidden');
-              break;
-            }
-          }
-        }
+        displayUserError(err);
         return false;
       }
-      registerAccount(doc._id, parent, function(err, account) {
+      registerAccount(doc.type, parent, function(err, account) {
         if (err) {
+          displayParentError(err);
           return false;
         }
-        $('#step-contents').addClass('hidden');
-        $('#registration-success').removeClass('hidden');
+        displaySuccess();
+      });
+    });
+  });
+
+  $('#done-2').click(function() {
+    var affiliation = $('#volunteer-affiliation').val();
+    var gender = $('input[name=gender]:checked').val();
+    var two_readers = $('input[name=two_reader]:checked').val();
+    var special_ed = $('input[name=special_ed]:checked').val();
+    var language_ed = $('input[name=language_ed]:checked').val();
+    var about_me = $('#volunteer-about-me').val();
+
+    if (!validateVolunteerInfo(affiliation, gender, about_me)) {
+      return false;
+    }
+
+    // everything checks out
+
+    volunteer.affiliation = affiliation;
+    volunteer.gender = gender;
+    volunteer.two_readers = (two_readers === 'true' ? true : false);
+    volunteer.special_ed = (special_ed === 'true' ? true : false)
+    volunteer.language_ed = (language_ed === 'true' ? true : false)
+    volunteer.about_me = about_me;
+
+    registerUser(user, function(err, doc) {
+      if (err) {
+        displayUserError(err);
+        $('#step-4').addClass('hidden');
+        $('#step-1').removeClass('hidden');
+        return false;
+      }
+      registerAccount(doc.type, volunteer, function(err, account) {
+        if (err) {
+          displayVolunteerError(err);
+          return false;
+        }
+        displaySuccess();
       });
     });
   });
@@ -160,7 +190,7 @@ function validateAccountType(type) {
   return type === 'p' || type === 'v';
 }
 
-function emailExists(email, callback) {
+function validateEmail(email, callback) {
   var uri = "/api/users/exists/";
   var encoded = uri + encodeURIComponent(email)
 
@@ -176,10 +206,51 @@ function emailExists(email, callback) {
   });
 }
 
+function displayUserError(err) {
+  // figure out what to display
+  switch(err.name) {
+    case 'MongoError': {
+      if (err.code == 11000) {
+        displayFormError('user-email-div', 'Email already taken');
+        $('#step-1').removeClass('hidden');
+        $('#step-3').addClass('hidden');
+        break;
+      }
+    }
+  }
+}
+
+function displayParentError(err) {
+
+}
+
+function displayVolunteerError(err) {
+  console.log(err);
+}
+
+function displayFormError(div_id, error_text) {
+  var id = '#' + div_id
+  $(id).addClass('has-error');
+  $(id + ' span').removeClass('error-icon-hidden');
+  $(id + ' p').text(error_text);
+}
+
+function hideFormError(div_id) {
+  var id = '#' + div_id;
+  $(id).removeClass('has-error');
+  $(id + ' span').addClass('error-icon-hidden');
+  $(id + ' p').text('');
+}
+
+function displaySuccess() {
+  $('#step-contents').addClass('hidden');
+  $('#registration-success').removeClass('hidden');
+}
+
 function registerUser(data, callback) {
   $.ajax({
     type: 'POST',
-    url: '/api/register',
+    url: '/api/users',
     data: data
   })
   .done(function(json) {
@@ -190,10 +261,10 @@ function registerUser(data, callback) {
   });
 }
 
-function registerAccount(user_id, account, callback) {
+function registerAccount(type, account, callback) {
   $.ajax({
     type: 'POST',
-    url: '/api/register/' + user_id,
+    url: (type === 'p' ? '/api/parents' : '/api/volunteers'),
     data: account
   })
   .done(function(json) {
@@ -204,39 +275,50 @@ function registerAccount(user_id, account, callback) {
   });
 }
 
-function addErrorOnEmail(text) {
-  $('#user-email-div').addClass('has-error');
-  $('#user-email-span').removeClass('error-icon-hidden');
-  $('#user-email-info').text(text);
-}
-
-function removeErrorOnEmail() {
-  $('#user-email-div').removeClass('has-error');
-  $('#user-email-span').addClass('error-icon-hidden');
-  $('#user-email-info').text('');
-}
-
 function validateBasicInfo(first_name, last_name, phone) {
 
   // validate they aren't blank
   var flag = true;
   if (!first_name) {
-    $('#first-name-div').addClass('has-error');
-    $('#first-name-span').removeClass('error-icon-hidden');
-    $('#first-name-info').text('Please enter a first name');
+    displayFormError('first-name-div', 'Please enter a first name');
     flag = false;
+  } else {
+    hideFormError('first-name-div');
   }
   if (!last_name) {
-    $('#last-name-div').addClass('has-error');
-    $('#last-name-span').removeClass('error-icon-hidden');
-    $('#last-name-info').text('Please enter a last name');
+    displayFormError('last-name-div', 'Please enter a last name');
     flag = false;
+  } else {
+    hideFormError('last-name-div');
   }
   if (!phone) {
-    $('#phone-div').addClass('has-error');
-    $('#phone-span').removeClass('error-icon-hidden');
-    $('#phone-info').text('Please enter a phone number');
+    displayFormError('phone-div', 'Please enter a phone number');
     flag = false;
+  } else {
+    hideFormError('phone-div');
+  }
+  return flag;
+}
+
+function validateVolunteerInfo(affiliation, gender, about_me) {
+  var flag = true;
+  if (!affiliation) {
+    displayFormError('volunteer-affiliation-div', 'Please enter your college');
+    flag = false;
+  } else {
+    hideFormError('volunteer-affiliation-div');
+  }
+  if (!gender) {
+    displayFormError('volunteer-gender-div', 'Please choose your gender');
+    flag = false;
+  } else {
+    hideFormError('volunteer-gender-div');
+  }
+  if (!about_me) {
+    displayFormError('volunteer-about-me-div', 'Please enter something about yourself');
+    flag = false;
+  } else {
+    hideFormError('volunteer-about-me-div');
   }
   return flag;
 }

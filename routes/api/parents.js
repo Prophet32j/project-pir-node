@@ -21,6 +21,7 @@ router.route('/')
   })
   .post(function(req, res, next) {
     var data = req.body;
+    // console.log('data: ' + data);
     Parent.create(data, function(err, doc) {
       if (err) {
         err.status = 500;
