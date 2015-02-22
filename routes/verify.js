@@ -28,6 +28,18 @@ router.route('/')
         return res.render('verify', { title: 'Email Verification', status: 'error', message: 'Key not found' });
       }
 
+      // let's send out a success email
+      var mailer = new Mailer();
+      var message = {
+        to: [{ email: email }],
+        subject: 'Email Address Activated'
+      }
+      mailer.sendEmail('email-confirmed', {}, message, function(err, emails) {
+        if (err) {
+          console.error('Mandrill API Error: ', err.stack);
+        }
+      });
+      
       res.render('verify', { title: 'Email Verification', status: 'success' });
     });
   })
