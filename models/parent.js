@@ -67,7 +67,7 @@ schema.statics.findAndRemove = function(id, callback) {
 // schema middleware hooks
 
 /*
- * middleware hook to check email exists
+ * middleware hook to verify that user email exists
  */
 schema.pre('save', function(next) {
   if (!this.isNew)
@@ -77,7 +77,7 @@ schema.pre('save', function(next) {
     if (err) 
       return next(err);
     if (!doc) 
-      return next(new errors.NotFoundError('email_not_found', { message: 'Email not found' }));
+      return next(new errors.InvalidRequestError('email_not_registered', { message: 'Email not registered' }));
 
     next();
   });

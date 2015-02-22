@@ -137,11 +137,14 @@ schema.statics.register = function(user_data, callback) {
 
     var uid = uuid.v4();
     redisClient.hset('activations', doc.email, uid, function(err, result) {
+      // need to handle errors and delete document
       if (err) {
+        doc.remove();
         err.status = 500;
         return callback(err);
       }
       if (!result) {
+        doc.remove();
         err = new Error('something happened saving to database. uuid: ' + uid);
         err.status = 500;
         return callback(err);
