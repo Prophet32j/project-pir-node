@@ -1,10 +1,9 @@
 var express = require('express'),
     app = express();
 var bodyParser = require('body-parser');
-var authjwt = require('./auth/auth-jwt');
 var path = require('path');
 var morgan = require('morgan');
-
+var api = require('./routes/api');
 var mongoose = require('mongoose');
 var config = require('./config/config.json');
 
@@ -24,42 +23,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-// application routes
-// secure all API routes with tokens
-var allows = [
-  // /\/api\/users\/exists/i,
-  /\/api\/register/i,
-  /\/api\/users/i,
-  /\/api\/parents/i,
-  /\/api\/volunteers/i
-];
-app.use('/api', authjwt(config.jwt_secret).unless({ path: allows }));
-
-
+// mount web pages
 app.use('/', require('./routes'));
 app.use('/login', require('./routes/login'));
 app.use('/verify', require('./routes/verify'));
 
 
 // mount API
-require('./routes/api')(app);
+app.use('/api', api);
 
 // error handlers
 handleErrors();
-app.use(handleApiErrors);
-
 
 module.exports = app;
 
 
-
-function handleApiErrors(err, req, res, next) {  
-  res.status(err.status || 500);
-  res.json({ error: err });
-}
-
 function handleErrors() {
-  var regex = /^\/api\//i;
 
   // catch 404 and forward to error handler
   app.use(function(req, res, next) {
@@ -72,9 +51,6 @@ function handleErrors() {
   // will print stacktrace
   if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
-      if (regex.test(req.path)) {
-        return next(err);
-      }
       res.status(err.status || 500);
       res.render('error', {
           message: err.message,
@@ -86,13 +62,10 @@ function handleErrors() {
   // production error handler
   // no stacktraces leaked to user
   app.use(function(err, req, res, next) {
-    if (regex.test(req.path)) {
-      return next(err);
-    }
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
       error: {}
     });
-});
+  });
 }
