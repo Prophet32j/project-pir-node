@@ -4,11 +4,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-  email: { type: String, unique: true, required: true },
-  password: { type: String, required: true, select: false },
-  created: { type: Date, default: Date.now },
-  last_login: { type: Date, default: null },
-  activated: { type: Boolean, default: false }
+  email: { type: String, index: { unique: true }, required: '{PATH} is required' },
+  first_name: { type: String, required: '{PATH} is required' },
+  last_name: { type: String, required: '{PATH} is required' },
+  phone: { type: String, required: '{PATH} is required' },
 });
 
 /*
@@ -18,6 +17,22 @@ var schema = new Schema({
  */   
 schema.statics.findByEmail = function(email, callback) {
   this.findOne({ email: email }, callback);
+}
+
+/*
+ * find User by email and remove the document.
+ * This method will fire any middleware hooks
+ * @param email of the User
+ * @param callback function(error, doc)
+ */
+schema.statics.findByEmailAndRemove = function(email, callback) {
+  this.findByEmail(email, function(err, doc) {
+    if (err || !doc) {
+      return callback(err);
+    }
+    
+    doc.remove(callback);
+  });
 }
 
 module.exports = mongoose.model('FrontDesk', schema);

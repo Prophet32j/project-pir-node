@@ -238,6 +238,10 @@ schema.pre('remove', function(next) {
       return mongoose.model('Parent').findAndRemove(this.email, next);
     case 'v':
       return mongoose.model('Volunteer').findAndRemove(this.email, next);
+    case 'a':
+      return mongoose.model('Admin').findAndRemove(this.email, next);
+    case 'f':
+      return mongoose.model('FrontDesk').findAndRemove(this.email, next);  
     default:
       next();
   }
