@@ -3,7 +3,7 @@ var express = require('express'),
 var bodyParser = require('body-parser');
 var path = require('path');
 var morgan = require('morgan');
-var api = require('./routes/api');
+var routes = require('./routes');
 var mongoose = require('mongoose');
 var config = require('./config/config.json');
 
@@ -24,13 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 // mount web pages
-app.use('/', require('./routes'));
-app.use('/login', require('./routes/login'));
-app.use('/verify', require('./routes/verify'));
-
-
-// mount API
-app.use('/api', api);
+app.use('/', routes);
 
 // error handlers
 handleErrors();
@@ -42,9 +36,9 @@ function handleErrors() {
 
   // catch 404 and forward to error handler
   app.use(function(req, res, next) {
-      var err = new Error('Not Found');
-      err.status = 404;
-      next(err);
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
   });
 
   // development error handler
@@ -53,8 +47,8 @@ function handleErrors() {
     app.use(function(err, req, res, next) {
       res.status(err.status || 500);
       res.render('error', {
-          message: err.message,
-          error: err
+        message: err.message,
+        error: err
       });
     });
   }
