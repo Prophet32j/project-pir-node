@@ -38,8 +38,8 @@ module.exports = function(secret) {
         
         if (!result)
           return next(new UnauthorizedError('invalid_token', { message: 'Token is invalid' }));
-
-        req['user'] = decoded;
+        
+        req['tokenPayload'] = decoded;
         next();
       });
     });
