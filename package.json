@@ -2,7 +2,7 @@
   "name": "project-pir-node",
   "version": "1.0.0",
   "description": "Node.js API server",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "start": "./src/server/bin/www",
     "test": "mocha tests/*"
