@@ -9,14 +9,10 @@ var errors = require('./../../errors');
 
 // secure routes with token-based authentication
 var allows = [
-  // /\/api\/users\/exists/i,
-  /\/api\/register/i,
-  /\/api\/users/i,
-  /\/api\/parents/i,
-  /\/api\/volunteers/i
+  /\/api\/users\/exists/i
 ];
 
-// api.use('/', authjwt(config.jwt_secret).unless({ path: allows }));
+api.use('/', authjwt(config.jwt_secret).unless({ path: allows }));
 // api.use('/', acl());
 
 fs.readdirSync(__dirname).forEach(function(file) {

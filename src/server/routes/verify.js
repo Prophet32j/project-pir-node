@@ -18,6 +18,7 @@ router.route('/')
     var email = req.query.email;
     User.activate(email, key, function(err, doc) {
       if (err) {
+        console.log(err);
         if (err.status == 500) {
           return next(err);
         } else {

@@ -6,7 +6,8 @@ router.route('/')
     res.render('forgot-password', { title: 'Forgot Password' });
   })
   .post(function(req, res, next) {
-
+    var data = req.body;
+    
   });
 
 module.exports = router;

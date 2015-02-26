@@ -4,7 +4,7 @@
   "description": "Node.js API server",
   "main": "app.js",
   "scripts": {
-    "start": "./bin/www",
+    "start": "./src/server/bin/www",
     "test": "mocha tests/*"
   },
   "repository": {

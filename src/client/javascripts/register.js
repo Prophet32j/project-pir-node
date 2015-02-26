@@ -114,18 +114,13 @@ $(function() {
     parent.phone = phone;
 
     // make the POST calls to register user and parent
-    registerUser(user, function(err, doc) {
+    register({ user: user, parent: parent }, function(err) {
       if (err) {
         displayUserError(err);
         return false;
       }
-      registerAccount(doc.type, parent, function(err, account) {
-        if (err) {
-          displayParentError(err);
-          return false;
-        }
-        displaySuccess();
-      });
+      
+      displaySuccess();
     });
   });
 
@@ -150,20 +145,15 @@ $(function() {
     volunteer.language_ed = (language_ed === 'true' ? true : false)
     volunteer.about_me = about_me;
 
-    registerUser(user, function(err, doc) {
+    register({ user: user, volunteer: volunteer }, function(err) {
       if (err) {
         displayUserError(err);
         $('#step-4').addClass('hidden');
         $('#step-1').removeClass('hidden');
         return false;
       }
-      registerAccount(doc.type, volunteer, function(err, account) {
-        if (err) {
-          displayVolunteerError(err);
-          return false;
-        }
-        displaySuccess();
-      });
+      
+      displaySuccess();
     });
   });
   
@@ -247,28 +237,14 @@ function displaySuccess() {
   $('#registration-success').removeClass('hidden');
 }
 
-function registerUser(data, callback) {
+function register(data, callback) {
   $.ajax({
     type: 'POST',
-    url: '/api/users',
+    url: '/register',
     data: data
   })
   .done(function(json) {
-    return callback(null, json.user);
-  })
-  .fail(function(jqxhr) {
-    return callback(jqxhr.responseJSON.error);
-  });
-}
-
-function registerAccount(type, account, callback) {
-  $.ajax({
-    type: 'POST',
-    url: (type === 'p' ? '/api/parents' : '/api/volunteers'),
-    data: account
-  })
-  .done(function(json) {
-    return callback(null, json);
+    return callback();
   })
   .fail(function(jqxhr) {
     return callback(jqxhr.responseJSON.error);

@@ -17,14 +17,19 @@ router.route('/')
     var user = data.user,
         account = data.parent || data.volunteer;
 
-    registerUser(user, function(err, doc) {
+    console.log('user: ', user);
+    console.log('account: ', account);
+
+    registerUser(user, req.hostname, function(err, doc) {
       if (err) {
+        console.log(err);
         return next(err);
       }
 
       // now we need to register the parent/volunteer
       registerAccount(doc.type, account, function(err, account) {
         if (err) {
+          console.log(err);
           doc.remove();
           return next(err);
         }
@@ -39,7 +44,7 @@ router.route('/')
 module.exports = router;
 
 
-function registerUser(user, callback) {
+function registerUser(user, hostname, callback) {
 
   User.register(user, function(err, doc, uid) {
     if (err) {
@@ -53,7 +58,7 @@ function registerUser(user, callback) {
       subject: 'Confirm Your Email Address',
     }
     var email_data = {
-      "url": req.hostname + '/verify?key=' + uid + '&email=' + encodeURIComponent(doc.email)
+      "url": hostname + '/verify?key=' + uid + '&email=' + encodeURIComponent(doc.email)
     }
 
     var mailer = new Mailer();
@@ -75,6 +80,7 @@ function registerAccount(type, account, callback) {
   if (type === 'p') {
     return registerParent(account, callback);
   } 
+  
   registerVolunteer(account, callback);
 
 }
@@ -85,7 +91,7 @@ function registerParent(parent, callback) {
   Parent.create(parent, function(err, doc) {
     if (err) {
       err.status = 400;
-      return next(err);
+      return callback(err);
     }
 
     var mailer = new Mailer();
@@ -103,6 +109,8 @@ function registerParent(parent, callback) {
         console.err('Mandrill API Error: ', err.stack);
       }
     });
+
+    callback(null, doc);
   });
 
 }
@@ -113,7 +121,7 @@ function registerVolunteer(volunteer, callback) {
   Volunteer.create(volunteer, function(err, doc) {
     if (err) {
       err.status = 400;
-      return next(err);
+      return callback(err);
     }
 
     // send email
@@ -134,6 +142,8 @@ function registerVolunteer(volunteer, callback) {
         console.err('Mandrill API Error: ', err.stack);
       }
     });
+
+    callback(null, doc);
   });
 
 }
