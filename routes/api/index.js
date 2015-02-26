@@ -3,7 +3,9 @@ var express = require('express'),
     
 var fs = require('fs');
 var authjwt = require('./../../auth/auth-jwt');
+// var acl = require('./../../auth/api-acl');
 var config = require('./../../config/config.json');
+var errors = require('./../../errors');
 
 // secure routes with token-based authentication
 var allows = [
@@ -14,7 +16,8 @@ var allows = [
   /\/api\/volunteers/i
 ];
 
-api.use('/', authjwt(config.jwt_secret).unless({ path: allows }));
+// api.use('/', authjwt(config.jwt_secret).unless({ path: allows }));
+// api.use('/', acl());
 
 fs.readdirSync(__dirname).forEach(function(file) {
   if (file !== 'index.js') {
@@ -29,7 +32,14 @@ api.on('mount', function(parent) {
 });
 
 
-// error handler for API
+// error handlers for API
+
+// catch 404 and forward to error handler
+api.use(function(req, res, next) {
+    var err = new errors.NotFoundError('resource_not_found', { message: 'Resource not found' });
+    next(err);
+});
+
 // development error handler
 // will print stacktrace
 if (api.get('env') === 'development') {
