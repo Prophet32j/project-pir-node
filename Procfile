@@ -1,1 +1,1 @@
-web: .src/server/bin/www
+web: ./src/server/bin/www
