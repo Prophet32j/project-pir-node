@@ -26,6 +26,9 @@ router.route('/')
         return next(err);
       }
 
+      // check to make sure account has associated email in data
+      account.email = account.email || doc.email;
+
       // now we need to register the parent/volunteer
       registerAccount(doc.type, account, function(err, account) {
         if (err) {
