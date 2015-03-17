@@ -19,6 +19,9 @@ var Mailer = function() { }
 Mailer.prototype.sendEmail = function(template, data, email, callback) {
   var mailer = this;
   loadTemplateAndCompile(template, data, function(err, html) {
+    if (err) {
+      return callback(err);
+    }
     var message = {
       to: email.to,
       from_email: (email.from && email.from.email) || email_config.system_email.email,
@@ -47,7 +50,7 @@ Mailer.prototype.sendEmail = function(template, data, email, callback) {
 }
 
 function _loadTemplate(templateName, callback) {
-  var filePath = path.resolve('mailer/templates', './' + templateName + '.hbs');
+  var filePath = path.resolve('src/server/mailer/templates', './' + templateName + '.hbs');
   fs.readFile(filePath, { encoding: 'utf-8' }, callback);
 }
 
