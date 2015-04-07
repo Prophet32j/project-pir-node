@@ -12,7 +12,7 @@ var allows = [
   /\/api\/users\/exists/i
 ];
 
-api.use('/', authjwt(config.jwt_secret).unless({ path: allows }));
+// api.use('/', authjwt(config.jwt_secret).unless({ path: allows }));
 // api.use('/', acl());
 
 fs.readdirSync(__dirname).forEach(function(file) {

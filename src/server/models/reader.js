@@ -3,21 +3,22 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 var errors = require('./../errors');
+var req_str = '{PATH} is required';
 
 var schema = new Schema({
-  parent: { type: Schema.Types.ObjectId, ref: 'Parent', required: '{PATH} is required' },
-  first_name: { type: String, required: '{PATH} is required' },
-  last_name: { type: String, required: '{PATH} is required' },
+  parent: { type: Schema.Types.ObjectId, ref: 'Parent', required: req_str },
+  first_name: { type: String, required: req_str },
+  last_name: { type: String, required: req_str },
   image: { type: String, default: 'default.png' },
   
-  gender: { type: String, required: '{PATH} is required' },
-  age: { type: Number, required: '{PATH} is required' },
-  grade: { type: String, required: '{PATH} is required' },
+  gender: { type: String, required: req_str },
+  age: { type: Number, required: req_str },
+  grade: { type: String, required: req_str },
   alt_phone: String,
   alt_parent: String,
   special_needs: { type: String, default: false },
   language_needs: { type: String, default: false },
-  about_me: { type: String, required: '{PATH} is required' },
+  about_me: { type: String, required: req_str },
   pair: { type: Schema.Types.ObjectId, ref: 'Pair' },
   
   availability: {},

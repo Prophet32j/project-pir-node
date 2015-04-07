@@ -1,18 +1,20 @@
-// Admin model will be used since we are getting rid of User model
+// Assistant model for doing non-administrative tasks
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var req_str = '{PATH} is required';
 
 var schema = new Schema({
-  email: { type: String, index: { unique: true }, required: '{PATH} is required' },
-  first_name: { type: String, required: '{PATH} is required' },
-  last_name: { type: String, required: '{PATH} is required' },
-  phone: { type: String, required: '{PATH} is required' },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: req_str },
+  email: { type: String, index: { unique: true }, required: req_str },
+  first_name: { type: String, required: req_str },
+  last_name: { type: String, required: req_str },
+  phone: { type: String, required: req_str },
 });
 
 /*
- * find Admin by email
- * @param email of the Admin
+ * find assistant by email
+ * @param email of the assistant
  * @param callback function(error, doc)
  */   
 schema.statics.findByEmail = function(email, callback) {
@@ -35,4 +37,4 @@ schema.statics.findByEmailAndRemove = function(email, callback) {
   });
 }
 
-module.exports = mongoose.model('Admin', schema);
+module.exports = mongoose.model('Assistant', schema);

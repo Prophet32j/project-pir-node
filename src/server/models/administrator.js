@@ -1,18 +1,19 @@
-// Front Desk model will be used since we are getting rid of User model
+// Admin model will be used since we are getting rid of User model
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var req_str = '{PATH} is required';
 
 var schema = new Schema({
-  email: { type: String, index: { unique: true }, required: '{PATH} is required' },
-  first_name: { type: String, required: '{PATH} is required' },
-  last_name: { type: String, required: '{PATH} is required' },
-  phone: { type: String, required: '{PATH} is required' },
+  email: { type: String, index: { unique: true }, required: req_str },
+  first_name: { type: String, required: req_str },
+  last_name: { type: String, required: req_str },
+  phone: { type: String, required: req_str },
 });
 
 /*
- * find FrontDesk by email
- * @param email of the FrontDesk
+ * find Admin by email
+ * @param email of the Admin
  * @param callback function(error, doc)
  */   
 schema.statics.findByEmail = function(email, callback) {
@@ -35,4 +36,4 @@ schema.statics.findByEmailAndRemove = function(email, callback) {
   });
 }
 
-module.exports = mongoose.model('FrontDesk', schema);
+module.exports = mongoose.model('Administrator', schema);
