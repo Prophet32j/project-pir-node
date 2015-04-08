@@ -1,5 +1,5 @@
 var unless = require('express-unless');
-var errors = require('./../errors');
+var errors = require('rm-errors');
 var _ = require('lodash');
 
 

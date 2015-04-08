@@ -6,12 +6,14 @@ var morgan = require('morgan');
 var routeHandler = require('./routes');
 var mongoose = require('mongoose');
 var config = require('./config/config.json');
+var cons = require('consolidate');
 
 // connect to Mongo and Mongoose
 mongoose.connect(process.env.MONGOLAB_URI || config.mongodb.url);
 
 // console.log(path.join(__dirname, 'src/server/views'));
-app.set('view engine', 'jade');
+app.engine('dust', cons.dust);
+app.set('view engine', 'dust');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(morgan('dev'));

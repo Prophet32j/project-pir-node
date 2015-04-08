@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken');
-var errors = require('./../errors'),
+var errors = require('rm-errors'),
     UnauthorizedError = errors.UnauthorizedError;
 var unless = require('express-unless');
     
