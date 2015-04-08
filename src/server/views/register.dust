@@ -1,0 +1,150 @@
+{>layout/}
+
+{<content}
+<h1>Register</h1>
+{/content}
+{! extends layout
+
+block append scripts
+  script(src='javascripts/register.js')
+  script(src='//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js')
+
+block append stylesheets
+  link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css')
+  link(rel='stylesheet' href='stylesheets/register.css')
+
+block content
+  .container(style='margin: 10px')
+    .row
+      h3 Account Registration
+    //- .row
+      .step-titles
+        .step-1
+          span Step 1
+        .step-2
+          span Step 2
+        .step-3
+          span Step 3
+        .step-4
+          span Step 4
+    .row
+      #step-contents.col-md-6.col-xs-12.well
+        #step-1
+          h4 User Information
+          #user-email-div.form-group.has-feedback
+            label.control-label(for='user-email') Email address
+            input#user-email.form-control(type='email' name='email' placeholder='Email address' autofocus)
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
+          #user-password-div.has-feedback
+            .form-group.has-feedback
+              label.control-label(for='user-password') Password
+              input#user-password.form-control(type='password' name='password' placeholder='Enter password')
+              span.user-password-span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+              //- p#user-password-info
+            .form-group.has-feedback
+              label.control-label(for='user-password-conf') Confirm password
+              input#user-password-conf.form-control(type='password' name='conf_password' placeholder='Confirm password')
+              span.user-password-span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+              //- p#user-password-conf-info
+            p#user-password-info.text-danger
+          .form-group
+            button#next-1.btn.btn-primary.pull-right Next
+        #step-2.hidden
+          h4 User Type
+          #user-type-div.form-group.has-feedback
+            label Are you a parent or volunteer?
+            .radio
+              label
+                input(name='type' type='radio' value='p')
+                | Parent
+            .radio
+              label
+                input(name='type' type='radio' value='v')
+                | Volunteer
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
+          .form-group
+            button#next-2.btn.btn-primary.pull-right Next
+            button#back-2.btn.btn-primary.pull-right Back
+        #step-3.hidden
+          h4 Basic Information
+          #first-name-div.form-group.has-feedback
+            label.control-label(for='first-name') First name
+            input#first-name.form-control(name='first_name' placeholder='First Name')
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
+          #last-name-div.form-group.has-feedback
+            label.control-label(for='last-name') Last name
+            input#last-name.form-control(name='last_name' placeholder='Last Name')
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
+          #phone-div.form-group.has-feedback
+            label.control-label(for='phone') Phone number
+            input#phone.form-control(name='phone' type='tel' data-mask='999-999-9999' placeholder='Phone Number')
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
+          .form-group
+            button#next-3.btn.btn-primary.pull-right.hidden Next
+            button#done-1.btn.btn-primary.pull-right.hidden Done
+            button#back-3.btn.btn-primary.pull-right Back
+        #step-4.hidden
+          h4 Volunteer Information
+          #volunteer-affiliation-div.form-group.has-feedback
+            label.control-label(for='volunteer-affiliation') What college are you attending?
+            input#volunteer-affiliation.form-control(name='affiliation' placeholder='College')
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
+          #volunteer-gender-div.form-group.has-feedback
+            label.control-label What is your gender?
+            <br>
+            label.radio-inline
+              input(name='gender' type='radio' value='f')
+              | Female
+            label.radio-inline
+              input(name='gender' type='radio' value='m')
+              | Male
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
+          .form-group
+            label.control-label Would you like to be paired with two children?
+            <br>
+            label.radio-inline
+              input(name='two_readers' type='radio' value='true')
+              | Yes
+            label.radio-inline
+              input(name='two_readers' type='radio' value='false')
+              | No
+          .form-group
+            label.control-label Are you special education?
+            <br>
+            label.radio-inline
+              input(name='special_ed' type='radio' value='true')
+              | Yes
+            label.radio-inline
+              input(name='special_ed' type='radio' value='false')
+              | No
+          .form-group
+            label.control-label Are you language education?
+            <br>
+            label.radio-inline
+              input(name='language_ed' type='radio' value='true')
+              | Yes
+            label.radio-inline
+              input(name='language_ed' type='radio' value='false')
+              | No
+          #volunteer-about-me-div.form-group.has-feedback
+            label.control-label(for='volunteer-about-me') Tell us about yourself
+            textarea#volunteer-about-me.form-control(name='about_me' rows='4')
+            span.glyphicon.glyphicon-remove.form-control-feedback.error-icon-hidden
+            p.text-danger
+          .form-group
+            button#done-2.btn.btn-primary.pull-right Done
+            button#back-4.btn.btn-primary.pull-right Back
+    .row
+      #registration-success.col-md-6.hidden
+        h4 You're registered!
+        p.
+          Thank you for registering for the program.<br>
+          Please check for your verification email.<br>
+          You will not be allowed to log in until you have verified your email address. !}

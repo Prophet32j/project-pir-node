@@ -1,0 +1,47 @@
+{>layout/}
+
+{<content}
+  <div class="container">
+  <div class="col-md-4 well">
+    <h3>Sign in</h3>
+    <form name="login-form">
+      <div class="input-group input-group-lg">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+        <input type="email" class="form-control" placeholder="Email address"> 
+      </div>
+      <br>
+      <div class="input-group input-group-lg">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+        <input type="password" class="form-control" placeholder="Password"> 
+      </div>
+      <br>
+      <button class="btn btn-primary btn-lg btn-block">Submit</button>
+    </form>
+  </div>
+  </div>
+{/content}
+{! extends layout
+
+block append scripts
+  script(src='javascripts/login.js')
+
+block content
+  .container-fluid(style='margin: 10px')
+    .row
+      //- h3 User Sign-in
+      .col-md-6.col-xs-12.well
+        h3 Dashboard Log-in
+        #login-error.alert.alert-danger(role='alert' style='display: none') 
+          p <strong>Error! </strong>Incorrect email or password
+        form#login-form(name='login')
+          .form-group
+            label(for='emailaddress') Email
+            input#emailaddress.form-control(type='email' name='email' placeholder='Email address' autofocus)
+          .form-group
+            label(for='password') Password
+            input#password.form-control(type='password' name='password' placeholder='Password')
+          p.
+            Forgot password? #[a(href='/forgot-password') Click here]
+          .form-group
+            button.btn.btn-success(type='submit') Sign In
+ !}
