@@ -1,11 +1,10 @@
 var express = require('express');
+var errors = require('rm-errors');
 
 var models = require('./../../models'),
     Pair = models.pair,
     Reader = models.reader,
     Volunteer = models.volunteer;
-var errors = require('./../../errors'),
-    NotFoundError = models.NotFoundError;
 var Mailer = require('./../../mailer');
 
 var router = express.Router();
@@ -63,7 +62,7 @@ router.param('id', function(req, res, next, id) {
       return next(err);
     }
     if (!doc) {
-      return next(new NotFoundError('id_not_found', { message: 'ID not found' }));
+      return next(new errors.NotFoundError('id_not_found', { message: 'ID not found' }));
     }
     
     req.pair = doc;

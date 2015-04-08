@@ -1,11 +1,11 @@
 var express = require('express'),
     api = express();
+var errors = require('rm-errors');
     
 var fs = require('fs');
 var authjwt = require('./../../auth/auth-jwt');
 // var acl = require('./../../auth/api-acl');
 var config = require('./../../config/config.json');
-var errors = require('./../../errors');
 
 // secure routes with token-based authentication
 var allows = [

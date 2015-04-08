@@ -1,10 +1,10 @@
 var express = require('express'),
     router = express.Router();
+var errors = require('rm-errors');
 var models = require('./../../models'),
     User = models.user;
 var Mailer = require('./../../mailer');
 var mailer_config = require('./../../mailer/config.json');
-var errors = require('./../../errors');
 
 router.route('/')
   .get(function(req, res, next) {

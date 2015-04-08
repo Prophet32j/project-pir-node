@@ -1,11 +1,11 @@
 var express = require('express'),
     router = express.Router();
+var errors = require('rm-errors');
 var models = require('./../../models'),
     Reader = models.reader,
     Parent = models.parent,
     Pair = models.pair;
 var Mailer = require('./../../mailer');
-var errors = require('./../../errors');
 
 router.route('/')
   .get(function(req, res) {

@@ -5,7 +5,7 @@ var models = require('./../models'),
     Parent = models.parent,
     Volunteer = models.volunteer;
 var Mailer = require('./../mailer');
-var errors = require('./../errors');
+var errors = require('rm-errors');
 
 
 router.route('/')
