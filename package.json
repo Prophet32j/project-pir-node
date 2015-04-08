@@ -20,7 +20,9 @@
   "dependencies": {
     "bcrypt": "^0.8.1",
     "body-parser": "^1.10.0",
+    "consolidate": "^0.12.1",
     "debug": "^2.1.1",
+    "dustjs-linkedin": "^2.6.2",
     "express": "^4.10.4",
     "express-subdomain": "^1.0.2",
     "express-unless": "^0.1.0",
@@ -36,7 +38,8 @@
     "node-uuid": "^1.4.2",
     "passport": "^0.2.1",
     "passport-http": "^0.2.2",
-    "redis": "^0.12.1"
+    "redis": "^0.12.1",
+    "rm-errors": "^1.0.1"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",

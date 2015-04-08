@@ -1,4 +1,5 @@
 var redis = require('redis');
+var config = require('./../config/config')
 
 module.exports = function() {
   var client;
@@ -7,7 +8,9 @@ module.exports = function() {
     client = redis.createClient(rtg.port, rtg.hostname);
     client.auth(rtg.auth.split(':')[1]);
   } else {
-    client = redis.createClient();
+    var rtg = require('url').parse(config.redistogo.url);
+    client = redis.createClient(rtg.port, rtg.hostname);
+    client.auth(rtg.auth.split(':')[1]);
   }
   return client;
 }
