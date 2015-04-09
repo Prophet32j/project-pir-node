@@ -124,7 +124,7 @@ schema.statics.logout = function(token, callback) {
 schema.statics.register = function(user_data, callback) {
   // validate role
   var role = user_data.role;
-  if (!role || !/[pv]/i.test(role)) {
+  if (!role || !/\b(parent|volunteer)\b/i.test(role)) {
     return callback(new errors.InvalidRequestError('invalid_user_type', { message: 'User role is invalid' }));
   }
 

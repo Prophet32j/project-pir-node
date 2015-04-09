@@ -10,6 +10,7 @@
     <script src="javascripts/jquery-1.11.0.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="javascripts/bootstrap/bootstrap.min.js"></script>
+    {+head/}
   </head>
 
   <body>

@@ -4,7 +4,7 @@
     "url": "mongodb://heroku_app33314683:t6al45aciqoesripvsd62jikae@ds031651.mongolab.com:31651/heroku_app33314683"
   },
   "redistogo": {
-  	"url": "redis://redistogo:ef92663948c49c0143d639c2b6c97d69@cod.redistogo.com:10588/"
+  	"url": "redis://redistogo:620a84f197c3a1081946b218545de950@scat.redistogo.com:10347"
 	},
   "jwt_secret": "secretkey",
   "mandrill_api_key": "xPjTf6andJhboaRZltNs0w"

@@ -30,7 +30,7 @@ router.route('/')
       account.email = account.email || doc.email;
 
       // now we need to register the parent/volunteer
-      registerAccount(doc.type, account, function(err, account) {
+      registerAccount(doc.role, account, function(err, account) {
         if (err) {
           console.log(err);
           doc.remove();
@@ -78,9 +78,9 @@ function registerUser(user, hostname, callback) {
 }
 
 
-function registerAccount(type, account, callback) {
+function registerAccount(role, account, callback) {
 
-  if (type === 'p') {
+  if (role === 'parent') {
     return registerParent(account, callback);
   } 
   
