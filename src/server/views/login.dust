@@ -1,4 +1,4 @@
-{>layout/}
+{>"layouts/main"/}
 
 {<head}
   <script src="javascripts/login.js"></script>
