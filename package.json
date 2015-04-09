@@ -39,7 +39,7 @@
     "passport": "^0.2.1",
     "passport-http": "^0.2.2",
     "redis": "^0.12.1",
-    "rm-errors": "git+https://github.com/Prophet32j/rm-errors.git"
+    "rm-errors": "^1.0.2"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
