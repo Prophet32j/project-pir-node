@@ -1,6 +1,6 @@
 // Parent Model for handling data layer
 
-var errors = require('./../errors');
+var errors = require('rm-errors');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 

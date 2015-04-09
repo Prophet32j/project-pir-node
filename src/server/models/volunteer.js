@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
-var errors = require('./../errors');
+var errors = require('rm-errors');
 
 var schema = new Schema({
   email: { type: String, index: { unique: true }, required: '{PATH} is required' },

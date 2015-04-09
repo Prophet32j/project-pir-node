@@ -3,7 +3,7 @@
 var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 var config = require('./../config/config.json');
-var errors = require('./../errors');
+var errors = require('rm-errors');
 var redisClient = require('./../bin/redis-client')();
 var uuid = require('node-uuid');
 
@@ -13,7 +13,7 @@ var Schema = mongoose.Schema;
 var schema = new Schema({
   email: { type: String, required: '{PATH} is required', index: { unique: true } },
   password: { type: String, required: '{PATH} is required' },
-  type: { type: String, required: '{PATH} is required' },
+  role: { type: String, required: '{PATH} is required' },
   created: { type: Date, default: Date.now },
   last_login: { type: Date, default: null },
   activated: { type: Boolean, default: false }
@@ -118,14 +118,14 @@ schema.statics.logout = function(token, callback) {
 
 /*
  * creates a new user and generates a UID so an email can be sent
- * @param user_data object{email,password,type}
+ * @param user_data object{email,password,role}
  * @param callback function(err, doc, uid)
  */
 schema.statics.register = function(user_data, callback) {
-  // validate type
-  var type = user_data.type;
-  if (!type || !/[pv]/i.test(type)) {
-    return callback(new errors.InvalidRequestError('invalid_user_type', { message: 'User type is invalid' }));
+  // validate role
+  var role = user_data.role;
+  if (!role || !/[pv]/i.test(role)) {
+    return callback(new errors.InvalidRequestError('invalid_user_type', { message: 'User role is invalid' }));
   }
 
 
@@ -218,13 +218,13 @@ schema.pre('save', function(next) {
 });
 
 /*
- * validate that user type is correct
+ * validate that user role is correct
  */
 schema.pre('save', function(next) {
-  if (!this.isModified('type')) return next();
+  if (!this.isModified('role')) return next();
 
-  if (!/[afpv]/i.test(this.type)) {
-    return next(new errors.InvalidRequestError('invalid_user_type', { message: 'User type is invalid '}));
+  if (!/[afpv]/i.test(this.role)) {
+    return next(new errors.InvalidRequestError('invalid_user_type', { message: 'User role is invalid '}));
   }
   next();
 });
@@ -233,14 +233,14 @@ schema.pre('save', function(next) {
  * remove related parent/volunteer
  */
 schema.pre('remove', function(next) {
-  switch(this.type) {
-    case 'p':
+  switch(this.role) {
+    case 'parent':
       return mongoose.model('Parent').findAndRemove(this.email, next);
-    case 'v':
+    case 'volunteer':
       return mongoose.model('Volunteer').findAndRemove(this.email, next);
-    case 'a':
+    case 'administrator':
       return mongoose.model('Admin').findAndRemove(this.email, next);
-    case 'f':
+    case 'assistant':
       return mongoose.model('FrontDesk').findAndRemove(this.email, next);  
     default:
       next();

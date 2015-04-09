@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
-var errors = require('./../errors');
+var errors = require('rm-errors');
 var req_str = '{PATH} is required';
 
 var schema = new Schema({
