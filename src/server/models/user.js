@@ -9,14 +9,18 @@ var uuid = require('node-uuid');
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var req_str = '{PATH} is required';
 
 var schema = new Schema({
-  email: { type: String, required: '{PATH} is required', index: { unique: true } },
-  password: { type: String, required: '{PATH} is required' },
-  role: { type: String, required: '{PATH} is required' },
+  email: { type: String, required: req_str, index: { unique: true } },
+  password: { type: String, required: req_str },
+  role: { type: String, required: req_str }, // may have multiple roles
+  organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: req_str },
   created: { type: Date, default: Date.now },
   last_login: { type: Date, default: null },
-  activated: { type: Boolean, default: false }
+  activated: { type: Boolean, default: false },
+  approved: { type: Boolean, default: true },
+  activation_key: String
 });
 
 /*
@@ -87,22 +91,25 @@ schema.statics.login = function(email, password, callback) {
       }
 
       // console.log(doc.toJSON());
-      var token = jwt.sign(doc.toJSON(), config.jwt_secret);
-
-      // save to database, redis
-      redisClient.hset('jwt_tokens', token, email, function(err, result) {
-        if (err) {
-          err.status = 500;
-          return callback(err);
-        }
-        if (!result) {
-          err = new Error('JWT not added to redis');
-          err.status = 500;
-          return calback(err);
-        }
-
-        callback(null, doc, token);
+      var token = jwt.sign(doc.email, config.jwt_secret, {
+        expiresInMinutes: 10080 // expires in 7 days, 60*24*7
       });
+
+      callback(null, doc, token);
+      // save to database, redis
+      // redisClient.hset('jwt_tokens', token, email, function(err, result) {
+      //   if (err) {
+      //     err.status = 500;
+      //     return callback(err);
+      //   }
+      //   if (!result) {
+      //     err = new Error('JWT not added to redis');
+      //     err.status = 500;
+      //     return calback(err);
+      //   }
+
+      //   callback(null, doc, token);
+      // });
     });
   });
 }
@@ -124,10 +131,13 @@ schema.statics.logout = function(token, callback) {
 schema.statics.register = function(user_data, callback) {
   // validate role
   var role = user_data.role;
-  if (!role || !/\b(parent|volunteer)\b/i.test(role)) {
+  if (!role || !/\b(parent|volunteer|administrator|assistant|manager)\b/i.test(role)) {
     return callback(new errors.InvalidRequestError('invalid_user_type', { message: 'User role is invalid' }));
   }
+  user_data.activation_key = uuid.v4();
 
+  // TODO
+  // set approved to false if admin, asst, man
 
   this.create(user_data, function(err, doc) {
     if (err) {
@@ -135,55 +145,73 @@ schema.statics.register = function(user_data, callback) {
       return callback(err);
     }
 
-    var uid = uuid.v4();
-    redisClient.hset('activations', doc.email, uid, function(err, result) {
-      // need to handle errors and delete document
-      if (err) {
-        doc.remove();
-        err.status = 500;
-        return callback(err);
-      }
-      if (!result) {
-        doc.remove();
-        err = new Error('something happened saving to database. uuid: ' + uid);
-        err.status = 500;
-        return callback(err);
-      }
+    callback(null, doc);
+  //   var uid = uuid.v4();
+  //   redisClient.hset('activations', doc.email, uid, function(err, result) {
+  //     // need to handle errors and delete document
+  //     if (err) {
+  //       doc.remove();
+  //       err.status = 500;
+  //       return callback(err);
+  //     }
+  //     if (!result) {
+  //       doc.remove();
+  //       err = new Error('something happened saving to database. uuid: ' + uid);
+  //       err.status = 500;
+  //       return callback(err);
+  //     }
 
-      callback(null, doc, uid);
-    });
+  //     callback(null, doc, uid);
+  //   });
   });
 }
 
-schema.statics.activate = function(email, uid, callback) {
-  redisClient.hget('activations', email, function(err, uuid) {
+schema.statics.activate = function(email, key, callback) {
+  this.findByEmail(email, function(err, user) {
     if (err) {
       err.status = 500;
       return callback(err);
     }
-    if (!uuid) {
-      return callback(new errors.NotFoundError('email_not_found', { message: 'Email or Activation Key not found' }));
+    if (!user) {
+      return callback(new errors.NotFoundError('email_not_found', { message: 'Email does not exist' }));
     }
-    // make sure keys match
-    if (uid !== uuid) {
+    if (user.activation_key !== key) {
       return callback (new errors.UnauthorizedError('uid_mismatch', { message: 'Activation keys do not match' }));
     }
-    redisClient.hdel('activations', email);
 
-    // good to go, activate the user
-    mongoose.model('User').findByEmail(email, function(err, doc) {
-      if (err) {
-        err.status = 500;
-        return callback(err);
-      }
-      if (!doc) {
-        return callback(new errors.NotFoundError('user_not_found', { message: 'User ID not found' }));
-      }
-
-      doc.activated = true;
-      doc.save(callback);
-    });
+    // everything is good, activate user
+    user.activated = true;
+    user.save(callback);
   });
+
+  // redisClient.hget('activations', email, function(err, uuid) {
+  //   if (err) {
+  //     err.status = 500;
+  //     return callback(err);
+  //   }
+  //   if (!uuid) {
+  //     return callback(new errors.NotFoundError('email_not_found', { message: 'Email or Activation Key not found' }));
+  //   }
+  //   // make sure keys match
+  //   if (uid !== uuid) {
+  //     return callback (new errors.UnauthorizedError('uid_mismatch', { message: 'Activation keys do not match' }));
+  //   }
+  //   redisClient.hdel('activations', email);
+
+  //   // good to go, activate the user
+  //   mongoose.model('User').findByEmail(email, function(err, doc) {
+  //     if (err) {
+  //       err.status = 500;
+  //       return callback(err);
+  //     }
+  //     if (!doc) {
+  //       return callback(new errors.NotFoundError('user_not_found', { message: 'User ID not found' }));
+  //     }
+
+  //     doc.activated = true;
+  //     doc.save(callback);
+  //   });
+  // });
 }
 
 /*

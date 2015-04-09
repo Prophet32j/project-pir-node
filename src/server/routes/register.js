@@ -49,7 +49,7 @@ module.exports = router;
 
 function registerUser(user, hostname, callback) {
 
-  User.register(user, function(err, doc, uid) {
+  User.register(user, function(err, doc) {
     if (err) {
       err.status = 400;
       return callback(err);
@@ -61,7 +61,7 @@ function registerUser(user, hostname, callback) {
       subject: 'Confirm Your Email Address',
     }
     var email_data = {
-      "url": hostname + '/verify?key=' + uid + '&email=' + encodeURIComponent(doc.email)
+      "url": hostname + '/verify?key=' + doc.activation_key + '&email=' + encodeURIComponent(doc.email)
     }
 
     var mailer = new Mailer();
