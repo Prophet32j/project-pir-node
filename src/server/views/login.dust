@@ -5,7 +5,6 @@
 {/head}
 
 {<content}
-  <div class="container">
   <div class="col-md-4 well">
     <h3>Sign in</h3>
     <form id="login-form" name="login">
@@ -21,7 +20,6 @@
       <br>
       <button class="btn btn-primary btn-lg btn-block">Submit</button>
     </form>
-  </div>
   </div>
 {/content}
 {! extends layout

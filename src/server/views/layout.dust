@@ -54,9 +54,11 @@
       </div><!-- /.container-fluid -->
     </nav>
 
-    {+content}
-    Content Comes in Here
-    {/content}
+    <div class="container">
+      {+content}
+      Content Comes in Here
+      {/content}
+    </div>
     <footer>
       <div class="footer">
         <!-- <div class="container"> -->
