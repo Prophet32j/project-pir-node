@@ -1,6 +1,7 @@
 var fs = require('fs');
+var config = require('./../config/config.json');
 
-exports.mountRoutes = function(app) {
+exports.mount = function(app) {
 
   /*
    * initializes all models and sources them as .model-name
@@ -24,5 +25,4 @@ exports.mountRoutes = function(app) {
   app.get('/contact', function(req, res, next) {
     res.render('contact', { title: 'Contact' });
   });
-
 }

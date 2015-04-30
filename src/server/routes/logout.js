@@ -1,6 +1,6 @@
 var express = require('express'),
     router = express.Router();
-var models = require('./../models'),
+var models = require('rm-models'),
     User = models.user;
 
 router.route('/')

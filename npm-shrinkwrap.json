@@ -87,6 +87,25 @@
         }
       }
     },
+    "client-sessions": {
+      "version": "0.7.0",
+      "from": "client-sessions@*",
+      "resolved": "https://registry.npmjs.org/client-sessions/-/client-sessions-0.7.0.tgz",
+      "dependencies": {
+        "cookies": {
+          "version": "0.5.0",
+          "from": "cookies@0.5.0",
+          "resolved": "https://registry.npmjs.org/cookies/-/cookies-0.5.0.tgz",
+          "dependencies": {
+            "keygrip": {
+              "version": "1.0.1",
+              "from": "keygrip@>=1.0.0 <1.1.0",
+              "resolved": "https://registry.npmjs.org/keygrip/-/keygrip-1.0.1.tgz"
+            }
+          }
+        }
+      }
+    },
     "consolidate": {
       "version": "0.12.1",
       "from": "consolidate@*",

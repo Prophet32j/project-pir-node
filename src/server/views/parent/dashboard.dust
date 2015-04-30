@@ -1,0 +1,6 @@
+{>"layouts/main"/}
+
+{<content}
+  <h1>Parent Dashboard</h1>
+  Email: {user.email}
+{/content}

@@ -1,7 +1,7 @@
 var express = require('express'),
     router = express.Router();
 
-var models = require('./../models'),
+var models = require('rm-models'),
     User = models.user;
 
 router.route('/')
@@ -9,21 +9,17 @@ router.route('/')
     res.render('login', { title: 'Sign-in' });
   })
   .post(function(req, res, next) {
+    console.log(req.body);
     var email = req.body.email;
     var password = req.body.password;
 
-    User.login(email, password, function(err, doc, token) {
+    User.login(email, password, function(err, doc) {
       if (err) {
         err.status = err.status || 500;
+        console.log(err);
         return next(err);
       }
-      // models.getAccount(doc, function(err, json) {
-      //   if (err) {
-      //     err.status = err.status || 500;
-      //     return next(err);
-      //   }
 
-      // });
       var user = {
         id: doc.id,
         email: doc.email,
@@ -31,21 +27,14 @@ router.route('/')
         created: doc.created,
         last_login: doc.last_login
       }
-      res.json({ token: token, user: user });
+      // determine if this is browser or mobile app
+      if (req.body.isBrowser) {
+        console.log('hi');
+        res.render(user.role + '/dashboard', { title: 'Parent Dashboard', user: user });
+      } else {
+        res.json({ token: token, user: user });
+      }
     });
   });
 
 module.exports = router;
-
-
-// function createAccountPayload(user, callback, token) {
-//   models.getAccount(user, function(err, account) {
-//     if (err) {
-//       return callback(err);
-//     }
-
-//     if (user.role === 'parent') {
-//       account.user = user;
-//     }
-//   });
-// }

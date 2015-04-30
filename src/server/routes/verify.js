@@ -1,11 +1,11 @@
 var express = require('express'),
     router = express.Router();
-var models = require('./../models'),
+var models = require('rm-models'),
     User = models.user;
 var errors = require('rm-errors');
-var redisClient = require('./../bin/redis-client')();
+// var redisClient = require('./../bin/redis-client')();
 var uuid = require('node-uuid');
-var Mailer = require('./../mailer');
+var Mailer = require('rm-mailer');
 
 router.route('/')
   .get(function(req, res, next) {

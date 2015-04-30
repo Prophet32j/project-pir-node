@@ -1,12 +1,15 @@
 var express = require('express'),
-    app = express();
-var bodyParser = require('body-parser');
-var path = require('path');
-var morgan = require('morgan');
-var routeHandler = require('./routes');
-var mongoose = require('mongoose');
-var config = require('./config/config.json');
-var cons = require('consolidate');
+    app = express(),
+    bodyParser = require('body-parser'),
+    path = require('path'),
+    morgan = require('morgan'),
+    routes = require('./routes'),
+    mongoose = require('mongoose'),
+    config = require('./config/config.json'),
+    cons = require('consolidate'),
+    api = require('rm-api'),
+    subdomain = require('express-subdomain'),
+    sessions = require('client-sessions');
 
 // connect to Mongo and Mongoose
 mongoose.connect(process.env.MONGOLAB_URI || config.mongodb.url);
@@ -22,10 +25,27 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // mount web pages
-routeHandler.mountRoutes(app);
+routes.mount(app);
+
+// mount the API on api. subdomain
+app.use(subdomain('api', api));
 
 // static file serving
 app.use(express.static(path.join(__dirname, '../client')));
+
+// set cookie sessions
+app.use(sessions({
+  cookieName: 'session',
+  secret: config.secret,
+  duration: 7 * 24 * 60 * 60 * 1000,
+  activeDuration: 5 * 60 * 1000
+}));
+
+app.use(function(req, res, next) {
+  if (!req.session.visited) {
+    req.session.visited = true;
+  }
+});
 
 // error handlers
 handleErrors();

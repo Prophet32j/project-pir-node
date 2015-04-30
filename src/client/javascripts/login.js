@@ -3,9 +3,10 @@ $(function() {
   $('#login-form').submit(function(event) {
 
     var form = $(this);
-    event.preventDefault();
+    // event.preventDefault();
 
     var data = form.serialize();
+    data.isBrower = true;
 
     $.ajax({
       type: 'POST',
@@ -16,30 +17,17 @@ $(function() {
       var user = json.user;
       var token = json.token;
 
+      // save token and redirect to dashboard
       localStorage.setItem('token', token);
-      alert(localStorage.getItem('token'));
+      // alert(localStorage.getItem('token'));
 
-      // save token and redirect to Ember route based on user type
-      switch (user.type) {
-        case 'p':
-          window.location.href = "/parent";
-          break;
-        case 'v':
-          window.location.href = "/volunteer";
-          break;
-        case 'a':
-          window.location.href = "/admin";
-          break;
-        case 'f':
-          window.location.href = "/front-desk";
-          break;
-      }
+      window.location.href = "/dashboard?token="+token;
     })
     .fail(function() {
       form.trigger('reset');
 
       // flash an error message
-      $('.alert').show();
+      $('.alert').append("<p> <strong>Error! </strong>Incorrect email or password</p>");
     });
 
   });
