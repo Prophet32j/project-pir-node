@@ -4,7 +4,7 @@ var models = require('rm-models'),
     User = models.user,
     Parent = models.parent,
     Volunteer = models.volunteer;
-var Mailer = require('rm-mailer');
+var mailer = require('rm-mailer');
 var errors = require('rm-errors');
 
 
@@ -64,8 +64,6 @@ function registerUser(user, hostname, callback) {
       "url": hostname + '/verify?key=' + doc.activation_key + '&email=' + encodeURIComponent(doc.email)
     }
 
-    var mailer = new Mailer();
-
     mailer.sendEmail('email-confirmation', email_data, message, function(err, emails) {
       if (err) {
         console.err('Mandrill API Error: ', err.stack);
@@ -97,7 +95,6 @@ function registerParent(parent, callback) {
       return callback(err);
     }
 
-    var mailer = new Mailer();
     var message = {
       to: [{
             email: doc.email,
@@ -128,7 +125,6 @@ function registerVolunteer(volunteer, callback) {
     }
 
     // send email
-    var mailer = new Mailer();
     var email_data = { 
       "volunteer": doc.toJSON()
     };
