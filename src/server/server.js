@@ -12,7 +12,7 @@ var express = require('express'),
     sessions = require('client-sessions');
 
 // connect to Mongo and Mongoose
-mongoose.connect(process.env.MONGOLAB_URI || config.mongodb.url);
+// mongoose.connect(process.env.MONGOLAB_URI || config.mongodb.url);
 
 // console.log(path.join(__dirname, 'src/server/views'));
 app.engine('dust', cons.dust);
