@@ -1,17 +1,14 @@
 var express = require('express'),
-    router = express.Router();
-var models = require('rm-models'),
+    router = express.Router(),
+    models = require('rm-models'),
     User = models.user,
     Parent = models.parent,
-    Volunteer = models.volunteer;
-var mailer = require('rm-mailer');
-var errors = require('rm-errors');
+    Volunteer = models.volunteer,
+    mailer = require('rm-mailer'),
+    errors = require('rm-errors');
 
 
 router.route('/')
-  .get(function(req, res, next) {
-    res.render('register', { title: 'Register' });
-  })
   .post(function(req, res, next) {
     var data = req.body;
     var user = data.user,
@@ -66,7 +63,7 @@ function registerUser(user, hostname, callback) {
 
     mailer.sendEmail('email-confirmation', email_data, message, function(err, emails) {
       if (err) {
-        console.err('Mandrill API Error: ', err.stack);
+        console.log('Mandrill API Error: ', err.stack);
       }
     });
 
@@ -106,7 +103,7 @@ function registerParent(parent, callback) {
 
     mailer.sendEmail('parent-confirmation', email_data, message, function(err, emails) {
       if (err) {
-        console.err('Mandrill API Error: ', err.stack);
+        console.log('Mandrill API Error: ', err.stack);
       }
     });
 
@@ -138,7 +135,7 @@ function registerVolunteer(volunteer, callback) {
 
     mailer.sendEmail('volunteer-confirmation', email_data, message, function(err, emails) {
       if (err) {
-        console.err('Mandrill API Error: ', err.stack);
+        console.log('Mandrill API Error: ', err.stack);
       }
     });
 

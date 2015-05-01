@@ -33,7 +33,7 @@
     "morgan": "^1.5.1",
     "node-uuid": "^1.4.2",
     "redis": "^0.12.1",
-    "rm-api": "^1.0.2",
+    "rm-api": "^1.0.3",
     "rm-errors": "^1.0.2",
     "rm-mailer": "^1.0.1",
     "rm-models": "^1.3.0"

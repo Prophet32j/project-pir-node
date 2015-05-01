@@ -8,7 +8,6 @@ var express = require('express'),
     config = require('./config/config.json'),
     cons = require('consolidate'),
     api = require('rm-api'),
-    subdomain = require('express-subdomain'),
     sessions = require('client-sessions');
 
 // connect to Mongo and Mongoose
@@ -27,8 +26,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // mount web pages
 routes.mount(app);
 
-// mount the API on api. subdomain
-app.use(subdomain('api', api));
+// mount the API
+app.use('/api', api);
 
 // static file serving
 app.use(express.static(path.join(__dirname, '../client')));
