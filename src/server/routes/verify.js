@@ -5,7 +5,7 @@ var models = require('rm-models'),
 var errors = require('rm-errors');
 // var redisClient = require('./../bin/redis-client')();
 var uuid = require('node-uuid');
-var Mailer = require('rm-mailer');
+var mailer = require('rm-mailer');
 
 router.route('/')
   .get(function(req, res, next) {
@@ -30,7 +30,6 @@ router.route('/')
       }
 
       // let's send out a success email
-      var mailer = new Mailer();
       var message = {
         to: [{ email: email }],
         subject: 'Email Address Activated'
@@ -70,7 +69,6 @@ router.route('/')
       }
 
       // send the email
-      var mailer = new Mailer();
       var message = {
         to: [{ email: email }],
         subject: 'Confirm Your Email Address'
