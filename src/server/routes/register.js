@@ -9,6 +9,9 @@ var express = require('express'),
 
 
 router.route('/')
+  .get(function(req, res, next) {
+    res.render('register', { title: 'Register' });
+  })
   .post(function(req, res, next) {
     var data = req.body;
     var user = data.user,
