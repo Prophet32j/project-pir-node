@@ -1,0 +1,56 @@
+<html>
+  <head>
+
+  </head>
+  <body>
+  <h3>New Reader Created!</h3>
+  <p>Hello {{parent.first_name}} {{parent.last_name}}!</p>
+  <p>Thank you for adding a new reader to our program. We appreciate your participation.
+  Below is your new Reader information.</p>
+
+  <p>Reader Details:</p>
+  <img src="{{image}}">
+  <table>
+    <tr>
+      <td>First Name</td>
+      <td>{{reader.first_name}}</td>
+    </tr>
+    <tr>
+      <td>Last Name</td>
+      <td>{{reader.last_name}}</td>
+    </tr>
+    <tr>
+      <td>Gender</td>
+      <td>{{reader.gender}}</td>
+    </tr>
+    <tr>
+      <td>Grade</td>
+      <td>{{reader.grade}}</td>
+    </tr>
+    {{#if reader.alt_phone}}
+      <tr>
+        <td>Alternate Phone</td>
+        <td>{{reader.alt_phone}}</td>
+      </tr>
+    {{/if}}
+    {{#if reader.alt_parent}}
+      <tr>
+        <td>Alternate Parent</td>
+        <td>{{reader.alt_parent}}</td>
+      </tr>
+    {{/if}}
+    <tr>
+      <td>Special Needs</td>
+      <td>{{reader.special_needs}}</td>
+    </tr>
+    <tr>
+      <td>Language Needs</td>
+      <td>{{reader.language_needs}}</td>
+    </tr>
+    <tr>
+      <td>About Me</td>
+      <td>{{reader.about_me}}</td>
+    </tr>
+  </table>
+  </body>
+</html>

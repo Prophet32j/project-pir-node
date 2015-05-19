@@ -1,15 +1,17 @@
 var express = require('express'),
-    router = express.Router();
-var models = require('rm-models'),
+    router = express.Router(),
+    uuid = require('node-uuid'),
+    errors = require('./../errors'),
+    mailer = require('./../mailer'),
+    models = require('./../models'),
     User = models.user;
-var errors = require('rm-errors');
-// var redisClient = require('./../bin/redis-client')();
-var uuid = require('node-uuid');
-var mailer = require('rm-mailer');
 
 router.route('/')
   .get(function(req, res, next) {
     // check to see if they followed the email
+    if (!req.query) {
+      return res.render('verify', { title: 'Email Verification' });
+    }
     if (!req.query.key || !req.query.email) {
       return res.render('verify', { title: 'Email Verification', status: 'error', message: 'Missing key and/or email' });
     }
@@ -53,20 +55,14 @@ router.route('/')
 
     // send new email and with new key
 
-    // delete the key if it exists first
-    redisClient.hdel('activations', email);
-    var uid = uuid.v4();
-    redisClient.hset('activations', email, uid, function(err, result) {
+    User.findByEmail(email, function(err, doc) {
       if (err) {
-        err.status = 500;
-        return next(err);
+        return res.status(err.status || 500).json({ error: err });
       }
-
-      if (!result) {
-        err = new Error('something went wrong writing to the database');
-        err.status = 500;
-        return next(err);
-      }
+      
+      var uid = uuid.v4();
+      doc.activation_key = uid;
+      doc.save();
 
       // send the email
       var message = {
@@ -85,6 +81,8 @@ router.route('/')
 
       res.sendStatus(204);
     });
+
   });
+
 
 module.exports = router;

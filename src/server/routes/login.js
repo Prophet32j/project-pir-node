@@ -1,7 +1,7 @@
 var express = require('express'),
     router = express.Router();
 
-var models = require('rm-models'),
+var models = require('./../models'),
     User = models.user;
 
 router.route('/')
@@ -27,13 +27,12 @@ router.route('/')
         created: doc.created,
         last_login: doc.last_login
       }
-      // determine if this is browser or mobile app
-      if (req.body.isBrowser) {
-        console.log('hi');
-        res.render(user.role + '/dashboard', { title: 'Parent Dashboard', user: user });
-      } else {
-        res.json({ token: token, user: user });
-      }
+
+      // set up cookie session
+      req.session.user = user;
+
+
+      res.render(user.role + '/dashboard', { title: 'Parent Dashboard', user: user });
     });
   });
 

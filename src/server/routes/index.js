@@ -15,10 +15,12 @@ exports.mount = function(app) {
 
 
   app.get('/', function(req, res, next) {
+    // req.session.hello = 'Hello World';
     res.render('index', { title: 'Home' });
   });
 
   app.get('/about', function(req, res, next) {
+    console.log(req.session);
     res.render('about', { title: 'About' });
   });
 

@@ -1,0 +1,28 @@
+<html>
+  <head>
+
+  </head>
+  <body>
+  <h3>Parent Registration Complete!</h3>
+  <p>Hello {{parent.first_name}} {{parent.last_name}}!</p>
+  <p>Thank you for completing the registration process. 
+    Please remember to confirm your email address.<br>
+    If you have not already done so, please add your children to your account</p>
+
+  <p>Here are your parent details:</p>
+  <table>
+    <tr>
+      <td>First Name</td>
+      <td>{{parent.first_name}}</td>
+    </tr>
+    <tr>
+      <td>Last Name</td>
+      <td>{{parent.last_name}}</td>
+    </tr>
+    <tr>
+      <td>Phone Number</td>
+      <td>{{parent.phone}}</td>
+    </tr>
+  </table>
+  </body>
+</html>

@@ -1,17 +1,14 @@
 var express = require('express'),
     router = express.Router(),
-    mailer = require('./../mailer'),
-    errors = require('./../errors'),
-    models = require('./../models'),
+    mailer = require('./../../mailer'),
+    errors = require('./../../errors'),
+    models = require('./../../models'),
     User = models.user,
     Parent = models.parent,
     Volunteer = models.volunteer;
 
 
 router.route('/')
-  .get(function(req, res, next) {
-    res.render('register', { title: 'Register' });
-  })
   .post(function(req, res, next) {
     var data = req.body;
     var user = data.user,

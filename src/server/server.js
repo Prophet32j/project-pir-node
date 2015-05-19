@@ -7,11 +7,13 @@ var express = require('express'),
     mongoose = require('mongoose'),
     config = require('./config/config.json'),
     cons = require('consolidate'),
-    api = require('rm-api'),
-    sessions = require('client-sessions');
+    api = require('./api'),
+    session = require('express-session'),
+    RedisStore = require('connect-redis')(session),
+    redisClient = require('./bin/redis-client');
 
 // connect to Mongo and Mongoose
-// mongoose.connect(process.env.MONGOLAB_URI || config.mongodb.url);
+mongoose.connect(process.env.MONGOLAB_URI || config.mongodb.url);
 
 // console.log(path.join(__dirname, 'src/server/views'));
 app.engine('dust', cons.dust);
@@ -20,31 +22,32 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(morgan('dev'));
 
+// mount the API
+app.use('/api', api);
+
+// set cookie sessions
+app.use(session({
+  // store: new RedisStore({
+  //   client: redisClient
+  // }),
+  // cookieName: 'session',
+  secret: config.secret,
+  resave: false,
+  saveUninitialized: false
+  // duration: 7 * 24 * 60 * 60 * 1000,
+  // activeDuration: 5 * 60 * 1000
+}));
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // mount web pages
 routes.mount(app);
 
-// mount the API
-app.use('/api', api);
-
 // static file serving
 app.use(express.static(path.join(__dirname, '../client')));
 
-// set cookie sessions
-app.use(sessions({
-  cookieName: 'session',
-  secret: config.secret,
-  duration: 7 * 24 * 60 * 60 * 1000,
-  activeDuration: 5 * 60 * 1000
-}));
-
-app.use(function(req, res, next) {
-  if (!req.session.visited) {
-    req.session.visited = true;
-  }
-});
 
 // error handlers
 handleErrors();
