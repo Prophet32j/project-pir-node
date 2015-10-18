@@ -1,10 +1,7 @@
 {
   "mongodb": {
     "name": "test",
-    "url": "mongodb://heroku_app33314683:t6al45aciqoesripvsd62jikae@ds031651.mongolab.com:31651/heroku_app33314683"
+    "url": ""
   },
-  "redistogo": {
-  	"url": "redis://redistogo:620a84f197c3a1081946b218545de950@scat.redistogo.com:10347"
-	},
-  "secret": "secret"
+  "secret": ""
 }
